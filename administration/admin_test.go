@@ -7,7 +7,7 @@ package administration
 	"testing"
 	"time"
 	"tunnel/administration/model"
-	"tunnel/common/config"
+	"tunnel/config"
 	"tunnel/common/logging"
 )
 

@@ -14,7 +14,7 @@ import (
 	"tunn-hub/administration"
 	"tunn-hub/authentication"
 	"tunn-hub/cache"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/device"
 	"tunn-hub/networking"
 	"tunn-hub/traffic"

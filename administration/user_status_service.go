@@ -3,7 +3,7 @@ package administration
 import (
 	"time"
 	"tunn-hub/administration/model"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

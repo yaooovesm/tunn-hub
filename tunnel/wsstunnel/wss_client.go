@@ -9,7 +9,7 @@ import (
 	"net"
 	"net/url"
 	"time"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/transmitter"
 	"tunn-hub/tunnel"
 )

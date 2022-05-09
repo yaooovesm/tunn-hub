@@ -7,7 +7,7 @@ import (
 	"net"
 	"os/exec"
 	"strconv"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/networking"
 )
 

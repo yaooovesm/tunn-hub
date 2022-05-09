@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"tunn-hub/administration/model"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/networking"
 	"tunn-hub/traffic"
 	"tunn-hub/transmitter"

@@ -2,7 +2,7 @@ package authentication
 
 import (
 	"encoding/json"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 type OptionCode int

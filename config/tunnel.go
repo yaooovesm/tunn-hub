@@ -1,7 +1,7 @@
 package config
 
 import (
-	"tunn-hub/common/config/protocol"
+	"tunn-hub/config/protocol"
 )
 
 //

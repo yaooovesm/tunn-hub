@@ -1,7 +1,7 @@
 package authentication
 
 import (
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/device"
 )
 

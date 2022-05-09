@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tunn-hub/common/config"
-	"tunn-hub/common/config/protocol"
+	"tunn-hub/config"
+	"tunn-hub/config/protocol"
 	"tunn-hub/transmitter"
 	"tunn-hub/utils/timer"
 )

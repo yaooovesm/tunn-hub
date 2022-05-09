@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	log "github.com/cihub/seelog"
 	"github.com/gofrs/uuid"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

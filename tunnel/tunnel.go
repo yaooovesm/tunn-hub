@@ -2,7 +2,7 @@ package tunnel
 
 import (
 	"net"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

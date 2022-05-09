@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 	"time"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/transmitter"
 	"tunn-hub/tunnel"
 )

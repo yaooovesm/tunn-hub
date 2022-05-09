@@ -2,7 +2,7 @@ package tcptunnel
 
 import (
 	"net"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/tunnel"
 )
 

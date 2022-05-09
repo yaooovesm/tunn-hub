@@ -6,7 +6,7 @@ import (
 	log "github.com/cihub/seelog"
 	"io/ioutil"
 	"os"
-	"tunn-hub/common/config/protocol"
+	"tunn-hub/config/protocol"
 )
 
 var Current = Config{}

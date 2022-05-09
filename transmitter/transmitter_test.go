@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-	"tunn-hub/common/logging"
+	"tunn-hub/logging"
 	"tunn-hub/traffic"
 )
 

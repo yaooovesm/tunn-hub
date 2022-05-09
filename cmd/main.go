@@ -5,8 +5,8 @@ import (
 	log "github.com/cihub/seelog"
 	"tunn-hub/administration"
 	"tunn-hub/application"
-	"tunn-hub/common/config"
-	"tunn-hub/common/logging"
+	"tunn-hub/config"
+	"tunn-hub/logging"
 )
 
 //go:embed static

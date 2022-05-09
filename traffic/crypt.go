@@ -3,7 +3,7 @@ package traffic
 import (
 	log "github.com/cihub/seelog"
 	"github.com/xtaci/kcp-go"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

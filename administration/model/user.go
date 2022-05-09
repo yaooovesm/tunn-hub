@@ -2,7 +2,7 @@ package model
 
 import (
 	"encoding/json"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/traffic"
 )
 

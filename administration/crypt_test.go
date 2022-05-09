@@ -3,7 +3,7 @@ package administration
 import (
 	"fmt"
 	"testing"
-	"tunn-hub/common/logging"
+	"tunn-hub/logging"
 )
 
 func TestCrypt(t *testing.T) {

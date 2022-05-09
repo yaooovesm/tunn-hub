@@ -6,7 +6,7 @@ import (
 	"tunn-hub/administration"
 	"tunn-hub/administration/model"
 	"tunn-hub/authentication"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/device"
 	"tunn-hub/traffic"
 )

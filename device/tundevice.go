@@ -1,7 +1,7 @@
 package device
 
 import (
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 const DefaultTunDeviceName = "tunnel"

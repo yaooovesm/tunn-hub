@@ -5,7 +5,7 @@ import (
 	"github.com/xtaci/kcp-go"
 	"net"
 	"time"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/tunnel"
 )
 

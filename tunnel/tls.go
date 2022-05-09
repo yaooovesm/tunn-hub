@@ -11,7 +11,7 @@ import (
 	"net"
 	"os"
 	"time"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

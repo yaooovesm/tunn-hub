@@ -3,8 +3,8 @@ package application
 import (
 	log "github.com/cihub/seelog"
 	"os"
-	"tunn-hub/common/config"
-	"tunn-hub/common/config/protocol"
+	"tunn-hub/config"
+	"tunn-hub/config/protocol"
 	"tunn-hub/tunnel"
 	"tunn-hub/tunnel/kcptunnel"
 	"tunn-hub/tunnel/tcptunnel"

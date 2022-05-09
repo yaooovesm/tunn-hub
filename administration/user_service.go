@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"time"
 	"tunn-hub/administration/model"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 var userServiceInstance *userService

@@ -7,7 +7,7 @@ import (
 	"github.com/xtaci/kcp-go"
 	"testing"
 	"time"
-	"tunn-hub/common/logging"
+	"tunn-hub/logging"
 )
 
 type fp1 struct {

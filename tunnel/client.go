@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 	"tunn-hub/authentication"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/device"
 	"tunn-hub/traffic"
 	"tunn-hub/transmitter"

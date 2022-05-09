@@ -3,7 +3,7 @@ package authentication
 import (
 	"errors"
 	"tunn-hub/administration"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

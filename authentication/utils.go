@@ -3,7 +3,7 @@ package authentication
 import (
 	"encoding/json"
 	"net"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

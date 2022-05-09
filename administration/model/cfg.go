@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/base64"
 	"encoding/json"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 )
 
 //

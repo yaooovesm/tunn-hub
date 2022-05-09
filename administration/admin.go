@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"tunn-hub/common/config"
+	"tunn-hub/config"
 	"tunn-hub/version"
 )
 
