@@ -1,0 +1,676 @@
+{
+	"info": {
+		"_postman_id": "4ce2f6e5-54f8-4e40-b8ac-3676f7659a03",
+		"name": "tunnel_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "获取用户",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/test",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取概况",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/general",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"general"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过用户ID获取用户",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/id/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"id",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/list",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建用户",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"test10\",\r\n    \"password\": \"123456\",\r\n    \"email\": \"\",\r\n    \"disabled\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/create",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改用户信息",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"779b8462e0494cfa9d0c7accfe2b4a9a\",\r\n    \"password\": \"123456\",\r\n    \"email\": \"123\",\r\n    \"config_id\": \"abc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/update/00cb4516eccc4f3d9ba27504e4aca286",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"update",
+								"00cb4516eccc4f3d9ba27504e4aca286"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "设置禁用",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"567c5708851c4593b9ea5df13b9dac40\",\r\n    \"disabled\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/disable/567c5708851c4593b9ea5df13b9dac40",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"disable",
+								"567c5708851c4593b9ea5df13b9dac40"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除用户",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"779b8462e0494cfa9d0c7accfe2b4a9a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/delete",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户登录",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"test\",\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/login",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户退出",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/logout/test",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"logout",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/info/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"info",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取用户Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/status/100",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"status",
+								"100"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "用户列表Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/list/info",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"list",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "token",
+			"item": [
+				{
+					"name": "获取token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"test\",\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}token/",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}token"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "server",
+			"item": [
+				{
+					"name": "获取服务器流量数据",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/flow",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"flow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取服务器配置",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/config",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过ID关闭用户连接",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/disconnect/id/848f141a2fc647dca219b4bd28df156a",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"disconnect",
+								"id",
+								"848f141a2fc647dca219b4bd28df156a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取地址池概况",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/ippool",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"ippool"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取地址池分配列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/ippool/list",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"ippool",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "config",
+			"item": [
+				{
+					"name": "获取配置列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/list",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过配置ID获取配置",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/64580aa8a0544605a23e541272a886d7",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"64580aa8a0544605a23e541272a886d7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建配置",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"routes\":[],\r\n    \"device\":{}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/create",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "更新配置",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"64580aa8a0544605a23e541272a886d7\",\r\n    \"routes\":[\r\n        {\"network\":\"200.100.100.100/32\",\"option\":\"import\"}\r\n    ],\r\n    \"device\":{}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/update",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过配置ID删除配置",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/delete/64580aa8a0544605a23e541272a886d7",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"delete",
+								"64580aa8a0544605a23e541272a886d7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
