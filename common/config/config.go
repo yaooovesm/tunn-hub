@@ -1,0 +1,112 @@
+package config
+
+import (
+	"encoding/json"
+	"flag"
+	log "github.com/cihub/seelog"
+	"io/ioutil"
+	"os"
+	"tunn-hub/common/config/protocol"
+)
+
+var Current = Config{}
+
+//
+// Config
+// @Description:
+//
+type Config struct {
+	Global      Global      `json:"global"`
+	User        User        `json:"user"`
+	Routes      []Route     `json:"route"`
+	Device      Device      `json:"device"`
+	Auth        Auth        `json:"auth"`
+	DataProcess DataProcess `json:"data_process"`
+	Security    Security    `json:"security"`
+	Admin       Admin       `json:"admin"`
+	IPPool      IPPool      `json:"ip_pool"`
+	Runtime     Runtime     `json:"runtime"`
+}
+
+//
+// Global
+// @Description: global config
+//
+type Global struct {
+	Tunnel
+	MTU          int    `json:"mtu"`
+	Pprof        int    `json:"pprof"`
+	Restart      bool   `json:"restart"`
+	DefaultRoute bool   `json:"default_route"`
+	MultiConn    int    `json:"multi_connection"`
+	StoragePath  string `json:"storage_path"`
+}
+
+//
+// ReadFromFile
+// @Description:
+// @receiver cfg
+// @param path
+//
+func (cfg *Config) ReadFromFile(path string) {
+	if path == "" {
+		_ = log.Error("config not specific")
+		os.Exit(-1)
+		return
+	}
+	log.Info("load config from : ", path)
+	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
+	if err != nil {
+		_ = log.Error("failed to open config file : " + err.Error())
+		os.Exit(-1)
+	}
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = log.Error("failed to read config file : " + err.Error())
+		os.Exit(-1)
+	}
+	cfg.SetDefaultValue()
+	_ = json.Unmarshal(bytes, cfg)
+}
+
+//
+// SetDefaultValue
+// @Description:
+// @receiver cfg
+//
+func (cfg *Config) SetDefaultValue() {
+	cfg.Global.Protocol = protocol.TCP
+	cfg.Global.MTU = 1400
+	cfg.Global.DefaultRoute = false
+}
+
+//
+// Check
+// @Description:
+// @receiver cfg
+//
+func (cfg *Config) Check() {
+	storagePath := cfg.Global.StoragePath
+	if storagePath != "" && storagePath[len(storagePath)-1:] != "/" {
+		cfg.Global.StoragePath += "/"
+	}
+	if cfg.Global.Protocol == protocol.WSS || cfg.Global.Protocol == protocol.WS {
+		log.Info("protocol ", cfg.Global.Protocol, " : multi_connection reset to 1")
+		cfg.Global.MultiConn = 1
+	}
+}
+
+//
+// Load
+// @Description:
+//
+func Load() {
+	c := flag.String("c", "", "config path")
+	flag.Parse()
+	Current.ReadFromFile(*c)
+	Current.Check()
+	Current.Runtime.Collect()
+}

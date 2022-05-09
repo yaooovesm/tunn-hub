@@ -1,0 +1,36 @@
+{
+  "global": {
+    "address": "172.18.28.12",
+    "port": 10240,
+    "protocol": "tcp",
+    "role": "client",
+    "mtu": 1500,
+    "pprof": 10242,
+    "restart": true
+  },
+  "user": {
+    "Account": "test",
+    "Password": "123456"
+  },
+  "route": [
+    {
+      "network": "30.30.30.30/32",
+      "option": "export"
+    },
+    {
+      "network": "20.20.20.20/32",
+      "option": "import"
+    }
+  ],
+  "device": {
+    "cidr": "172.23.0.2/24",
+    "dns": "223.5.5.5"
+  },
+  "auth": {
+    "address": "172.18.28.12",
+    "port": 10241
+  },
+  "data_process": {
+    "encrypt": "XOR"
+  }
+}
