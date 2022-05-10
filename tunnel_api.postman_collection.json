@@ -365,6 +365,31 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "通过用户ID获取配置",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/config/cb94976f29054e57b089cd7b411f908d",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"config",
+								"cb94976f29054e57b089cd7b411f908d"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
