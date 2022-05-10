@@ -21,6 +21,7 @@ var permissionAssignMap = map[string]UserAuthLevel{
 	"/api/v1/user/login":           None,
 	"/api/v1/user/logout/:account": User,
 	"/api/v1/user/general":         Administrator,
+	"/api/v1/user/config/:id":      User,
 	//token
 	"/api/v1/token/":      None,
 	"/api/v1/token/check": None,
@@ -51,6 +52,7 @@ var selfPermissionIdMap = map[string]int{
 	"/api/v1/user/status/:id": 1,
 	"/api/v1/user/id/:id":     1,
 	"/api/v1/user/update/:id": 1,
+	"/api/v1/user/config/:id": 1,
 }
 
 //
