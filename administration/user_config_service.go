@@ -3,6 +3,7 @@ package administration
 import (
 	"errors"
 	"tunn-hub/administration/model"
+	"tunn-hub/config"
 )
 
 //
@@ -63,11 +64,11 @@ func (u *userClientConfigService) List() ([]model.ClientConfig, error) {
 	}
 	cfgs := make([]model.ClientConfig, 0)
 	for i := range list {
-		config, err := list[i].GetConfig()
+		cfg, err := list[i].GetConfig()
 		if err != nil {
 			continue
 		}
-		cfgs = append(cfgs, config)
+		cfgs = append(cfgs, cfg)
 	}
 	return cfgs, nil
 }
@@ -94,12 +95,16 @@ func (u *userClientConfigService) DeleteById(id string) error {
 // @return error
 //
 func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.ClientConfig, error) {
+	err := u.HasDuplicateExport(cfg.Routes, cfg.Id)
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
 	storage := cfg.ToStorageModel()
 	db := u.db.Where("id=?", cfg.Id).Save(&storage)
 	if db.Error != nil {
 		return model.ClientConfig{}, db.Error
 	}
-	cfg, err := storage.GetConfig()
+	cfg, err = storage.GetConfig()
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
@@ -114,15 +119,70 @@ func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.Clie
 // @return error
 //
 func (u *userClientConfigService) Create(cfg model.ClientConfig) (model.ClientConfig, error) {
+	err := u.HasDuplicateExport(cfg.Routes, "")
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
 	cfg.Id = UUID()
 	storage := cfg.ToStorageModel()
 	db := u.db.Create(&storage)
 	if db.Error != nil {
 		return model.ClientConfig{}, db.Error
 	}
-	err := cfg.Decode(storage.Content)
+	err = cfg.Decode(storage.Content)
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
 	return cfg, nil
+}
+
+//
+// IsDuplicateExport
+// @Description:
+// @receiver u
+// @param route
+// @return error
+//
+func (u *userClientConfigService) IsDuplicateExport(route config.Route) error {
+	//不在任何一个已暴露的子网内
+	//不等于任何一个子网
+	list, err := u.List()
+	if err != nil {
+		return err
+	}
+	for i := range list {
+		for j := range list[i].Routes {
+			if err := list[i].Routes[j].IsDuplicateExport(route); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+//
+// HasDuplicateExport
+// @Description:
+// @receiver u
+// @param routes
+// @return error
+//
+func (u *userClientConfigService) HasDuplicateExport(routes []config.Route, ignoreId string) error {
+	list, err := u.List()
+	if err != nil {
+		return err
+	}
+	for i := range list {
+		if ignoreId != "" && list[i].Id == ignoreId {
+			continue
+		}
+		for j := range list[i].Routes {
+			for k := range routes {
+				if err := list[i].Routes[j].IsDuplicateExport(routes[k]); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
