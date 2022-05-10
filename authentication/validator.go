@@ -3,6 +3,7 @@ package authentication
 import (
 	"errors"
 	"tunn-hub/administration"
+	"tunn-hub/administration/model"
 	"tunn-hub/config"
 )
 
@@ -17,7 +18,7 @@ type IValidator interface {
 	// @param user
 	// @return bool
 	//
-	ValidateUser(user config.User) error
+	ValidateUser(user config.User) (model.ClientConfig, error)
 
 	//
 	// ValidateConfig
@@ -42,7 +43,7 @@ type DefaultValidator struct {
 // @param user
 // @return error
 //
-func (DefaultValidator) ValidateUser(user config.User) error {
+func (DefaultValidator) ValidateUser(user config.User) (model.ClientConfig, error) {
 	return administration.UserServiceInstance().TunnelLogin(user.Account, user.Password)
 }
 

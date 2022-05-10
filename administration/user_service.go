@@ -52,7 +52,7 @@ func newUserService(admin *ServerAdmin) *userService {
 // @param account
 // @param password
 //
-func (serv *userService) TunnelLogin(account string, password string) error {
+func (serv *userService) TunnelLogin(account string, password string) (model.ClientConfig, error) {
 	return serv.infoService.CheckPasswordAndAccount(model.UserInfo{Account: account, Password: password})
 }
 
@@ -392,4 +392,25 @@ func (serv userService) GrantAdmin(info *model.UserInfo) error {
 	}
 	_ = info.Copy(origin)
 	return nil
+}
+
+//
+// GenerateUserConfig
+// @Description:
+// @receiver serv
+// @param id
+// @return config.PushedConfig
+// @return error
+//
+func (serv userService) GenerateUserConfig(id string) (config.PushedConfig, error) {
+	info := model.UserInfo{Id: id}
+	err := serv.infoService.Query(&info)
+	if err != nil {
+		return config.PushedConfig{}, err
+	}
+	clientConfig, err := serv.configService.GetById(info.ConfigId)
+	if err != nil {
+		return config.PushedConfig{}, err
+	}
+	return clientConfig.ToPushModel(), nil
 }
