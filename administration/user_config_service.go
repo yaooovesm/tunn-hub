@@ -2,6 +2,7 @@ package administration
 
 import (
 	"errors"
+	log "github.com/cihub/seelog"
 	"tunn-hub/administration/model"
 	"tunn-hub/config"
 )
@@ -46,6 +47,8 @@ func (u *userClientConfigService) GetById(id string) (cfg model.ClientConfig, er
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
+	//合入服务端暴露的路由
+	cfg.Routes = append(cfg.Routes, config.Current.Routes...)
 	return
 }
 
@@ -95,7 +98,7 @@ func (u *userClientConfigService) DeleteById(id string) error {
 // @return error
 //
 func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.ClientConfig, error) {
-	err := u.HasDuplicateExport(cfg.Routes, cfg.Id)
+	err := u.HasDuplicateExport(cfg.Routes, cfg.Id, false)
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
@@ -119,7 +122,7 @@ func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.Clie
 // @return error
 //
 func (u *userClientConfigService) Create(cfg model.ClientConfig) (model.ClientConfig, error) {
-	err := u.HasDuplicateExport(cfg.Routes, "")
+	err := u.HasDuplicateExport(cfg.Routes, "", false)
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
@@ -137,37 +140,27 @@ func (u *userClientConfigService) Create(cfg model.ClientConfig) (model.ClientCo
 }
 
 //
-// IsDuplicateExport
-// @Description:
-// @receiver u
-// @param route
-// @return error
-//
-func (u *userClientConfigService) IsDuplicateExport(route config.Route) error {
-	//不在任何一个已暴露的子网内
-	//不等于任何一个子网
-	list, err := u.List()
-	if err != nil {
-		return err
-	}
-	for i := range list {
-		for j := range list[i].Routes {
-			if err := list[i].Routes[j].IsDuplicateExport(route); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-//
 // HasDuplicateExport
 // @Description:
 // @receiver u
 // @param routes
 // @return error
 //
-func (u *userClientConfigService) HasDuplicateExport(routes []config.Route, ignoreId string) error {
+func (u *userClientConfigService) HasDuplicateExport(routes []config.Route, ignoreId string, ignoreServer bool) error {
+	if !ignoreServer {
+		//服务端设置的Export
+		serverRoutes := config.Current.Routes
+		for i := range serverRoutes {
+			if serverRoutes[i].Option == config.RouteOptionExport {
+				for j := range routes {
+					if err := serverRoutes[i].IsDuplicateExport(routes[j]); err != nil {
+						return log.Error("export duplicate with server export : ", serverRoutes[i].Network, " , ", routes[j].Network)
+					}
+				}
+			}
+		}
+	}
+	//客户端Export
 	list, err := u.List()
 	if err != nil {
 		return err
@@ -179,7 +172,7 @@ func (u *userClientConfigService) HasDuplicateExport(routes []config.Route, igno
 		for j := range list[i].Routes {
 			for k := range routes {
 				if err := list[i].Routes[j].IsDuplicateExport(routes[k]); err != nil {
-					return err
+					return log.Error("export duplicate with user export @"+list[i].Id, ": ", list[i].Routes[j].Network, " , ", routes[k].Network)
 				}
 			}
 		}

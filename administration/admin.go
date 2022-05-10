@@ -72,6 +72,13 @@ func NewServerAdmin(cfg config.Admin, static embed.FS) (admin *ServerAdmin, err 
 	admin.userService = newUserService(admin)
 	//server service
 	admin.serverService = newServerService()
+
+	//执行路由冲突检查
+	err = admin.userService.configService.HasDuplicateExport(config.Current.Routes, "", true)
+	if err != nil {
+		return nil, err
+	}
+
 	//static
 	admin.static = static
 	return admin, nil

@@ -192,7 +192,7 @@ func (u *userInfoService) Query(info *model.UserInfo) error {
 
 //
 // CheckPasswordAndAccount
-// @Description: 验证用户名密码,供客户端(非admin)登录验证时使用
+// @Description: 验证用户名密码,供客户端(非webui)登录验证时使用
 // @receiver u
 // @param info
 // @return error
