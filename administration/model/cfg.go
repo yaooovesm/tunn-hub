@@ -8,7 +8,7 @@ import (
 
 //
 // ClientConfig
-// @Description:
+// @Description: 配置模型
 //
 type ClientConfig struct {
 	Id     string         `json:"id"`
@@ -66,8 +66,31 @@ func (c *ClientConfig) ToStorageModel() ClientConfigStorage {
 }
 
 //
-// ClientConfigStorage
+// ToPushModel
 // @Description:
+// @receiver c
+// @return config.PushedConfig
+//
+func (c *ClientConfig) ToPushModel() config.PushedConfig {
+	return config.PushedConfig{
+		Global: config.PushedGlobal{
+			Address:         config.Current.Global.Address,
+			Port:            config.Current.Global.Port,
+			Protocol:        config.Current.Global.Protocol,
+			Mtu:             config.Current.Global.MTU,
+			MultiConnection: config.Current.Global.MultiConn,
+		},
+		Routes: c.Routes,
+		Device: c.Device,
+		DataProcess: config.DataProcess{
+			CipherType: config.Current.DataProcess.CipherType,
+		},
+	}
+}
+
+//
+// ClientConfigStorage
+// @Description: 配置储存模型
 //
 type ClientConfigStorage struct {
 	Id      string `json:"id" gorm:"primaryKey" gorm:"column:id"`
