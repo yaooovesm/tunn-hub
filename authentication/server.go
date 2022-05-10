@@ -34,7 +34,7 @@ type AuthServerV3 struct {
 	version   transmitter.Version
 	upgrader  *websocket.Upgrader
 	validator IValidator
-	ippool    *networking.IPAddressPool
+	IPPool    *networking.IPAddressPool
 }
 
 //
@@ -60,7 +60,7 @@ func NewServerV3(handler AuthServerHandler, validator IValidator) (server *AuthS
 		if err != nil {
 			return nil, err
 		}
-		s.ippool = iPv4AddressPool
+		s.IPPool = iPv4AddressPool
 	}
 	if config.Current.Global.Protocol == protocol.WS || config.Current.Global.Protocol == protocol.WSS {
 		//当通信协议为websocket时生成WSKey
@@ -82,7 +82,7 @@ func NewServerV3(handler AuthServerHandler, validator IValidator) (server *AuthS
 	} else {
 		s.validator = validator
 	}
-	administration.ServerServiceInstance().SetupAuthServer(s.KickByUUID, s.GetConfigByUUID, s.version, s.WSKey, s.ippool)
+	administration.ServerServiceInstance().SetupAuthServer(s.KickByUUID, s.GetConfigByUUID, s.version, s.WSKey, s.IPPool)
 	return s, nil
 }
 
@@ -253,7 +253,7 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 		return
 	}
 	//验证用户
-	err = s.validator.ValidateUser(cfg.User)
+	clientConfig, err := s.validator.ValidateUser(cfg.User)
 	if err != nil {
 		s.reply(AuthReply{
 			Ok:      false,
@@ -262,20 +262,28 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 		}, PacketTypeLogin, packet.UUID, tunn)
 		return
 	}
-	//验证配置文件
-	err = s.validator.ValidateConfig(cfg)
-	if err != nil {
-		s.reply(AuthReply{
-			Ok:      false,
-			Error:   "invalid config : " + err.Error(),
-			Message: "配置文件错误",
-		}, PacketTypeLogin, packet.UUID, tunn)
-		return
-	}
 	//SetDeadline
 	_ = tunn.SetDeadline(time.Time{})
 	//set online
 	s.lock.Lock()
+	log.Info("[authentication][user:", cfg.User.Account, "] login success")
+	pushedConfig := clientConfig.ToPushModel()
+	if s.IPPool != nil {
+		if pushedConfig.Device.CIDR == "" {
+			ip, err := s.IPPool.DispatchCIDR(packet.UUID)
+			if err == nil {
+				log.Info("alloc ip address to ", packet.UUID, " : ", ip)
+				pushedConfig.Device.CIDR = ip
+			}
+		} else {
+			cidr, _ := s.IPPool.PickCIDR(pushedConfig.Device.CIDR, packet.UUID)
+			pushedConfig.Device.CIDR = cidr
+		}
+	}
+	//同步到服务端记录
+	cfg.MergePushed(pushedConfig)
+	pushedConfigByte, _ := json.Marshal(pushedConfig)
+	//在设置路由时已经检查过冲突问题,在此处可直接应用路由
 	//配置用户export路由
 	if len(cfg.Routes) > 0 {
 		deviceName := s.handler.GetDevice().Name()
@@ -295,45 +303,12 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 			}
 		}
 	}
-	log.Info("[authentication][user:", cfg.User.Account, "] login success")
 	//传输数据到客户端
 	data := map[string]string{
 		"key":     hex.EncodeToString(s.PublicKey),
 		"route":   getExportRoutes(),
 		"gateway": config.Current.Device.CIDR,
-	}
-	if s.ippool != nil {
-		//分配地址
-		ip, err := s.ippool.DispatchCIDR(packet.UUID)
-		if err == nil {
-			log.Info("alloc ip address to ", packet.UUID, " : ", ip)
-			data["cidr"] = ip
-			cfg.Device.CIDR = ip
-		} else {
-			data["error"] = err.Error()
-		}
-		//if cfg.Device.CIDR == "" {
-		//	ip, err := s.ippool.DispatchCIDR(packet.UUID)
-		//	if err == nil {
-		//		log.Info("alloc ip address to ", packet.UUID, " : ", ip)
-		//		data["cidr"] = ip
-		//		cfg.Device.CIDR = ip
-		//	} else {
-		//		data["error"] = err.Error()
-		//	}
-		//} else {
-		//	ip, _, err := net.ParseCIDR(cfg.Device.CIDR)
-		//	if err == nil {
-		//		cidr, err := s.ippool.PickCIDR(ip.String(), packet.UUID)
-		//		if err != nil {
-		//			data["error"] = err.Error()
-		//		} else {
-		//			log.Info("alloc ip address to ", packet.UUID, " : ", ip)
-		//			data["cidr"] = cidr
-		//			cfg.Device.CIDR = cidr
-		//		}
-		//	}
-		//}
+		"config":  string(pushedConfigByte),
 	}
 	if s.WSKey != "" && len(s.WSKey) > 0 {
 		data["ws_key"] = s.WSKey
@@ -391,7 +366,7 @@ func (s *AuthServerV3) logout(tunn *transmitter.Tunnel, packet *TransportPacket)
 		return
 	}
 	//验证用户
-	err = s.validator.ValidateUser(cfg.User)
+	_, err = s.validator.ValidateUser(cfg.User)
 	if err != nil {
 		s.reply(AuthReply{
 			Ok:      false,
@@ -457,7 +432,7 @@ func (s *AuthServerV3) clearByUUID(uuid string) {
 		if cidr != "" {
 			ip, _, err := net.ParseCIDR(cidr)
 			if err == nil {
-				s.ippool.ReturnBack(ip.To4().String())
+				s.IPPool.ReturnBack(ip.To4().String())
 			}
 		}
 	}
