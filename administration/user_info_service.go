@@ -197,23 +197,28 @@ func (u *userInfoService) Query(info *model.UserInfo) error {
 // @param info
 // @return error
 //
-func (u *userInfoService) CheckPasswordAndAccount(info model.UserInfo) error {
+func (u *userInfoService) CheckPasswordAndAccount(info model.UserInfo) (cfg model.ClientConfig, err error) {
+	cfg = model.ClientConfig{}
 	u.EncryptInfo(&info)
 	pwd := info.Password
 	info.Password = ""
 	db := u.db.Raw("SELECT * FROM tunn_user WHERE account=?", info.Account).First(&info)
 	if db.Error == nil {
 		if info.Password != pwd {
-			return errors.New("password not match")
+			return cfg, errors.New("password not match")
 		} else if info.Disabled == 1 {
-			return errors.New("user disabled")
+			return cfg, errors.New("user disabled")
 		} else {
-			return nil
+			cfg, err = UserServiceInstance().configService.GetById(info.ConfigId)
+			if err != nil {
+				return cfg, err
+			}
+			return
 		}
 	} else if db.Error == gorm.ErrRecordNotFound {
-		return errors.New("no such user")
+		return cfg, errors.New("no such user")
 	} else {
-		return errors.New("database error")
+		return cfg, errors.New("database error")
 	}
 }
 

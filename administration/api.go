@@ -58,6 +58,7 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		userGroup.POST("/login", ApiUserLogin)
 		userGroup.GET("/logout/:account", ApiUserLogout)
 		userGroup.GET("/general", ApiGetUserGeneral)
+		userGroup.GET("/config/:id", ApiGenerateUserConfig)
 	}
 	//token
 	{

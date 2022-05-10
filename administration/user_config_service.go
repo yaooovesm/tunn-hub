@@ -1,6 +1,7 @@
 package administration
 
 import (
+	"errors"
 	"tunn-hub/administration/model"
 )
 
@@ -32,6 +33,9 @@ func newUserClientConfigService(admin *ServerAdmin) *userClientConfigService {
 // @return model.ClientConfig
 //
 func (u *userClientConfigService) GetById(id string) (cfg model.ClientConfig, err error) {
+	if id == "" {
+		return model.ClientConfig{}, errors.New("config not found")
+	}
 	storage := model.ClientConfigStorage{}
 	db := u.db.Raw("SELECT * From tunn_config WHERE id=?", id).First(&storage)
 	if db.Error != nil {

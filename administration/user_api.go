@@ -249,3 +249,17 @@ func ApiGetUserGeneral(ctx *gin.Context) {
 	}
 	responseSuccess(ctx, general, "")
 }
+
+//
+// ApiGenerateUserConfig
+// @Description:
+// @param ctx
+//
+func ApiGenerateUserConfig(ctx *gin.Context) {
+	pushedConfig, err := UserServiceInstance().GenerateUserConfig(ctx.Param("id"))
+	if err != nil {
+		responseError(ctx, err, "获取配置失败")
+		return
+	}
+	responseSuccess(ctx, pushedConfig, "")
+}
