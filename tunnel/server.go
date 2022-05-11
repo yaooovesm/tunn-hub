@@ -297,37 +297,40 @@ func (s *Server) TXHandler() {
 		if err != nil || err == io.EOF || n == 0 {
 			continue
 		}
+		pl := buffer[:n]
 		//从数据包中生成identification
-		identification := traffic.IdentificationV2(buffer, traffic.Out)
+		identification := traffic.IdentificationV2(pl, traffic.Out)
 		if identification == "" {
 			//未能标识流量方向做丢包处理
 			continue
 		}
+
 		//匹配源方向
 		if uuid, ok := s.ipTable.Get(identification); ok {
 			if m, ok := s.tunnels[uuid]; ok {
 				//流量TX
 				//处理流量
 				if txfp, ok := s.txFlowCounters[uuid]; ok {
-					//计数
-					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(buffer[:n])))
+					//用户流量计数
+					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(pl)))
+					continue
 				} else {
-					_, _ = m.Get().Write(s.TxFP.Process(buffer[:n]))
+					_, _ = m.Get().Write(s.TxFP.Process(pl))
+					continue
 				}
 			}
-		} else {
-			//匹配永久路由
-			destination := waterutil.IPv4Destination(buffer)
-			if uuid := s.router.Route(destination); uuid != "" {
-				if m, ok := s.tunnels[uuid]; ok {
-					//流量TX
-					//处理流量
-					if txfp, ok := s.txFlowCounters[uuid]; ok {
-						//计数
-						_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(buffer[:n])))
-					} else {
-						_, _ = m.Get().Write(s.TxFP.Process(buffer[:n]))
-					}
+		}
+		//匹配路由
+		destination := waterutil.IPv4Destination(pl)
+		if uuid := s.router.Route(destination); uuid != "" {
+			if m, ok := s.tunnels[uuid]; ok {
+				//流量TX
+				//处理流量
+				if txfp, ok := s.txFlowCounters[uuid]; ok {
+					//用户流量计数
+					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(pl)))
+				} else {
+					_, _ = m.Get().Write(s.TxFP.Process(pl))
 				}
 			}
 		}
