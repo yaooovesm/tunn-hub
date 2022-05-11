@@ -11,12 +11,13 @@ import (
 // @param network
 // @param dev
 //
-func AddSystemRoute(network string, dev string) {
+func AddSystemRoute(network string, dev string) error {
 	log.Info("[", dev, "]add system route : ", network)
 	err := command("/sbin/ip", "route", "add", network, "dev", dev)
 	if err != nil {
-		_ = log.Warn("import ", network, " failed : ", err)
+		return log.Warn("import ", network, " failed : ", err)
 	}
+	return nil
 }
 
 //

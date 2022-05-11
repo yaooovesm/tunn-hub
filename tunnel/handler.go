@@ -165,7 +165,7 @@ func (h *AuthServerHandler) OnReport(packet *authentication.TransportPacket) {
 // @param Address
 //
 func (h *AuthServerHandler) AfterLogin(packet *authentication.TransportPacket, address string, cfg config.Config) {
-	log.Info("[Address:", address, "][uuid:", packet.UUID, "] login success")
+	log.Info("[Account:", cfg.User.Account, "][Address:", address, "][uuid:", packet.UUID, "] login success")
 	//setup flow processor
 	//tx
 	txfp := traffic.NewFlowProcessor()

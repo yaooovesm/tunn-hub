@@ -15,24 +15,25 @@ import (
 // @param network
 // @param dev
 //
-func AddSystemRoute(network string, dev string) {
+func AddSystemRoute(network string, dev string) error {
 	log.Info("[", dev, "]add system route : ", network)
 	ip, ipNet, err := net.ParseCIDR(network)
 	if err != nil {
 		_ = log.Warn("import ", network, " failed : ", err)
-		return
+		return err
 	}
 	//PowerShell route add -p [network] mask [mask] [dev_ip]
 	devIp, index, err := getIpv4ByInterfaceName(dev)
 	if err != nil {
 		_ = log.Warn("import ", network, " failed : ", err)
-		return
+		return err
 	}
 	err = command("PowerShell", "route", "add", ip.String(), "mask", ipv4MaskString(ipNet.Mask), devIp, "IF", strconv.Itoa(index))
 	if err != nil {
 		_ = log.Warn("import ", network, " failed : ", err)
-		return
+		return err
 	}
+	return nil
 }
 
 //

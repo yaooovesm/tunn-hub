@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"encoding/json"
 	"net"
 	"tunn-hub/config"
 )
@@ -11,7 +10,7 @@ import (
 // @Description:
 // @return string
 //
-func getExportRoutes() string {
+func getExportRoutes() []config.Route {
 	var routes []config.Route
 	for i := range config.Current.Routes {
 		if config.Current.Routes[i].Option == config.RouteOptionExport {
@@ -20,11 +19,7 @@ func getExportRoutes() string {
 			routes = append(routes, route)
 		}
 	}
-	marshal, err := json.Marshal(routes)
-	if err != nil {
-		return ""
-	}
-	return string(marshal)
+	return routes
 }
 
 //

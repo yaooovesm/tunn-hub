@@ -2,12 +2,10 @@ package device
 
 import (
 	"errors"
-	log "github.com/cihub/seelog"
 	"github.com/songgao/water"
 	"os/exec"
 	"strconv"
 	"tunn-hub/config"
-	"tunn-hub/networking"
 )
 
 //
@@ -80,13 +78,14 @@ func (d *TunDevice) Setup() error {
 	if err != nil {
 		return err
 	}
-	routes := config.Current.Routes
-	for i := range routes {
-		if routes[i].Option == config.RouteOptionImport {
-			log.Info("import route : ", routes[i].Network)
-			networking.AddSystemRoute(routes[i].Network, d.Name())
-		}
-	}
+	//不在此处引入路由，由systemrt.SystemRouteTable统一托管
+	//routes := config.Current.Routes
+	//for i := range routes {
+	//	if routes[i].Option == config.RouteOptionImport {
+	//		log.Info("import route : ", routes[i].Network)
+	//		networking.AddSystemRoute(routes[i].Network, d.Name())
+	//	}
+	//}
 	return nil
 }
 

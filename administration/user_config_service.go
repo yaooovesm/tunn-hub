@@ -47,8 +47,6 @@ func (u *userClientConfigService) GetById(id string) (cfg model.ClientConfig, er
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
-	//合入服务端暴露的路由
-	cfg.Routes = append(cfg.Routes, config.Current.Routes...)
 	return
 }
 

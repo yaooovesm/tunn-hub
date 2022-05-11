@@ -26,15 +26,16 @@ import (
 // @Description:
 //
 type AuthServerV3 struct {
-	online    map[string]*Connection
-	handler   AuthServerHandler
-	lock      sync.Mutex
-	PublicKey []byte
-	WSKey     string
-	version   transmitter.Version
-	upgrader  *websocket.Upgrader
-	validator IValidator
-	IPPool    *networking.IPAddressPool
+	online        map[string]*Connection
+	handler       AuthServerHandler
+	lock          sync.Mutex
+	PublicKey     []byte
+	WSKey         string
+	version       transmitter.Version
+	upgrader      *websocket.Upgrader
+	validator     IValidator
+	IPPool        *networking.IPAddressPool
+	SysRouteTable *networking.SystemRouteTable
 }
 
 //
@@ -92,6 +93,9 @@ func NewServerV3(handler AuthServerHandler, validator IValidator) (server *AuthS
 // @receiver s
 //
 func (s *AuthServerV3) Start() {
+	//注册系统路由表托管
+	s.SysRouteTable = networking.NewSystemRouteTable(s.handler.GetDevice().Name())
+	//启动服务
 	var address string
 	ip := net.ParseIP(config.Current.Global.Address)
 	if ip != nil {
@@ -266,7 +270,6 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 	_ = tunn.SetDeadline(time.Time{})
 	//set online
 	s.lock.Lock()
-	log.Info("[authentication][user:", cfg.User.Account, "] login success")
 	pushedConfig := clientConfig.ToPushModel()
 	if s.IPPool != nil {
 		if pushedConfig.Device.CIDR == "" {
@@ -282,16 +285,19 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 	}
 	//同步到服务端记录
 	cfg.MergePushed(pushedConfig)
-	pushedConfigByte, _ := json.Marshal(pushedConfig)
 	//在设置路由时已经检查过冲突问题,在此处可直接应用路由
 	//配置用户export路由
 	if len(cfg.Routes) > 0 {
 		deviceName := s.handler.GetDevice().Name()
 		for i := range cfg.Routes {
 			if cfg.Routes[i].Option == config.RouteOptionExport {
-				log.Info("[", cfg.User.Account, "][server_dev:", deviceName, "] export route --> ", cfg.Routes[i].Network)
+				log.Info("[", cfg.User.Account, "][server_dev:", deviceName, "] import route --> ", cfg.Routes[i].Network)
 				//添加系统路由
-				networking.AddSystemRoute(cfg.Routes[i].Network, deviceName)
+				s.SysRouteTable.Merge(append([]config.Route{}, config.Route{
+					Network: cfg.Routes[i].Network,
+					Option:  config.RouteOptionImport,
+				}))
+				//networking.AddSystemRoute(cfg.Routes[i].Network, deviceName)
 				//添加通道路由
 				err := s.handler.AddTunnelRoute(cfg.Routes[i].Network, packet.UUID)
 				if err != nil {
@@ -303,10 +309,14 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 			}
 		}
 	}
+	//合入服务端export
+	pushedConfig.Routes = append(pushedConfig.Routes, getExportRoutes()...)
+	pushedConfigByte, _ := json.Marshal(pushedConfig)
+	//更新系统路由
+	s.SysRouteTable.DeployAll()
 	//传输数据到客户端
 	data := map[string]string{
 		"key":     hex.EncodeToString(s.PublicKey),
-		"route":   getExportRoutes(),
 		"gateway": config.Current.Device.CIDR,
 		"config":  string(pushedConfigByte),
 	}
