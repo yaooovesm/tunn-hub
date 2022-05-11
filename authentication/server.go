@@ -229,22 +229,29 @@ func (s *AuthServerV3) HandleClientConnect(conn net.Conn, uuid string) {
 }
 
 //
+// isOnline
+// @Description:
+// @receiver s
+// @param account
+// @return bool
+//
+func (s *AuthServerV3) isOnline(account string) bool {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	for i := range s.online {
+		if s.online[i].Config.User.Account == account {
+			return true
+		}
+	}
+	return false
+}
+
+//
 // login
 // @Description:
 // @param conn
 //
 func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, address string) {
-	//检查是否有在线
-	s.lock.Lock()
-	if c, ok := s.online[packet.UUID]; ok && c != nil {
-		s.reply(AuthReply{
-			Ok:      false,
-			Error:   "operation failed, current user is already login",
-			Message: "登录失败，当前用户已在线",
-		}, PacketTypeLogin, packet.UUID, tunn)
-		return
-	}
-	s.lock.Unlock()
 	cfg := config.Config{}
 	err := json.Unmarshal(packet.Payload, &cfg)
 	//接收用户配置
@@ -253,6 +260,15 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 			Ok:      false,
 			Error:   "read config failed",
 			Message: "读取配置失败",
+		}, PacketTypeLogin, packet.UUID, tunn)
+		return
+	}
+	//检查用户是否在线
+	if s.isOnline(cfg.User.Account) {
+		s.reply(AuthReply{
+			Ok:      false,
+			Error:   "operation failed, current user is already login",
+			Message: "登录失败，当前用户已在线",
 		}, PacketTypeLogin, packet.UUID, tunn)
 		return
 	}
