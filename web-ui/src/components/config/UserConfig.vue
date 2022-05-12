@@ -1,8 +1,9 @@
 <template>
-  <div v-loading="loading">
+  <div>
     <el-dialog
         v-model="dialogVisible"
         width="50%"
+        top="18vh"
         :close-on-click-modal="false"
         custom-class="default-dialog"
         draggable
@@ -20,80 +21,96 @@
           </div>
         </div>
       </template>
-      <el-card shadow="always" body-style="padding:0">
-        <div class="title" style="margin-top: 20px;margin-bottom: 20px">
-          <div class="title-text">路由导入</div>
-        </div>
-        <div style="padding: 20px">
-          <el-tag
-              v-for="route in importRoutes"
-              :key="route"
-              closable
-              effect="dark"
-              :disable-transitions="false"
-              @close="handleDeleteImportRoute(route)"
-              style="margin-right: 10px;margin-bottom: 5px"
-          >
-            {{ route.network }}
-          </el-tag>
-          <el-input
-              v-if="addImportVisible"
-              v-model="addImportValue"
-              style="margin-top: 10px"
-              size="small"
-              placeholder="e.g. 192.168.1.0/24"
-          >
-            <template #append>
-              <el-button @click="handleAddImport">+</el-button>
-            </template>
-          </el-input>
-          <el-button v-else style="margin-left: 5px" size="small" @click="addImportVisible = true">
-            + 添加导入
-          </el-button>
-        </div>
-      </el-card>
-      <el-card shadow="always" body-style="padding:0" style="margin-top: 20px">
-        <div class="title" style="margin-top: 20px;margin-bottom: 20px">
-          <div class="title-text">网络暴露</div>
-        </div>
-        <div style="padding: 20px">
-          <el-tag
-              v-for="route in exportRoutes"
-              :key="route"
-              closable
-              effect="dark"
-              :disable-transitions="false"
-              @close="handleDeleteImportRoute(route)"
-              style="margin-right: 10px;margin-bottom: 5px"
-          >
-            {{ route.network }}
-          </el-tag>
-          <el-input
-              v-if="addExportVisible"
-              v-model="addExportValue"
-              style="margin-top: 10px"
-              placeholder="e.g. 192.168.1.0/24"
-              size="small"
-          >
-            <template #append>
-              <el-button @click="handleAddExport">+</el-button>
-            </template>
-          </el-input>
-          <el-button v-else style="margin-left: 5px" size="small" @click="addExportVisible = true">
-            + 添加暴露
-          </el-button>
-        </div>
-      </el-card>
-      <el-card shadow="always" body-style="padding:0" v-if="$storage.IsAdmin()" style="margin-top: 20px">
-        <div class="title" style="margin-top: 20px;margin-bottom: 20px">
-          <div class="title-text">高级设置</div>
-        </div>
-        <div style="padding: 20px">
-        </div>
-      </el-card>
+      <div v-loading="loading">
+        <el-card shadow="always" body-style="padding:0">
+          <div class="title" style="margin-top: 20px;margin-bottom: 20px">
+            <div class="title-text">网络导入</div>
+          </div>
+          <div style="padding: 20px">
+            <el-tag
+                v-for="route in importRoutes"
+                :key="route"
+                closable
+                effect="dark"
+                type="info"
+                :disable-transitions="false"
+                @close="handleDeleteImportRoute(route)"
+                style="margin-right: 10px;margin-bottom: 5px"
+            >
+              {{ route.network }}
+            </el-tag>
+            <el-input
+                v-if="addImportVisible"
+                v-model="addImportValue"
+                style="margin-top: 10px"
+                size="small"
+                placeholder="e.g. 192.168.1.0/24"
+            >
+              <template #append>
+                <el-button @click="handleAddImport" size="small">添加</el-button>
+              </template>
+            </el-input>
+            <el-button v-else style="margin-left: 5px" size="small" @click="addImportVisible = true">
+              + 添加
+            </el-button>
+          </div>
+        </el-card>
+        <el-card shadow="always" body-style="padding:0" style="margin-top: 20px">
+          <div class="title" style="margin-top: 20px;margin-bottom: 20px">
+            <div class="title-text">网络暴露</div>
+          </div>
+          <div style="padding: 20px">
+            <el-tag
+                v-for="route in exportRoutes"
+                :key="route"
+                closable
+                type="info"
+                effect="dark"
+                :disable-transitions="false"
+                @close="handleDeleteExportRoute(route)"
+                style="margin-right: 10px;margin-bottom: 5px"
+            >
+              {{ route.network }}
+            </el-tag>
+            <el-input
+                v-if="addExportVisible"
+                v-model="addExportValue"
+                style="margin-top: 10px"
+                placeholder="e.g. 192.168.1.0/24"
+                size="small"
+            >
+              <template #append>
+                <el-button @click="handleAddExport" size="small">添加</el-button>
+              </template>
+            </el-input>
+            <el-button v-else style="margin-left: 5px" size="small" @click="addExportVisible = true">
+              + 添加
+            </el-button>
+          </div>
+        </el-card>
+        <el-card shadow="always" body-style="padding:0" v-if="$storage.IsAdmin()" style="margin-top: 20px">
+          <div class="title" style="margin-top: 20px;margin-bottom: 20px">
+            <div class="title-text">高级设置</div>
+          </div>
+          <div style="padding: 20px">
+            <el-checkbox v-model="enableStaticCIDR" label="地址静态分配" style="margin-bottom: 5px" size="small"/>
+            <span
+                style="margin-bottom: 5px;font-size: 13px;color: #404040;display: inline-block;transform: translateY(-2px);">
+            <el-tooltip
+                effect="dark"
+                content='设置后客户端内网地址将会被静态分配以设置的值'
+                placement="right">
+              <i class="iconfont icon-exclamation-circle"
+                 style="color: #909399;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
+            </el-tooltip>
+          </span>
+            <el-input v-model="staticCIDR" v-if="enableStaticCIDR" placeholder="e.g. 192.168.1.1/24" size="small"/>
+          </div>
+        </el-card>
+      </div>
       <template #footer>
-        <el-button type="primary">保存</el-button>
-        <el-button @click="dialogVisible = false">关闭</el-button>
+        <el-button :loading="loading" type="primary" @click="save">保存</el-button>
+        <el-button :loading="loading" @click="dialogVisible = false">关闭</el-button>
       </template>
     </el-dialog>
   </div>
@@ -117,6 +134,8 @@ export default {
       account: "",
       importRoutes: [],
       exportRoutes: [],
+      staticCIDR: "",
+      enableStaticCIDR: false,
     }
   },
   methods: {
@@ -130,6 +149,32 @@ export default {
       this.dialogVisible = true
       this.load()
     },
+    save: function () {
+      this.loading = true
+      let data = {
+        id: this.configId,
+        device: {
+          cidr: "",
+          dns: "",
+        }
+      }
+      if (this.enableStaticCIDR && this.staticCIDR !== "") {
+        data.device.cidr = this.staticCIDR
+      }
+      data.routes = [...this.importRoutes, ...this.exportRoutes]
+      axios({
+        method: "post",
+        url: "/api/v1/cfg/update",
+        data: data
+      }).then(() => {
+        this.$utils.Success("提示", "更新配置成功")
+        this.load()
+        this.loading = false
+      }).catch((err) => {
+        this.$utils.HandleError(err)
+        this.loading = false
+      })
+    },
     load: function () {
       this.loading = true
       axios({
@@ -138,7 +183,6 @@ export default {
         data: {}
       }).then(res => {
         let response = res.data
-        console.log(response.data)
         let routes = response.data.routes
         let imports = []
         let exports = []
@@ -151,6 +195,13 @@ export default {
         }
         this.importRoutes = imports
         this.exportRoutes = exports
+        if (response.data.device.cidr !== "") {
+          this.staticCIDR = response.data.device.cidr
+          this.enableStaticCIDR = true
+        } else {
+          this.staticCIDR = ""
+          this.enableStaticCIDR = false
+        }
         this.loading = false
       }).catch(() => {
         ElMessageBox.alert('加载用户配置失败', '错误', {
@@ -190,7 +241,7 @@ export default {
       if (this.addExportValue !== '') {
         this.exportRoutes.push({
           network: this.addExportValue,
-          option: "import"
+          option: "export"
         })
       }
       this.addExportValue = ""
