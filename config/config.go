@@ -92,10 +92,10 @@ func (cfg *Config) Check() {
 	if storagePath != "" && storagePath[len(storagePath)-1:] != "/" {
 		cfg.Global.StoragePath += "/"
 	}
-	if cfg.Global.Protocol == protocol.WSS || cfg.Global.Protocol == protocol.WS {
-		log.Info("protocol ", cfg.Global.Protocol, " : multi_connection reset to 1")
-		cfg.Global.MultiConn = 1
-	}
+	//if cfg.Global.Protocol == protocol.WSS || cfg.Global.Protocol == protocol.WS {
+	//	log.Info("protocol ", cfg.Global.Protocol, " : multi_connection reset to 1")
+	//	cfg.Global.MultiConn = 1
+	//}
 }
 
 //

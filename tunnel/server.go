@@ -99,16 +99,20 @@ func (s *Server) Init() error {
 	s.tunnels = make(map[string]*transmitter.MultiConn)
 	s.rxFlowProcessors = make(map[string]*traffic.FlowProcessors)
 	s.txFlowCounters = make(map[string]*traffic.FlowProcessors)
-	s.TxFP = traffic.NewFlowProcessor()
+	//全局RX流量处理
 	s.RxFP = traffic.NewFlowProcessor()
+	s.RxFP.Name = "global_rx"
+	//注册流量统计
+	s.RXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_rx_flow_statistics"}
+	s.RxFP.Register(s.RXFlowCounter, "rx_flow_statistics")
+	//全局TX流量处理
+	s.TxFP = traffic.NewFlowProcessor()
+	s.TxFP.Name = "global_tx"
 	txEncryptFP := traffic.GetEncryptFP(config.Current.DataProcess, s.AuthServer.PublicKey)
 	if txEncryptFP != nil {
 		//注册tx加密
 		s.TxFP.Register(txEncryptFP, "tx_encrypt")
 	}
-	//注册流量统计
-	s.RXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_rx_flow_statistics"}
-	s.RxFP.Register(s.RXFlowCounter, "rx_flow_statistics")
 	s.TXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_tx_flow_statistics"}
 	s.TxFP.Register(s.TXFlowCounter, "tx_flow_statistics")
 	//注册服务器
