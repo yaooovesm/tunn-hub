@@ -40,6 +40,7 @@ type Server struct {
 	rxFlowProcessors map[string]*traffic.FlowProcessors
 	txFlowCounters   map[string]*traffic.FlowProcessors
 	TxFP             *traffic.FlowProcessors
+	RxFP             *traffic.FlowProcessors
 	mtu              int
 	router           *networking.RouteTable
 	version          transmitter.Version
@@ -99,6 +100,7 @@ func (s *Server) Init() error {
 	s.rxFlowProcessors = make(map[string]*traffic.FlowProcessors)
 	s.txFlowCounters = make(map[string]*traffic.FlowProcessors)
 	s.TxFP = traffic.NewFlowProcessor()
+	s.RxFP = traffic.NewFlowProcessor()
 	txEncryptFP := traffic.GetEncryptFP(config.Current.DataProcess, s.AuthServer.PublicKey)
 	if txEncryptFP != nil {
 		//注册tx加密
@@ -106,6 +108,7 @@ func (s *Server) Init() error {
 	}
 	//注册流量统计
 	s.RXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_rx_flow_statistics"}
+	s.RxFP.Register(s.RXFlowCounter, "rx_flow_statistics")
 	s.TXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_tx_flow_statistics"}
 	s.TxFP.Register(s.TXFlowCounter, "tx_flow_statistics")
 	//注册服务器
@@ -257,6 +260,8 @@ func (s *Server) RXHandler(conn net.Conn, uuid string) {
 			//log.Info("[rx][", Address, "][#", num, "] exit with error ", err.Error())
 			return
 		}
+		//流量计数
+		s.RxFP.Process(pl)
 		//从通道进入的数据需要先进行处理再分发流量
 		pl = fps.Process(pl)
 		//优先匹配路由

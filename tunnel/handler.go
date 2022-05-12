@@ -179,8 +179,6 @@ func (h *AuthServerHandler) AfterLogin(packet *authentication.TransportPacket, a
 	//单用户RX流量统计
 	rxfs := &traffic.FlowStatisticsFP{Name: "rx_" + packet.UUID}
 	rxfp.Register(rxfs, "rx_"+packet.UUID)
-	//公共流量统计
-	rxfp.Register(h.Server.RXFlowCounter, "rx_pub")
 	//setup cipher
 	if cfg.DataProcess.CipherType != "" {
 		log.Info("[uuid:", packet.UUID, "] set cipher : ", cfg.DataProcess.CipherType)
