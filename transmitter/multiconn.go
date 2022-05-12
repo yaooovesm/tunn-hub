@@ -4,6 +4,7 @@ import (
 	log "github.com/cihub/seelog"
 	"net"
 	"sync"
+	"tunn-hub/traffic"
 )
 
 //
@@ -11,15 +12,16 @@ import (
 // @Description:
 //
 type MultiConn struct {
-	Current       *Tunnel
-	conns         []*Tunnel
-	ver           Version
-	maxIndex      int
-	currentIndex  int
-	Size          int
-	Name          string
-	electionGap   int
-	electionCount int
+	Current            *Tunnel
+	conns              []*Tunnel
+	ver                Version
+	maxIndex           int
+	currentIndex       int
+	Size               int
+	Name               string
+	electionGap        int
+	electionCount      int
+	writeFlowProcessor *traffic.FlowProcessors
 	sync.RWMutex
 }
 
@@ -32,6 +34,16 @@ type MultiConn struct {
 func NewMultiConn(name string) *MultiConn {
 	m := &MultiConn{Name: name, electionGap: 20, ver: V2}
 	return m
+}
+
+//
+// SetWriteFlowProcessors
+// @Description:
+// @receiver m
+// @param processors
+//
+func (m *MultiConn) SetWriteFlowProcessors(processors *traffic.FlowProcessors) {
+	m.writeFlowProcessor = processors
 }
 
 //
@@ -72,6 +84,22 @@ func (m *MultiConn) Get() *Tunnel {
 		}
 	}()
 	return m.Current
+}
+
+//
+// Write
+// @Description:
+// @receiver m
+// @param pl
+// @return n
+// @return err
+//
+func (m *MultiConn) Write(pl []byte) (n int, err error) {
+	if m.writeFlowProcessor != nil {
+		pl = m.writeFlowProcessor.Process(pl)
+	}
+	n, err = m.Get().Write(pl)
+	return
 }
 
 //

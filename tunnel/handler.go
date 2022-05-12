@@ -9,6 +9,7 @@ import (
 	"tunn-hub/config"
 	"tunn-hub/device"
 	"tunn-hub/traffic"
+	"tunn-hub/transmitter"
 )
 
 //
@@ -198,6 +199,11 @@ func (h *AuthServerHandler) AfterLogin(packet *authentication.TransportPacket, a
 	//每次登录时
 	h.Server.rxFlowProcessors[packet.UUID] = rxfp
 	h.Server.txFlowCounters[packet.UUID] = txfp
+	//将计数器注入到multiconn中
+	multiConn := transmitter.NewMultiConn(packet.UUID)
+	multiConn.SetWriteFlowProcessors(txfp)
+	h.Server.tunnels[packet.UUID] = multiConn
+	//创建multi Conn with counter
 	//注册到后台
 	if administration.UserServiceInstance() != nil {
 		//设置在线

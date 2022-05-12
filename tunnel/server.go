@@ -263,12 +263,7 @@ func (s *Server) RXHandler(conn net.Conn, uuid string) {
 		if uuid := s.router.Route(waterutil.IPv4Destination(pl)); uuid != "" {
 			if m, ok := s.tunnels[uuid]; ok {
 				//重定向通道
-				if txfp, ok := s.txFlowCounters[uuid]; ok {
-					//计数
-					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(pl)))
-				} else {
-					_, _ = m.Get().Write(s.TxFP.Process(pl))
-				}
+				_, _ = m.Write(s.TxFP.Process(pl))
 			}
 			//路由匹配成功，无论是否发送到通道都不写入到网卡
 			continue
@@ -310,14 +305,8 @@ func (s *Server) TXHandler() {
 			if m, ok := s.tunnels[uuid]; ok {
 				//流量TX
 				//处理流量
-				if txfp, ok := s.txFlowCounters[uuid]; ok {
-					//用户流量计数
-					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(pl)))
-					continue
-				} else {
-					_, _ = m.Get().Write(s.TxFP.Process(pl))
-					continue
-				}
+				_, _ = m.Write(s.TxFP.Process(pl))
+				continue
 			}
 		}
 		//匹配路由
@@ -326,12 +315,7 @@ func (s *Server) TXHandler() {
 			if m, ok := s.tunnels[uuid]; ok {
 				//流量TX
 				//处理流量
-				if txfp, ok := s.txFlowCounters[uuid]; ok {
-					//用户流量计数
-					_, _ = m.Get().Write(txfp.Process(s.TxFP.Process(pl)))
-				} else {
-					_, _ = m.Get().Write(s.TxFP.Process(pl))
-				}
+				_, _ = m.Write(s.TxFP.Process(pl))
 			}
 		}
 	}
