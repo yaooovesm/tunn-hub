@@ -33,10 +33,10 @@
               </el-tooltip>
             </template>
           </el-descriptions-item>
-          <el-descriptions-item width="20%" label="邮箱">{{
-              User.email === "" ? "未设置" : User.email
-            }}
-          </el-descriptions-item>
+          <!--          <el-descriptions-item width="20%" label="邮箱">{{-->
+          <!--              User.email === "" ? "未设置" : User.email-->
+          <!--            }}-->
+          <!--          </el-descriptions-item>-->
           <el-descriptions-item width="25%" label="创建时间">{{
               $utils.SecondToDate(User.created, "")
             }}
@@ -46,10 +46,13 @@
                   $utils.UnixMilliToDate(User.last_login, "")
             }}
           </el-descriptions-item>
-          <el-descriptions-item width="50%" label="上次离线">{{
+          <el-descriptions-item width="25%" label="上次离线">{{
               User.last_logout === 0 ? "未曾离线" :
                   $utils.UnixMilliToDate(User.last_logout, "")
             }}
+          </el-descriptions-item>
+          <el-descriptions-item width="25%" label="用户配置">
+            <config-btn :config-id="User.config_id" :account="User.account"/>
           </el-descriptions-item>
         </el-descriptions>
       </div>
@@ -66,9 +69,14 @@
 
 <script>
 import axios from "axios";
+import ConfigBtn from "@/components/config/ConfigBtn";
 
 export default {
   name: "UserCard",
+  components: {
+    ConfigBtn
+  },
+
   props: {
     id: {
       type: String
