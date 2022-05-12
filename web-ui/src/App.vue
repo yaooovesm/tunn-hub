@@ -53,9 +53,9 @@ export default {
             this.$router.push({path: "/dashboard/home"})
             //验证成功跳转
             this.loading = false
-          }).catch((err) => {
+          }).catch(() => {
             //验证失败删除后跳转到登录页
-            this.$utils.Warning("登录超时", err.response.data.msg)
+            //this.$utils.Warning("登录超时", err.response.data.msg)
             this.$router.push({path: "/login"})
             localStorage.removeItem("tunnel_server_user")
           })

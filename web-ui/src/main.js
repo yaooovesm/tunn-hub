@@ -56,10 +56,12 @@ axios.interceptors.response.use(res => {
             //删除状态
             localStorage.removeItem("tunnel_server_user")
             publicStorage.Load()
-            //跳转
-            router.push({path: "/login"})
-            //提示
-            utils.Warning("登录超时", "请重新登录后继续")
+            if (router.path !== "/login") {
+                //跳转
+                router.push({path: "/login"})
+                //提示
+                utils.Warning("登录超时", "请重新登录后继续")
+            }
             return
         }
     }
