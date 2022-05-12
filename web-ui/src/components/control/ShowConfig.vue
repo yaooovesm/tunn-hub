@@ -53,14 +53,8 @@
               <el-descriptions-item width="20%" label="通信协议">
                 {{ config.global.protocol }}
               </el-descriptions-item>
-              <el-descriptions-item width="20%" label="角色">
-                {{ config.global.role }}
-              </el-descriptions-item>
               <el-descriptions-item width="20%" label="MTU">
                 {{ config.global.mtu }}
-              </el-descriptions-item>
-              <el-descriptions-item width="20%" label="自动重连">
-                {{ config.global.restart ? "支持" : "不支持" }}
               </el-descriptions-item>
               <el-descriptions-item width="20%" label="连接数">
                 {{ config.global.multi_connection }}
@@ -142,10 +136,8 @@ export default {
           address: "",
           port: 0,
           protocol: "",
-          role: "",
           mtu: 0,
           pprof: 0,
-          restart: false,
           default_route: false,
           multi_connection: 0,
           storage_path: ""
