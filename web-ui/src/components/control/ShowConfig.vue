@@ -1,0 +1,181 @@
+<template>
+  <div>
+    <el-dialog
+        v-model="dialogVisible"
+        width="60%"
+        custom-class="default-dialog"
+        draggable
+    >
+      <template #title>
+        <div class="title">
+          <div class="title-text">用户配置文件
+            <el-tooltip
+                effect="dark"
+                :content="account"
+                placement="bottom-start"
+                v-if="account.length>10"
+            >
+              <el-tag
+                  type=""
+                  effect="dark"
+                  style="transform: translateY(-2px);margin-left: 10px;height: 25px"
+              >
+                {{ account.length > 10 ? account.substring(0, 10) + "..." : account }}
+              </el-tag>
+            </el-tooltip>
+            <el-tag
+                type=""
+                effect="dark"
+                style="transform: translateY(-2px);margin-left: 10px;height: 25px"
+                v-else
+            >
+              {{ account }}
+            </el-tag>
+          </div>
+        </div>
+      </template>
+      <el-scrollbar height="500px">
+        <el-row v-loading="loading" style="padding-bottom: 30px;padding-top: 20px">
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="5"
+                size="small"
+                direction="vertical"
+                title="全局配置"
+            >
+              <el-descriptions-item width="20%" label="服务器地址">
+                {{ config.global.address }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="服务器端口">
+                {{ config.global.port }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="通信协议">
+                {{ config.global.protocol }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="角色">
+                {{ config.global.role }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="MTU">
+                {{ config.global.mtu }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="自动重连">
+                {{ config.global.restart ? "支持" : "不支持" }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="连接数">
+                {{ config.global.multi_connection }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="5"
+                size="small"
+                direction="vertical"
+                title="虚拟网卡"
+                style="margin-top: 20px"
+            >
+              <el-descriptions-item width="20%" label="CIDR">
+                {{ config.device.cidr }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="DNS">
+                {{ config.device.dns }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="5"
+                size="small"
+                direction="vertical"
+                title="验证服务器"
+                style="margin-top: 20px"
+            >
+              <el-descriptions-item width="20%" label="地址">
+                {{ config.auth.Address }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="端口">
+                {{ config.auth.Port }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="5"
+                size="small"
+                direction="vertical"
+                title="数据处理"
+                style="margin-top: 20px"
+            >
+              <el-descriptions-item width="20%" label="加密方式">
+                {{ config.data_process.encrypt }}
+              </el-descriptions-item>
+              <el-descriptions-item width="20%" label="秘钥">
+                {{ config.data_process.key }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+        </el-row>
+      </el-scrollbar>
+
+
+      <template #footer>
+        <el-button @click="dialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "ShowConfig",
+  data() {
+    return {
+      account: "",
+      loading: false,
+      dialogVisible: false,
+      config: {
+        global: {
+          address: "",
+          port: 0,
+          protocol: "",
+          role: "",
+          mtu: 0,
+          pprof: 0,
+          restart: false,
+          default_route: false,
+          multi_connection: 0,
+          storage_path: ""
+        },
+        route: [],
+        device: {
+          cidr: "",
+          dns: ""
+        },
+        auth: {
+          Address: "",
+          Port: 0
+        },
+        data_process: {
+          encrypt: "",
+          key: null
+        }
+      }
+    }
+  },
+  methods: {
+    show: function (config, account) {
+      this.account = account
+      this.config = config
+      this.dialogVisible = true
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
