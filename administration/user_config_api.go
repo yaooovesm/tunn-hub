@@ -51,7 +51,7 @@ func ApiDeleteConfigById(ctx *gin.Context) {
 	}
 	err := UserServiceInstance().configService.DeleteById(id)
 	if err != nil {
-		responseError(ctx, err, "")
+		responseError(ctx, err, "删除设置失败")
 		return
 	}
 	responseSuccess(ctx, "", "删除["+id+"]成功")
@@ -71,7 +71,7 @@ func ApiUpdateConfigById(ctx *gin.Context) {
 	}
 	cfg, err = UserServiceInstance().configService.UpdateById(cfg)
 	if err != nil {
-		responseError(ctx, err, "")
+		responseError(ctx, err, "更新设置失败")
 		return
 	}
 	responseSuccess(ctx, cfg, "更新["+cfg.Id+"]成功")
@@ -95,4 +95,18 @@ func ApiCreateConfig(ctx *gin.Context) {
 		return
 	}
 	responseSuccess(ctx, create, "创建["+create.Id+"]成功")
+}
+
+//
+// ApiAvailableExports
+// @Description:
+// @param ctx
+//
+func ApiAvailableExports(ctx *gin.Context) {
+	routes, err := UserServiceInstance().configService.AvailableExports()
+	if err != nil {
+		responseError(ctx, err, "获取可导入网络列表失败")
+		return
+	}
+	responseSuccess(ctx, routes, "")
 }

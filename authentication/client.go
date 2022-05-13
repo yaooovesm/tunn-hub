@@ -198,7 +198,6 @@ func (c *AuthClientV3) onLogin(reply *AuthReply) error {
 			_ = log.Warn("failed to recv route info")
 		} else {
 			//merge to local
-			//TODO 合入路由表去重
 			config.Current.Routes = append(config.Current.Routes, rs...)
 		}
 	}

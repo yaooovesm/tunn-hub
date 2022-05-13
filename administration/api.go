@@ -85,5 +85,6 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		cfgGroup.DELETE("/delete/:id", ApiDeleteConfigById)
 		cfgGroup.POST("/update", ApiUpdateConfigById)
 		cfgGroup.PUT("/create", ApiCreateConfig)
+		cfgGroup.GET("/route/available", ApiAvailableExports)
 	}
 }

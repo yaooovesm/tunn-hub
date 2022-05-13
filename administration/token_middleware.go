@@ -34,11 +34,12 @@ var permissionAssignMap = map[string]UserAuthLevel{
 	"/api/v1/server/ippool":            Administrator,
 	"/api/v1/server/ippool/list":       Administrator,
 	//config
-	"/api/v1/cfg/:id":        User,
-	"/api/v1/cfg/list":       Administrator,
-	"/api/v1/cfg/delete/:id": Administrator,
-	"/api/v1/cfg/create":     Administrator,
-	"/api/v1/cfg/update":     User,
+	"/api/v1/cfg/:id":             User,
+	"/api/v1/cfg/list":            Administrator,
+	"/api/v1/cfg/delete/:id":      Administrator,
+	"/api/v1/cfg/create":          Administrator,
+	"/api/v1/cfg/update":          User,
+	"/api/v1/cfg/route/available": User,
 }
 
 //通过账号验证是否为对应用户操作

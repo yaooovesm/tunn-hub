@@ -28,6 +28,67 @@ func newUserClientConfigService(admin *ServerAdmin) *userClientConfigService {
 }
 
 //
+// AvailableExports
+// @Description:
+// @receiver u
+// @return []config.Route
+// @return error
+//
+func (u *userClientConfigService) AvailableExports() ([]config.Route, error) {
+	routes := make([]config.Route, 0)
+	serverRoutes := config.Current.Routes
+	for i := range serverRoutes {
+		if serverRoutes[i].Option == config.RouteOptionExport {
+			routes = append(routes, serverRoutes[i])
+		}
+	}
+	list, err := u.List()
+	if err != nil {
+		return nil, err
+	}
+	for i := range list {
+		for j := range list[i].Routes {
+			if list[i].Routes[j].Option == config.RouteOptionExport {
+				routes = append(routes, list[i].Routes[j])
+			}
+		}
+	}
+	return routes, nil
+}
+
+//
+// ImportsCheck
+// @Description:
+// @receiver u
+// @param routes
+// @return error
+//
+func (u *userClientConfigService) ImportsCheck(routes []config.Route) error {
+	exports, err := u.AvailableExports()
+	if err != nil {
+		return err
+	}
+	for i := range routes {
+		r := routes[i]
+		//只检查import
+		if r.Option != config.RouteOptionImport {
+			continue
+		}
+		hasExport := false
+		for j := range exports {
+			if exports[j].Network == r.Network {
+				hasExport = true
+				break
+			}
+		}
+		if !hasExport {
+			return errors.New("invalid import " + r.Network + " no export")
+		}
+	}
+	return nil
+}
+
+//
 // GetById
 // @Description:
 // @receiver u
@@ -100,6 +161,10 @@ func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.Clie
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
+	err = u.ImportsCheck(cfg.Routes)
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
 	storage := cfg.ToStorageModel()
 	db := u.db.Where("id=?", cfg.Id).Save(&storage)
 	if db.Error != nil {
@@ -124,6 +189,10 @@ func (u *userClientConfigService) Create(cfg model.ClientConfig) (model.ClientCo
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
+	err = u.ImportsCheck(cfg.Routes)
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
 	cfg.Id = UUID()
 	storage := cfg.ToStorageModel()
 	db := u.db.Create(&storage)
@@ -145,6 +214,16 @@ func (u *userClientConfigService) Create(cfg model.ClientConfig) (model.ClientCo
 // @return error
 //
 func (u *userClientConfigService) HasDuplicateExport(routes []config.Route, ignoreId string, ignoreServer bool) error {
+	//自检
+	temp := make(map[string]int)
+	for i := range routes {
+		r := routes[i]
+		if _, ok := temp[r.Network]; ok {
+			return log.Error("current configuration contains duplicate routes")
+		} else {
+			temp[r.Network] = 1
+		}
+	}
 	if !ignoreServer {
 		//服务端设置的Export
 		serverRoutes := config.Current.Routes
