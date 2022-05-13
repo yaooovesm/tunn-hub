@@ -13,6 +13,19 @@
       </div>
       <div style="padding: 20px">
         <el-row :gutter="30">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+            <!--客户端操作-->
+            <div style="margin-bottom: 30px">
+              <div class="subtitle">客户端操作</div>
+              <div style="margin-top: 20px;text-align: left">
+                <el-button size="small" @click="disconnect"><i class="iconfont icon-duankailianjie"
+                                                               style="font-size: 10px"></i>&nbsp;断开连接
+                </el-button>
+                <el-button size="small" @click="reconnect"><i class="iconfont icon-lianjie" style="font-size: 10px"></i>&nbsp;重置连接
+                </el-button>
+              </div>
+            </div>
+          </el-col>
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <!--RX数据显示-->
             <div style="margin-bottom: 30px">
@@ -133,6 +146,7 @@
 <script>
 import axios from "axios";
 import "../../assets/icon/iconfont"
+import {ElMessageBox} from "element-plus";
 
 
 export default {
@@ -208,7 +222,65 @@ export default {
         clearInterval(this.timer)
         this.loading = false
       })
-    }
+    },
+    disconnect: function () {
+      if (this.id === "") {
+        this.$utils.Warning("操作失败", "无法获取用户ID")
+        return
+      }
+      ElMessageBox.confirm(
+          "是否断开连接，手动断开连接将不会自动重连",
+          '警告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        axios({
+          method: "get",
+          url: "/api/v1/server/disconnect/id/" + this.id,
+          data: {}
+        }).then(res => {
+          let response = res.data
+          this.$utils.Success("操作成功，请耐心等待生效", response.msg)
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          this.update(false)
+        })
+      }).catch(() => {
+      })
+    },
+    reconnect: function () {
+      if (this.id === "") {
+        this.$utils.Warning("操作失败", "无法获取用户ID")
+        return
+      }
+      ElMessageBox.confirm(
+          "是否重新连接",
+          '警告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        axios({
+          method: "get",
+          url: "/api/v1/server/reconnect/id/" + this.id,
+          data: {}
+        }).then(res => {
+          let response = res.data
+          this.$utils.Success("操作成功，请耐心等待生效", response.msg)
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          this.update(false)
+        })
+      }).catch(() => {
+      })
+    },
   }
 }
 </script>

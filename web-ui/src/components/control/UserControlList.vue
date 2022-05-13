@@ -144,6 +144,7 @@
                     <el-dropdown-item @click="$refs.config_set.show(scope.row.config_id,scope.row.account)">设置
                     </el-dropdown-item>
                     <el-dropdown-item @click="disconnect(scope.row.id,scope.row.account)">断开</el-dropdown-item>
+                    <el-dropdown-item @click="reconnect(scope.row.id,scope.row.account)">重置</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -330,6 +331,35 @@ export default {
         }).then(res => {
           let response = res.data
           this.$utils.Success("操作成功", response.msg)
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          this.searchUser()
+        })
+      }).catch(() => {
+      })
+    },
+    reconnect: function (id, account) {
+      if (id === "") {
+        this.$utils.Warning("操作失败", "无法获取用户ID")
+        return
+      }
+      ElMessageBox.confirm(
+          '是否重置与用户' + account + "的连接",
+          '警告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        axios({
+          method: "get",
+          url: "/api/v1/server/reconnect/id/" + id,
+          data: {}
+        }).then(res => {
+          let response = res.data
+          this.$utils.Success("操作成功,请等待生效", response.msg)
         }).catch((err) => {
           this.$utils.HandleError(err)
         }).finally(() => {
