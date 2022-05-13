@@ -107,11 +107,6 @@ type IPAllocInfo struct {
 	IsDynamic bool
 }
 
-//TODO 静态分配
-/**
-添加一个map保存静态分配的地址，在分配时需要检查是否有重复分配
-*/
-
 //
 // IPAddressPool
 // @Description:
