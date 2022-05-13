@@ -104,6 +104,9 @@
                  style="color: #909399;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
             </el-tooltip>
           </span>
+            <span v-if="enableStaticCIDR" style="display: block;margin-bottom: 5px;color: #909399;font-size: 12px">
+              提示：若分配冲突则可能导致客户端无法接入网络，请确认后再修改。修改静态地址分配将在客户端重新连接后生效。
+            </span>
             <el-input v-model="staticCIDR" v-if="enableStaticCIDR" placeholder="e.g. 192.168.1.1/24" size="small"/>
           </div>
         </el-card>
