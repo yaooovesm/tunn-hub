@@ -66,7 +66,6 @@
 
             </template>
           </el-table-column>
-          <el-table-column prop="status.address" fixed label="IP地址" width="180"/>
           <el-table-column prop="status.config.device.cidr" fixed label="内网地址" width="150"/>
           <el-table-column prop="account" fixed label="账号">
             <template #default="scope">
@@ -95,6 +94,7 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column prop="status.address" label="IP地址" width="180"/>
           <el-table-column label="状态" width="100">
             <template #default="scope">
               <el-tag size="small" type="danger" effect="dark" v-if="scope.row.disabled===1">禁用</el-tag>
@@ -110,16 +110,16 @@
               {{ $utils.FormatBytesSize(scope.row.flow_count) }}
             </template>
           </el-table-column>
-          <el-table-column label="上次登录" width="160" prop="last_login" sortable>
-            <template #default="scope">
-              {{ scope.row.last_login === 0 ? "未曾登录" : $utils.UnixMilliToDate(scope.row.last_login, "") }}
-            </template>
-          </el-table-column>
-          <el-table-column label="上次离线" width="160" prop="last_logout" sortable>
-            <template #default="scope">
-              {{ scope.row.last_logout === 0 ? "未曾离线" : $utils.UnixMilliToDate(scope.row.last_logout, "") }}
-            </template>
-          </el-table-column>
+          <!--          <el-table-column label="上次登录" width="160" prop="last_login" sortable>-->
+          <!--            <template #default="scope">-->
+          <!--              {{ scope.row.last_login === 0 ? "未曾登录" : $utils.UnixMilliToDate(scope.row.last_login, "") }}-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <!--          <el-table-column label="上次离线" width="160" prop="last_logout" sortable>-->
+          <!--            <template #default="scope">-->
+          <!--              {{ scope.row.last_logout === 0 ? "未曾离线" : $utils.UnixMilliToDate(scope.row.last_logout, "") }}-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <el-table-column width="230" fixed="right">
             <template #header>
               <div style="display: inline">
@@ -135,12 +135,26 @@
                 详情
               </el-button>
               <el-button size="small" @click="showConfig(scope.row.status.config,scope.row.account)">
-                配置
+                属性
               </el-button>
-              <el-button size="small" @click="disconnect(scope.row.id,scope.row.account)"
-                         v-if="scope.row.status.online">
-                断开
-              </el-button>
+              <el-dropdown size="small" trigger="click" style="margin-left: 10px">
+                <el-button size="small">操作</el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="$refs.config_set.show(scope.row.config_id,scope.row.account)">设置
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="disconnect(scope.row.id,scope.row.account)">断开</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+              <!--              <el-button size="small"-->
+              <!--                         @click="$refs.config_set.show(scope.row.config_id,scope.row.account)">-->
+              <!--                设置-->
+              <!--              </el-button>-->
+              <!--              <el-button size="small" @click="disconnect(scope.row.id,scope.row.account)"-->
+              <!--                         v-if="scope.row.status.online">-->
+              <!--                断开-->
+              <!--              </el-button>-->
             </template>
           </el-table-column>
         </el-table>
@@ -180,6 +194,7 @@
     <user-detail ref="detail"/>
     <user-update ref="update" @success="searchUser(false)"/>
     <show-config ref="config"/>
+    <user-config ref="config_set" style="text-align: left"/>
   </div>
 </template>
 
@@ -189,10 +204,11 @@ import UserDetail from "@/components/users/UserDetail";
 import UserUpdate from "@/components/users/UserUpdate";
 import ShowConfig from "@/components/control/ShowConfig";
 import {ElMessageBox} from "element-plus";
+import UserConfig from "@/components/config/UserConfig";
 
 export default {
   name: "UserControlList",
-  components: {ShowConfig, UserUpdate, UserDetail},
+  components: {ShowConfig, UserUpdate, UserDetail, UserConfig},
   data() {
     return {
       showOffline: false,

@@ -11,9 +11,9 @@
                   :default-sort="{ prop: 'flow_count', order: 'descending' }"
                   scrollbar-always-on
         >
-          <el-table-column prop="id" fixed label="ID" width="280"/>
-          <el-table-column prop="account" fixed label="账号" width="120"/>
-          <el-table-column prop="email" min-width="200" label="邮箱">
+          <el-table-column prop="id" fixed label="ID" width="120" show-overflow-tooltip/>
+          <el-table-column prop="account" fixed label="账号" width="120" show-overflow-tooltip/>
+          <el-table-column prop="email" min-width="150" label="邮箱" show-overflow-tooltip>
             <template #default="scope">
               {{ scope.row.email === "" ? "未设置" : scope.row.email }}
             </template>
@@ -50,7 +50,7 @@
               {{ $utils.SecondToDate(scope.row.created, "") }}
             </template>
           </el-table-column>
-          <el-table-column width="200" fixed="right">
+          <el-table-column width="230" fixed="right">
             <template #header>
               <div style="display: inline">
                 <el-input v-model="search" size="small" placeholder="Type to search">
@@ -62,8 +62,8 @@
             </template>
             <template #default="scope">
               <el-button size="small" @click="detailUser(scope.row)">详情</el-button>
-              <el-dropdown type="primary" trigger="click" style="margin-left: 10px">
-                <el-button size="small" type="primary">操作</el-button>
+              <el-dropdown size="small" trigger="click" style="margin-left: 10px">
+                <el-button size="small">操作</el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="updateUser(scope.row)">修改</el-dropdown-item>
