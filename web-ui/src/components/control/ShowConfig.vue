@@ -112,6 +112,47 @@
               </el-descriptions-item>
             </el-descriptions>
           </el-col>
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="1"
+                size="small"
+                direction="vertical"
+                title="路由网络"
+                style="margin-top: 20px"
+            >
+              <el-descriptions-item width="100%" label="网络导入">
+                <span v-if="route.imports.length===0">无</span>
+                <div v-else>
+                  <el-tag
+                      v-for="r in route.imports"
+                      :key="r"
+                      type="info"
+                      effect="dark"
+                      :disable-transitions="false"
+                      style="margin-right: 10px;margin-bottom: 5px"
+                  >
+                    {{ r.network }}
+                  </el-tag>
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item width="100%" label="网络暴露">
+                <span v-if="route.exports.length===0">无</span>
+                <div v-else>
+                  <el-tag
+                      v-for="r in route.exports"
+                      :key="r"
+                      type="info"
+                      effect="dark"
+                      :disable-transitions="false"
+                      style="margin-right: 10px;margin-bottom: 5px"
+                  >
+                    {{ r.network }}
+                  </el-tag>
+                </div>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
         </el-row>
       </el-scrollbar>
 
@@ -155,6 +196,10 @@ export default {
           encrypt: "",
           key: null
         }
+      },
+      route: {
+        imports: [],
+        exports: [],
       }
     }
   },
@@ -162,6 +207,18 @@ export default {
     show: function (config, account) {
       this.account = account
       this.config = config
+      let routes = config.route
+      let imports = []
+      let exports = []
+      for (let i in routes) {
+        if (routes[i].option === 'import') {
+          imports.push(routes[i])
+        } else if (routes[i].option === 'export') {
+          exports.push(routes[i])
+        }
+      }
+      this.route.imports = imports
+      this.route.exports = exports
       this.dialogVisible = true
     }
   }
