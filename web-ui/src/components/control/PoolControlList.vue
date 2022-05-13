@@ -11,14 +11,25 @@
                   scrollbar-always-on
                   v-loading="loading"
         >
-          <el-table-column label="分配地址" fixed width="120">
+          <el-table-column label="分配地址" fixed width="180">
             <template #default="scope">
               {{ scope.row.info.Address }}
             </template>
           </el-table-column>
-          <el-table-column label="所在网络" fixed width="120">
+          <el-table-column label="所在网络" fixed width="180">
             <template #default="scope">
               {{ scope.row.info.Network }}
+            </template>
+          </el-table-column>
+          <el-table-column label="分配类型" width="100" fixed>
+            <template #default="scope">
+              <span v-if="scope.row.info.IsDynamic" style="color: #0077aa">动态分配</span>
+              <span v-else>静态分配</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="连接ID" width="100" fixed>
+            <template #default="scope">
+              {{ scope.row.info.UUID.substr(0, 8) }}
             </template>
           </el-table-column>
           <el-table-column label="账号" fixed>
@@ -36,11 +47,6 @@
               {{ scope.row.info.Expire === 0 ? "不过期" : $utils.UnixMilliToDate(scope.row.info.Expire, "") }}
             </template>
           </el-table-column>
-          <el-table-column label="连接ID" width="100">
-            <template #default="scope">
-              {{ scope.row.info.UUID.substr(0, 8) }}
-            </template>
-          </el-table-column>
           <el-table-column width="230" fixed="right">
             <template #header>
               <div style="display: inline">
@@ -51,18 +57,6 @@
                 </el-input>
               </div>
             </template>
-            <!--            <template #default="scope">-->
-            <!--              <el-button size="small" @click="detailUser(scope.row)">-->
-            <!--                详情-->
-            <!--              </el-button>-->
-            <!--              <el-button size="small" @click="showConfig(scope.row.status.config,scope.row.account)">-->
-            <!--                配置-->
-            <!--              </el-button>-->
-            <!--              <el-button size="small" @click="disconnect(scope.row.id,scope.row.account)"-->
-            <!--                         v-if="scope.row.status.online">-->
-            <!--                断开-->
-            <!--              </el-button>-->
-            <!--            </template>-->
           </el-table-column>
         </el-table>
         <div style="margin-top: 30px; margin-bottom: 20px;display: inline-block;width: 100%">
