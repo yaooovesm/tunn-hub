@@ -99,11 +99,12 @@ func (r IPRange) Map() map[int]net.IP {
 // @Description:
 //
 type IPAllocInfo struct {
-	Date    int64
-	Expire  int64
-	UUID    string
-	Address string
-	Network string
+	Date      int64
+	Expire    int64
+	UUID      string
+	Address   string
+	Network   string
+	IsDynamic bool
 }
 
 //TODO 静态分配
@@ -116,12 +117,13 @@ type IPAllocInfo struct {
 // @Description:
 //
 type IPAddressPool struct {
-	ipNet   *net.IPNet
-	ipRange IPRange
-	used    []net.IP
-	ipTable map[int]net.IP
-	info    map[string]IPAllocInfo
-	size    int
+	ipNet       *net.IPNet
+	ipRange     IPRange
+	used        []net.IP
+	ipTable     map[int]net.IP         //used_index:ip
+	staticTable map[string]IPAllocInfo //ip:info
+	info        map[string]IPAllocInfo //address:info
+	size        int
 	sync.RWMutex
 }
 
@@ -146,12 +148,13 @@ func NewIPv4AddressPool(network string, ipRange IPRange) (pool *IPAddressPool, e
 	}
 	size := ipRange.Size(ipNet)
 	return &IPAddressPool{
-		ipNet:   ipNet,
-		ipRange: ipRange,
-		used:    make([]net.IP, size),
-		size:    size,
-		ipTable: ipRange.Map(),
-		info:    map[string]IPAllocInfo{},
+		ipNet:       ipNet,
+		ipRange:     ipRange,
+		used:        make([]net.IP, size),
+		size:        size,
+		ipTable:     ipRange.Map(),
+		staticTable: map[string]IPAllocInfo{},
+		info:        map[string]IPAllocInfo{},
 	}, nil
 }
 
@@ -196,14 +199,15 @@ func (p *IPAddressPool) General() map[string]interface{} {
 // @param address
 // @return IPAllocInfo
 //
-func (p *IPAddressPool) allocInfo(uuid string, address string) IPAllocInfo {
+func (p *IPAddressPool) allocInfo(uuid string, address string, isDynamic bool) IPAllocInfo {
 	mask, _ := p.ipNet.Mask.Size()
 	return IPAllocInfo{
-		Date:    time.Now().UnixMilli(),
-		Expire:  0,
-		UUID:    uuid,
-		Address: address,
-		Network: p.ipNet.IP.String() + "/" + strconv.Itoa(mask),
+		Date:      time.Now().UnixMilli(),
+		Expire:    0,
+		UUID:      uuid,
+		Address:   address,
+		Network:   p.ipNet.IP.String() + "/" + strconv.Itoa(mask),
+		IsDynamic: isDynamic,
 	}
 }
 
@@ -248,7 +252,53 @@ func (p *IPAddressPool) DispatchCIDR(uuid string) (ip string, err error) {
 	size, _ := p.ipNet.Mask.Size()
 	cidr := dispatch.String() + "/" + strconv.Itoa(size)
 	p.used[index] = dispatch
-	p.info[dispatch.String()] = p.allocInfo(uuid, cidr)
+	p.info[dispatch.String()] = p.allocInfo(uuid, cidr, true)
+	return cidr, nil
+}
+
+//
+// StaticCIDR
+// @Description:
+// @receiver p
+// @param uuid
+// @param cidr
+// @return string
+// @return error
+//
+func (p *IPAddressPool) StaticCIDR(uuid string, cidr string) (string, error) {
+	p.Lock()
+	defer p.Unlock()
+	ip, _, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return "", err
+	}
+	//检查固定分配中是否有冲突
+	for u := range p.staticTable {
+		if p.staticTable[u].Address == ip.String() {
+			return "", errors.New("static ip duplicate")
+		}
+	}
+	//无冲突
+	//检查是否在地址池内
+	info := p.allocInfo(uuid, cidr, false)
+	for i := range p.ipTable {
+		if p.ipTable[i].String() == ip.String() {
+			//在地址池内
+			if p.used[i] != nil {
+				//被占用中
+				return "", errors.New("address is already in use")
+			} else {
+				//未被占用
+				p.staticTable[ip.String()] = info
+				p.used[i] = p.ipTable[i]
+				p.info[ip.String()] = info
+				return cidr, nil
+			}
+		}
+	}
+	//不在地址池内
+	p.staticTable[ip.String()] = info
+	p.info[ip.String()] = info
 	return cidr, nil
 }
 
@@ -268,31 +318,4 @@ func (p *IPAddressPool) ReturnBack(ip string) {
 			return
 		}
 	}
-}
-
-//
-// PickCIDR
-// @Description:
-// @receiver p
-// @param ip
-//
-func (p *IPAddressPool) PickCIDR(cidr string, uuid string) (string, error) {
-	ip, _, _ := net.ParseCIDR(cidr)
-	if ip != nil {
-		ipStr := ip.String()
-		for i := range p.ipTable {
-			if p.ipTable[i].String() == ipStr {
-				//检查是否被使用
-				if p.used[i] != nil {
-					//重新分配
-					return p.DispatchCIDR(uuid)
-				}
-				p.used[i] = p.ipTable[i]
-				p.info[ipStr] = p.allocInfo(uuid, cidr)
-				return cidr, nil
-			}
-		}
-		return p.DispatchCIDR(uuid)
-	}
-	return p.DispatchCIDR(uuid)
 }

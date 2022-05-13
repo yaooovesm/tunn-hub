@@ -37,7 +37,7 @@ func TestNewIPAddressPool(t *testing.T) {
 	pool.ReturnBack("192.0.2.1")
 	fmt.Println("used : ", pool.used)
 	fmt.Println("pick 192.0.2.1")
-	pool.PickCIDR("192.0.2.1/24", "")
+	//pool.PickCIDR("192.0.2.1/24", "")
 	fmt.Println("used : ", pool.used)
 	for i := 0; i < 3; i++ {
 		dispatch, err := pool.DispatchCIDR("")

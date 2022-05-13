@@ -295,8 +295,14 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 				pushedConfig.Device.CIDR = ip
 			}
 		} else {
-			cidr, _ := s.IPPool.PickCIDR(pushedConfig.Device.CIDR, packet.UUID)
-			pushedConfig.Device.CIDR = cidr
+			cidr, err := s.IPPool.StaticCIDR(packet.UUID, pushedConfig.Device.CIDR)
+			if err != nil {
+				log.Info("failed to alloc static ip address [", cidr, "] to ", packet.UUID, " : ", err)
+				pushedConfig.Device.CIDR = ""
+			} else {
+				log.Info("alloc static ip address to ", packet.UUID, " : ", cidr)
+				pushedConfig.Device.CIDR = cidr
+			}
 		}
 	}
 	//同步到服务端记录
