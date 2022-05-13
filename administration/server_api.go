@@ -57,6 +57,25 @@ func ApiKickById(ctx *gin.Context) {
 }
 
 //
+// ApiReconnectById
+// @Description:
+// @param ctx
+//
+func ApiReconnectById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		response400(ctx)
+		return
+	}
+	err := ServerServiceInstance().ReconnectById(id)
+	if err != nil {
+		responseError(ctx, err, "")
+		return
+	}
+	responseSuccess(ctx, "", "已重置与用户["+id+"]的连接")
+}
+
+//
 // ApiIPPoolGeneral
 // @Description:
 // @param ctx

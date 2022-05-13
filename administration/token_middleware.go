@@ -29,7 +29,8 @@ var permissionAssignMap = map[string]UserAuthLevel{
 	"/api/v1/server/version":           None,
 	"/api/v1/server/flow":              Administrator,
 	"/api/v1/server/config":            Administrator,
-	"/api/v1/server/disconnect/id/:id": Administrator,
+	"/api/v1/server/disconnect/id/:id": User,
+	"/api/v1/server/reconnect/id/:id":  User,
 	"/api/v1/server/ippool":            Administrator,
 	"/api/v1/server/ippool/list":       Administrator,
 	//config
@@ -48,11 +49,13 @@ var selfPermissionAccountMap = map[string]int{
 
 //通过ID验证是否为对应用户操作
 var selfPermissionIdMap = map[string]int{
-	"/api/v1/user/info/:id":   1,
-	"/api/v1/user/status/:id": 1,
-	"/api/v1/user/id/:id":     1,
-	"/api/v1/user/update/:id": 1,
-	"/api/v1/user/config/:id": 1,
+	"/api/v1/user/info/:id":            1,
+	"/api/v1/user/status/:id":          1,
+	"/api/v1/user/id/:id":              1,
+	"/api/v1/user/update/:id":          1,
+	"/api/v1/user/config/:id":          1,
+	"/api/v1/server/disconnect/id/:id": 1,
+	"/api/v1/server/reconnect/id/:id":  1,
 }
 
 //

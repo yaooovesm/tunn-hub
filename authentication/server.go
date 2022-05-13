@@ -83,7 +83,7 @@ func NewServerV3(handler AuthServerHandler, validator IValidator) (server *AuthS
 	} else {
 		s.validator = validator
 	}
-	administration.ServerServiceInstance().SetupAuthServer(s.KickByUUID, s.GetConfigByUUID, s.version, s.WSKey, s.IPPool)
+	administration.ServerServiceInstance().SetupAuthServer(s.KickByUUID, s.RestartByUUID, s.GetConfigByUUID, s.version, s.WSKey, s.IPPool)
 	return s, nil
 }
 
@@ -439,8 +439,41 @@ func (s *AuthServerV3) KickByUUID(uuid string) error {
 			Message: "disconnected by server",
 		}, PacketTypeKick, packet.UUID, c.Tunn)
 		go func() {
-			log.Info("[uuid:", uuid, "] connection will be clean in 10s")
-			time.Sleep(time.Second * 10)
+			log.Info("[uuid:", uuid, "] connection will be clean in 3s")
+			time.Sleep(time.Second * 3)
+			//clear
+			s.handler.OnKick(packet)
+			s.handler.BeforeClear(s.online[uuid])
+			delete(s.online, uuid)
+		}()
+		return nil
+	}
+}
+
+//
+// RestartByUUID
+// @Description:
+// @receiver s
+// @param uuid
+// @return error
+//
+func (s *AuthServerV3) RestartByUUID(uuid string) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	if c, ok := s.online[uuid]; !ok || c == nil {
+		return errors.New("user not online")
+	} else {
+		packet := NewTransportPacket()
+		//kick
+		packet.UUID = c.UUID
+		s.reply(AuthReply{
+			Ok:      true,
+			Error:   "",
+			Message: "restart by server",
+		}, PacketTypeRestart, packet.UUID, c.Tunn)
+		go func() {
+			log.Info("[uuid:", uuid, "] connection will be clean in 3s")
+			time.Sleep(time.Second * 3)
 			//clear
 			s.handler.OnKick(packet)
 			s.handler.BeforeClear(s.online[uuid])

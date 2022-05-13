@@ -13,6 +13,7 @@ const (
 	PacketTypeLogin   = 10
 	PacketTypeLogout  = 11
 	PacketTypeKick    = 12
+	PacketTypeRestart = 13
 )
 
 //

@@ -3,7 +3,6 @@ package administration
 import (
 	"context"
 	"errors"
-	"fmt"
 	"tunn-hub/administration/model"
 	"tunn-hub/config"
 	"tunn-hub/networking"
@@ -42,6 +41,7 @@ type serverService struct {
 	ctx                context.Context
 	cancel             context.CancelFunc
 	kickFunc           func(address string) error
+	reconnectFunc      func(address string) error
 	searchFunc         func(uuid string) (cfg config.Config, err error)
 	transmitterVersion transmitter.Version
 	wsKey              string
@@ -71,11 +71,13 @@ func (serv *serverService) SetupServer(rx, tx *traffic.FlowStatisticsFP,
 //
 func (serv *serverService) SetupAuthServer(
 	kickFunc func(address string) error,
+	reconnectFunc func(address string) error,
 	searchFunc func(uuid string) (cfg config.Config, err error),
 	version transmitter.Version,
 	wsKey string,
 	ippool *networking.IPAddressPool) {
 	serv.kickFunc = kickFunc
+	serv.reconnectFunc = reconnectFunc
 	serv.searchFunc = searchFunc
 	serv.transmitterVersion = version
 	serv.wsKey = wsKey
@@ -118,9 +120,23 @@ func (serv *serverService) GetServerConfigs() config.Config {
 //
 func (serv *serverService) KickById(id string) error {
 	status := UserServiceInstance().statusService.GetStatus(id)
-	fmt.Println("kick --> ", status.UUID)
 	if status.Online && status.UUID != "" {
 		return serv.kickFunc(status.UUID)
+	}
+	return errors.New("user not online")
+}
+
+//
+// ReconnectById
+// @Description:
+// @receiver serv
+// @param id
+// @return error
+//
+func (serv *serverService) ReconnectById(id string) error {
+	status := UserServiceInstance().statusService.GetStatus(id)
+	if status.Online && status.UUID != "" {
+		return serv.reconnectFunc(status.UUID)
 	}
 	return errors.New("user not online")
 }
