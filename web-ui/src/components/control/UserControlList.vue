@@ -59,11 +59,9 @@
                      style="font-size: 10px;margin-left: 5px;color: #007bbb;transform: translateY(-1px);display: inline-block"></i>
                 </el-tooltip>
               </div>
-              <div v-else>
+              <div v-else style="font-size: 12px;color: #909399">
                 unknown
               </div>
-
-
             </template>
           </el-table-column>
           <el-table-column prop="status.config.device.cidr" fixed label="内网地址" width="150"/>
