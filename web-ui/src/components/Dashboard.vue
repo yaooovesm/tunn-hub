@@ -12,9 +12,9 @@
             <el-menu-item class="main-title" :index="$route.path"
                           style="height: 60px;text-align: center;font-size: 16px">
               <div v-if="isCollapse" style="width: 20px;text-align: center">T</div>
-              {{ isCollapse ? "" : "Tunnel - Server" }}
+              {{ isCollapse ? "" : "TunnHub WebUI" }}
               <template v-slot:title>
-                <div style="text-align: center">{{ isCollapse ? "Tunnel - Server" : "" }}</div>
+                <div style="text-align: center">{{ isCollapse ? "TunnHub WebUI" : "" }}</div>
               </template>
             </el-menu-item>
             <!--控制台-->
