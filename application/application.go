@@ -18,6 +18,7 @@ import (
 // @Description:
 //
 type Application struct {
+	serv     Service
 	Config   config.Config
 	Protocol protocol.Name
 }
@@ -40,13 +41,25 @@ func New() *Application {
 // @receiver app
 //
 func (app *Application) Run() {
-	var serv = app.serverService()
-	if serv == nil {
-		_ = log.Warn("tunnel server type not support")
-		os.Exit(-1)
+	app.serv = app.serverService()
+	StopWatcher(func() {
+		app.Stop()
+	})
+	app.runService()
+}
+
+//
+// Stop
+// @Description:
+// @receiver app
+//
+func (app *Application) Stop() {
+	if app.serv == nil {
+		_ = log.Error("no service running")
 		return
 	}
-	app.runService(serv)
+	app.serv.Stop()
+	log.Info("application stopped")
 }
 
 //
@@ -79,19 +92,19 @@ type Service interface {
 // @receiver app
 // @param serv
 //
-func (app *Application) runService(serv Service) {
-	log.Info("tunnel version : ", version.Version)
+func (app *Application) runService() {
+	if app.serv == nil {
+		_ = log.Error("service not support...")
+		os.Exit(-1)
+		return
+	}
+	log.Info("application version : ", version.Version)
 	if version.Develop {
 		_ = log.Warn("当前版本为测试版本！")
 	}
 	app.PProf()
-	if serv == nil {
-		_ = log.Warn("tunnel server type not support")
-		os.Exit(-1)
-		return
-	}
 	ch := make(chan error, 1)
-	if err := serv.Init(); err != nil {
+	if err := app.serv.Init(); err != nil {
 		_ = log.Warn("init failed : ", err)
 		os.Exit(-1)
 		return
@@ -99,18 +112,18 @@ func (app *Application) runService(serv Service) {
 		log.Info("service init success...")
 	}
 	go func() {
-		ch <- serv.Start()
+		ch <- app.serv.Start()
 	}()
 	for {
 		select {
 		case err := <-ch:
 			if err != nil {
-				serv.Stop()
+				app.serv.Stop()
 				_ = log.Warn("tunn-hub exit with error : ", err.Error())
 				os.Exit(-1)
 				return
 			} else {
-				log.Info("tunn-hub exited")
+				log.Info("tunn-hub stopped")
 				os.Exit(0)
 				return
 			}

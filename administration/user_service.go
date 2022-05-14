@@ -414,3 +414,12 @@ func (serv userService) GenerateUserConfig(id string) (config.PushedConfig, erro
 	}
 	return clientConfig.ToPushModel(), nil
 }
+
+//
+// CommitAllFlowCount
+// @Description:
+// @receiver serv
+//
+func (serv *userService) CommitAllFlowCount() {
+	serv.statusService.CommitAllFlowCounts()
+}

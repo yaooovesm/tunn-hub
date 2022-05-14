@@ -42,13 +42,22 @@ func (u *userStatusService) autoCommit() {
 	go func() {
 		for {
 			time.Sleep(time.Minute * 1)
-			for id := range u.users {
-				if u.users[id] != nil && u.users[id].TXFlowCounter != nil {
-					UserServiceInstance().infoService.UpdateFlowCount(id, u.users[id].TXFlowCounter.Commit())
-				}
-			}
+			u.CommitAllFlowCounts()
 		}
 	}()
+}
+
+//
+// CommitAllFlowCounts
+// @Description:
+// @receiver u
+//
+func (u *userStatusService) CommitAllFlowCounts() {
+	for id := range u.users {
+		if u.users[id] != nil && u.users[id].TXFlowCounter != nil {
+			UserServiceInstance().infoService.UpdateFlowCount(id, u.users[id].TXFlowCounter.Commit())
+		}
+	}
 }
 
 //
