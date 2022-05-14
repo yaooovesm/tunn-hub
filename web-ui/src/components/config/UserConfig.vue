@@ -6,6 +6,7 @@
         top="18vh"
         :close-on-click-modal="false"
         custom-class="default-dialog"
+        destroy-on-close
         draggable
     >
       <template #title>
@@ -27,32 +28,29 @@
             <div class="title-text">网络导入</div>
           </div>
           <div style="padding: 20px">
-            <el-tag
-                v-for="route in importRoutes"
-                :key="route"
-                closable
-                effect="dark"
-                type="info"
-                :disable-transitions="false"
-                @close="handleDeleteImportRoute(route)"
-                style="margin-right: 10px;margin-bottom: 5px"
-            >
-              {{ route.network }}
-            </el-tag>
-            <el-input
-                v-if="addImportVisible"
-                v-model="addImportValue"
-                style="margin-top: 10px"
-                size="small"
-                placeholder="e.g. 192.168.1.0/24"
-            >
-              <template #append>
-                <el-button @click="handleAddImport" size="small">添加</el-button>
-              </template>
-            </el-input>
-            <el-button v-else style="margin-left: 5px" size="small" @click="addImportVisible = true">
-              + 添加
-            </el-button>
+            <div v-if="importRoutes.length>0">
+              <el-tag
+                  v-for="route in importRoutes"
+                  :key="route"
+                  closable
+                  effect="dark"
+                  type="info"
+                  :disable-transitions="false"
+                  @close="handleDeleteImportRoute(route)"
+                  style="margin-right: 10px;margin-bottom: 5px"
+              >
+                {{ route.network }}
+              </el-tag>
+            </div>
+            <div v-else>
+              <span style="font-size: 12px;color: #909399">还没有导入网络</span>
+            </div>
+            <route-import-selector
+                style="margin-top: 8px"
+                :imported="importRoutes"
+                :exported="exportRoutes"
+                @submit="handleAddImport"
+            />
           </div>
         </el-card>
         <el-card shadow="always" body-style="padding:0" style="margin-top: 20px">
@@ -60,32 +58,34 @@
             <div class="title-text">网络暴露</div>
           </div>
           <div style="padding: 20px">
-            <el-tag
-                v-for="route in exportRoutes"
-                :key="route"
-                closable
-                type="info"
-                effect="dark"
-                :disable-transitions="false"
-                @close="handleDeleteExportRoute(route)"
-                style="margin-right: 10px;margin-bottom: 5px"
-            >
-              {{ route.network }}
-            </el-tag>
-            <el-input
-                v-if="addExportVisible"
-                v-model="addExportValue"
-                style="margin-top: 10px"
-                placeholder="e.g. 192.168.1.0/24"
-                size="small"
-            >
-              <template #append>
-                <el-button @click="handleAddExport" size="small">添加</el-button>
-              </template>
-            </el-input>
-            <el-button v-else style="margin-left: 5px" size="small" @click="addExportVisible = true">
-              + 添加
-            </el-button>
+            <div v-if="exportRoutes.length>0">
+              <el-tag
+                  v-for="route in exportRoutes"
+                  :key="route"
+                  closable
+                  type="info"
+                  effect="dark"
+                  :disable-transitions="false"
+                  @close="handleDeleteExportRoute(route)"
+                  style="margin-right: 10px;margin-bottom: 5px"
+              >
+                {{ route.network }}
+              </el-tag>
+            </div>
+            <div v-else>
+              <span style="font-size: 12px;color: #909399">还没有暴露网络</span>
+            </div>
+            <div>
+              <el-input
+                  v-model="addExportValue"
+                  style="margin-top: 10px;width: 300px"
+                  placeholder="e.g. 192.168.1.0/24"
+                  size="small"
+              >
+              </el-input>
+              <el-button @click="handleAddExport" size="small" style="margin-left: 5px">添加
+              </el-button>
+            </div>
           </div>
         </el-card>
         <el-card shadow="always" body-style="padding:0" v-if="$storage.IsAdmin()" style="margin-top: 20px">
@@ -113,7 +113,7 @@
       </div>
       <template #footer>
         <el-button :loading="loading" type="primary" @click="save">保存</el-button>
-        <el-button :loading="loading" @click="dialogVisible = false">关闭</el-button>
+        <el-button :loading="loading" @click="close">关闭</el-button>
       </template>
     </el-dialog>
   </div>
@@ -122,17 +122,17 @@
 <script>
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
+import RouteImportSelector from "@/components/config/RouteImportSelector";
 
 export default {
   name: "UserConfig",
+  components: {RouteImportSelector},
   data() {
     return {
       loading: false,
       dialogVisible: false,
       addImportValue: "",
-      addImportVisible: false,
       addExportValue: "",
-      addExportVisible: false,
       configId: "",
       account: "",
       importRoutes: [],
@@ -151,6 +151,11 @@ export default {
       this.account = account
       this.dialogVisible = true
       this.load()
+    },
+    close: function () {
+      this.dialogVisible = false
+      this.addExportValue = ""
+      this.addImportValue = ""
     },
     save: function () {
       this.loading = true
@@ -223,15 +228,13 @@ export default {
         }
       }
     },
-    handleAddImport: function () {
-      if (this.addImportValue !== '') {
+    handleAddImport: function (routes) {
+      for (let i = 0; i < routes.length; i++) {
         this.importRoutes.push({
-          network: this.addImportValue,
+          network: routes[i].network,
           option: "import"
         })
       }
-      this.addImportValue = ""
-      this.addImportVisible = false
     },
     handleDeleteExportRoute: function (route) {
       for (let i in this.exportRoutes) {
@@ -248,8 +251,7 @@ export default {
         })
       }
       this.addExportValue = ""
-      this.addExportVisible = false
-    },
+    }
   }
 }
 </script>
