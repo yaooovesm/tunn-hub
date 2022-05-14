@@ -181,6 +181,7 @@ func (p *IPAddressPool) General() map[string]interface{} {
 		"size":    p.size,
 		"used":    used,
 		"network": p.ipNet.IP.String() + "/" + strconv.Itoa(mask),
+		"static":  len(p.staticTable),
 		"start":   p.ipRange.start.To4().String(),
 		"end":     p.ipRange.end.To4().String(),
 	}
@@ -313,4 +314,6 @@ func (p *IPAddressPool) ReturnBack(ip string) {
 			return
 		}
 	}
+	//删除静态分配
+	delete(p.staticTable, ip)
 }

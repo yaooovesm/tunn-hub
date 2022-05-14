@@ -27,7 +27,7 @@
                 </div>
                 <div class="dashboard-unit-text-small"
                      style="color: #909399;margin-top: 8px;text-align: center;">
-                  已分配 {{ status.used }}
+                  动态分配 {{ status.used }} | 静态分配 {{ status.static }}
                 </div>
               </div>
             </div>
