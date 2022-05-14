@@ -1,8 +1,7 @@
 <template>
   <div class="header-box">
     <div style="float: left;padding-left: 20px;padding-top: 20px;height: 20px">
-      <el-page-header content="" style="height: 20px"
-      >
+      <el-page-header content="" style="height: 20px">
         <template #title>
           <el-button v-if="$route.path!=='/dashboard/overview'"
                      @click="$router.push({path: '/dashboard/overview'})"
@@ -21,7 +20,6 @@
         <template #content>
           {{ getPageName($route.path) }}
         </template>
-
       </el-page-header>
     </div>
     <div style="float: right;padding-left: 20px;padding-right: 40px">
