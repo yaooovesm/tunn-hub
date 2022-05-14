@@ -13,7 +13,7 @@
       </div>
       <div style="padding: 20px">
         <el-row :gutter="30">
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" v-if="Status.online">
             <!--客户端操作-->
             <div style="margin-bottom: 30px">
               <div class="subtitle">客户端操作</div>
