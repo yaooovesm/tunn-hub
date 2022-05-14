@@ -1,5 +1,7 @@
 import {ElMessageBox} from 'element-plus'
 
+let show = false
+
 /**
  * Success
  * @param title
@@ -41,6 +43,10 @@ function Warning(title, msg) {
  * @constructor
  */
 function MsgPop(title, msg, icon, iconColor) {
+    if (show) {
+        return
+    }
+    show = true
     ElMessageBox.alert(
         '<div>' +
         '<div style="font-size: 14px;line-height: 20px;margin-bottom: 15px;margin-top: 5px;color: #303133;font-weight: 600">' +
@@ -53,6 +59,9 @@ function MsgPop(title, msg, icon, iconColor) {
             closeOnClickModal: false,
             showClose: false,
             confirmButtonText: '确认',
+            callback: () => {
+                show = false
+            },
         }
     )
 }
@@ -96,13 +105,18 @@ function Confirm(title, msg, cancel, confirm) {
  * @constructor
  */
 function HandleError(error) {
+    if (show) {
+        return
+    }
+    show = true
     let response = error.response
-    let status = response.status
+    let status = ""
     let err = ""
     let msg = ""
-    if (response.data !== undefined) {
+    if (response !== undefined && response.data !== undefined) {
         err = response.data.error
         msg = response.data.msg
+        status = response.status
     }
     ElMessageBox.alert(
         '<div>' +
@@ -121,6 +135,9 @@ function HandleError(error) {
             closeOnClickModal: false,
             showClose: false,
             confirmButtonText: '确认',
+            callback: () => {
+                show = false
+            },
         }
     )
 }
