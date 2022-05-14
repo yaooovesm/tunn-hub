@@ -61,8 +61,8 @@
           <page-header/>
         </el-header>
         <el-main>
-          <el-scrollbar height="100%">
-            <router-view/>
+          <el-scrollbar height="100%" style="width: 100%">
+            <router-view style="padding-bottom: 30px;margin-left: 1px;width: calc(100% - 6px)"/>
           </el-scrollbar>
         </el-main>
       </el-container>

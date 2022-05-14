@@ -8,26 +8,30 @@
       <div style="padding: 20px">
         <el-row>
           <el-col :span="24">
-            <div style="margin-bottom: 30px;text-align: left">
+            <div style="margin-bottom: 30px;text-align: left;padding-bottom: 9px">
               <el-descriptions
                   direction="vertical"
-                  :column="2"
+                  :column="3"
                   size="small"
                   border
               >
-                <el-descriptions-item label-class-name="overview-description-label" label="服务器地址" width="50%">
+                <el-descriptions-item label-class-name="overview-description-label" label="服务器地址" width="33.3%">
                   {{ config.address }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="传输协议" width="50%">
+                <el-descriptions-item label-class-name="overview-description-label" label="内网地址" width="33.3%">
+                  {{ config.cidr }}
+                </el-descriptions-item>
+                <el-descriptions-item label-class-name="overview-description-label" label="传输协议" width="33.3%">
                   {{ config.protocol }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="数据加密" width="50%">{{
-                    config.encrypt
-                  }}
+                <el-descriptions-item label-class-name="overview-description-label" label="数据加密" width="33.3%">
+                  {{ config.encrypt }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="虚拟网卡地址" width="50%">{{
-                    config.cidr
-                  }}
+                <el-descriptions-item label-class-name="overview-description-label" label="MTU" width="33.3%">
+                  {{ config.mtu }}
+                </el-descriptions-item>
+                <el-descriptions-item label-class-name="overview-description-label" label="并行通道数" width="33.3%">
+                  {{ config.multi }}
                 </el-descriptions-item>
               </el-descriptions>
             </div>
@@ -61,6 +65,8 @@ export default {
         address: "",
         cidr: "",
         encrypt: "",
+        mtu: 0,
+        multi: 0,
       },
     }
   },
@@ -77,6 +83,9 @@ export default {
         this.config.address = response.data.global.address
         this.config.cidr = response.data.device.cidr
         this.config.encrypt = response.data.data_process.encrypt
+        this.config.mtu = response.data.global.mtu
+        this.config.multi = response.data.global.multi_connection
+        this.raw = response.data
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {

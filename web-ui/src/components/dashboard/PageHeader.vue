@@ -1,5 +1,29 @@
 <template>
   <div class="header-box">
+    <div style="float: left;padding-left: 20px;padding-top: 20px;height: 20px">
+      <el-page-header content="" style="height: 20px"
+      >
+        <template #title>
+          <el-button v-if="$route.path!=='/dashboard/overview'"
+                     @click="$router.push({path: '/dashboard/overview'})"
+                     type="text"
+                     class="btn"
+                     style="padding: 0;height: 20px;line-height: 20px;transform: translateY(-2px);">
+            <span>
+              <i class="iconfont icon-angle-left"></i>&nbsp;概况
+            </span>
+          </el-button>
+          <span v-else style="cursor: default">TunnHub</span>
+        </template>
+        <template #icon>
+          <span></span>
+        </template>
+        <template #content>
+          {{ getPageName($route.path) }}
+        </template>
+
+      </el-page-header>
+    </div>
     <div style="float: right;padding-left: 20px;padding-right: 40px">
       <el-dropdown>
         <div class="header-block">
@@ -36,6 +60,20 @@ export default {
     }
   },
   methods: {
+    getPageName: function (route) {
+      switch (route) {
+        case "/dashboard/overview":
+          return "Overview"
+        case "/dashboard/home":
+          return "Home"
+        case "/dashboard/control":
+          return "ControlPanel"
+        case "/dashboard/users":
+          return "Accounts"
+        default:
+          return ""
+      }
+    },
     update: function () {
       let lo = localStorage.getItem("tunnel_server_user")
       if (lo !== "" && lo !== undefined && lo !== null) {
@@ -93,6 +131,15 @@ export default {
 </script>
 
 <style scoped>
+.btn {
+  color: #007bbb;
+  transition-duration: 0.5s;
+}
+
+.btn:hover {
+  color: #0ebbba;
+}
+
 .header-box {
   border-bottom: solid 1px rgba(60, 60, 60, 0.1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
