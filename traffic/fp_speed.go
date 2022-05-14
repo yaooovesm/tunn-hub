@@ -1,7 +1,12 @@
 package traffic
 
 import (
+	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"strings"
 	"sync/atomic"
 	"time"
 )
@@ -41,6 +46,53 @@ func (fp *FlowStatisticsFP) Init() bool {
 	}
 	go fp.statistics()
 	return true
+}
+
+//
+// LoadFromDump
+// @Description:
+// @receiver fp
+// @param file
+// @return error
+//
+func (fp *FlowStatisticsFP) LoadFromDump(file string) error {
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil && strings.Contains(err.Error(), "no such file or directory") || len(bytes) <= 0 {
+		return errors.New("no content")
+	}
+	if err != nil {
+		return err
+	}
+	decodeString, err := base64.StdEncoding.DecodeString(string(bytes))
+	if err != nil {
+		return err
+	}
+	temp := FlowStatisticsFP{}
+	err = json.Unmarshal(decodeString, &temp)
+	if err != nil {
+		return err
+	}
+	fp.Flow = temp.Flow
+	fp.FlowStamp = fp.Flow
+	fp.FlowCommitStamp = fp.Flow
+	fp.Packet = temp.Packet
+	fp.PacketStamp = temp.PacketStamp
+	return nil
+}
+
+//
+// Dump
+// @Description:
+// @receiver fp
+// @param file
+// @return error
+//
+func (fp *FlowStatisticsFP) Dump(file string) error {
+	marshal, err := json.Marshal(fp)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(file, []byte(base64.StdEncoding.EncodeToString(marshal)), 0600)
 }
 
 //

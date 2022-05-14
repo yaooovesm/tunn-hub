@@ -22,6 +22,11 @@ import (
 	"tunn-hub/utils/timer"
 )
 
+const (
+	RXCounterDumpFile = ".rx_counter"
+	TXCounterDumpFile = ".tx_counter"
+)
+
 //
 // Server
 // @Description:
@@ -103,8 +108,13 @@ func (s *Server) Init() error {
 	s.RxFP = traffic.NewFlowProcessor()
 	s.RxFP.Name = "global_rx"
 	//注册流量统计
-	s.RXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_rx_flow_statistics"}
-	s.RxFP.Register(s.RXFlowCounter, "rx_flow_statistics")
+	rxFlowCounter := &traffic.FlowStatisticsFP{Name: "pub_rx_flow_statistics"}
+	s.RxFP.Register(rxFlowCounter, "rx_flow_statistics")
+	//必须在初始化后加载,否则数值会被清零
+	err = rxFlowCounter.LoadFromDump(RXCounterDumpFile)
+	if err != nil {
+		_ = log.Warn("failed to load rx count record : ", err)
+	}
 	//全局TX流量处理
 	s.TxFP = traffic.NewFlowProcessor()
 	s.TxFP.Name = "global_tx"
@@ -113,14 +123,21 @@ func (s *Server) Init() error {
 		//注册tx加密
 		s.TxFP.Register(txEncryptFP, "tx_encrypt")
 	}
-	s.TXFlowCounter = &traffic.FlowStatisticsFP{Name: "pub_tx_flow_statistics"}
-	s.TxFP.Register(s.TXFlowCounter, "tx_flow_statistics")
+	txFlowCounter := &traffic.FlowStatisticsFP{Name: "pub_tx_flow_statistics"}
+	s.TxFP.Register(txFlowCounter, "tx_flow_statistics")
+	//必须在初始化后加载,否则数值会被清零
+	err = txFlowCounter.LoadFromDump(TXCounterDumpFile)
+	if err != nil {
+		_ = log.Warn("failed to load tx count record : ", err)
+	}
 	//注册服务器
 	if administration.ServerServiceInstance() != nil {
 		administration.ServerServiceInstance().SetupServer(
-			s.RXFlowCounter, s.TXFlowCounter,
+			rxFlowCounter, txFlowCounter,
 			s.Context, s.Cancel)
 	}
+	s.RXFlowCounter = rxFlowCounter
+	s.TXFlowCounter = txFlowCounter
 	return nil
 }
 
@@ -149,6 +166,23 @@ func (s *Server) Start() error {
 // @receiver s
 //
 func (s *Server) Stop() {
+	//保存流量统计数据
+	err := s.RXFlowCounter.Dump(RXCounterDumpFile)
+	if err != nil {
+		_ = log.Warn("failed to dump rx counter to file : ", RXCounterDumpFile)
+	} else {
+		log.Info("rx counter dumped")
+	}
+	err = s.TXFlowCounter.Dump(TXCounterDumpFile)
+	if err != nil {
+		_ = log.Warn("failed to dump tx counter to file : ", TXCounterDumpFile)
+	} else {
+		log.Info("tx counter dumped")
+	}
+	//保存用户数据
+	log.Info("commit all users flow counter")
+	administration.UserServiceInstance().CommitAllFlowCount()
+	log.Info("commit done")
 	s.Cancel()
 }
 
