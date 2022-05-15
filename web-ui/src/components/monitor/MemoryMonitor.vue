@@ -10,7 +10,10 @@
         <div>
           <el-progress type="dashboard" :percentage="total_percentage" style="position: relative">
             <template #default="{ percentage }">
-              <span class="percentage-value">{{ percentage }}%</span>
+              <span class="percentage-value" v-if="memory.error===''">{{ percentage }}%</span>
+              <span class="percentage-value" v-else>
+                <i class="iconfont icon-exclamation-circle" style="color: #f56c6c;"></i>
+              </span>
               <span class="percentage-label">内存</span>
             </template>
           </el-progress>
@@ -23,7 +26,7 @@
         </div>
       </template>
       <template #default>
-        <div>
+        <div v-if="memory.error === ''">
           <div class="detail-unit">
             <span>内存总量 </span> {{ $utils.FormatBytesSizeM(memory.total) }}
           </div>
@@ -38,6 +41,9 @@
               }}%)</span> </span>
             {{ $utils.FormatBytesSizeM(memory.app_used) }}
           </div>
+        </div>
+        <div v-else style="font-size: 12px;color: #909399">
+          {{ memory.error }}
         </div>
       </template>
     </el-popover>

@@ -10,7 +10,10 @@
         <div>
           <el-progress type="dashboard" :percentage="Number(cpu.usage.toFixed(1))" style="position: relative">
             <template #default="{ percentage }">
-              <span class="percentage-value">{{ percentage }}%</span>
+              <span class="percentage-value" v-if="cpu.error===''">{{ percentage }}%</span>
+              <span class="percentage-value" v-else>
+                <i class="iconfont icon-exclamation-circle" style="color: #f56c6c;"></i>
+              </span>
               <span class="percentage-label">处理器</span>
             </template>
           </el-progress>
@@ -23,7 +26,7 @@
         </div>
       </template>
       <template #default>
-        <div>
+        <div v-if="cpu.error===''">
           <div class="detail-unit">
             <span>总利用率 </span> {{ cpu.usage.toFixed(2) }}%
           </div>
@@ -32,6 +35,9 @@
             <span>TunnHub占用</span>
             {{ cpu.app_used.toFixed(2) }}%
           </div>
+        </div>
+        <div v-else style="font-size: 12px;color: #909399">
+          {{ cpu.error }}
         </div>
       </template>
     </el-popover>
@@ -44,8 +50,8 @@ export default {
   data() {
     return {
       cpu: {
-        usage: 0,
-        app_used: 0,
+        usage: 0.0,
+        app_used: 0.0,
         error: ""
       },
     }
@@ -54,10 +60,11 @@ export default {
     set: function (data) {
       if (data === undefined) {
         this.cpu = {
-          usage: 0,
-          app_used: 0,
+          usage: 0.0,
+          app_used: 0.0,
           error: "no data"
         }
+        return
       }
       this.cpu = data
     }

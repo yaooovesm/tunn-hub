@@ -9,14 +9,17 @@
       <div>
         <el-progress type="dashboard" :percentage="Number(disk.usage.toFixed(1))" style="position: relative">
           <template #default="{ percentage }">
-            <span class="percentage-value">{{ percentage }}%</span>
+            <span class="percentage-value" v-if="disk.error===''">{{ percentage }}%</span>
+            <span class="percentage-value" v-else>
+                <i class="iconfont icon-exclamation-circle" style="color: #f56c6c;"></i>
+              </span>
             <span class="percentage-label">磁盘</span>
           </template>
         </el-progress>
       </div>
     </template>
     <template #default>
-      <div>
+      <div v-if="disk.error===''">
         <div class="detail-unit">
           <span>储存总量 </span> {{ $utils.FormatBytesSizeG(disk.total) }}
         </div>
@@ -24,6 +27,9 @@
           <span>消耗储存<span style="color: #007bbb;float: right">({{ disk.usage.toFixed(2) }}%)</span> </span>
           {{ $utils.FormatBytesSizeG(disk.used) }}
         </div>
+      </div>
+      <div v-else style="font-size: 12px;color: #909399">
+        {{ disk.error }}
       </div>
     </template>
   </el-popover>
