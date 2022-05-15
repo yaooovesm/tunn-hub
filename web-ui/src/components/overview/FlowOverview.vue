@@ -55,7 +55,7 @@
                     </div>
                     <div class="dashboard-unit-text">
                       <span style="color: rgba(0,123,187,0.8)">
-                        {{ $utils.FormatBytesSize(status.rx.Flow) }}
+                        {{ $utils.FormatBytesSizeG(status.rx.Flow) }}
                       </span>
                     </div>
                     <div class="dashboard-unit-text-small"
@@ -71,7 +71,7 @@
                     </div>
                     <div class="dashboard-unit-text">
                       <span style="color: rgba(0,123,187,0.8)">
-                        {{ $utils.FormatBytesSize(status.tx.Flow) }}
+                        {{ $utils.FormatBytesSizeG(status.tx.Flow) }}
                       </span>
                     </div>
                     <div class="dashboard-unit-text-small"
