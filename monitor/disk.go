@@ -36,6 +36,6 @@ func (d *DiskData) Collect() error {
 	}
 	d.Used = used
 	d.Total = total
-	d.Usage = float64(used) / float64(total)
+	d.Usage = float64(used) / float64(total) * 100
 	return nil
 }
