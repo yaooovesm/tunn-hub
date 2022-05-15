@@ -69,7 +69,7 @@ export default {
 .percentage-value {
   display: block;
   margin-top: 10px;
-  font-size: 25px;
+  font-size: 18px;
 }
 
 .percentage-label {

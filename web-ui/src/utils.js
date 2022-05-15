@@ -215,11 +215,11 @@ function FormatBytesSize(bytes) {
     } else if (bytes >= b && bytes < k) {
         return (bytes / b).toFixed(2) + " K"
     } else if (bytes >= k && bytes < m) {
-        return (bytes / k).toFixed(3) + " M"
+        return (bytes / k).toFixed(2) + " M"
     } else if (bytes >= m && bytes < g) {
-        return (bytes / m).toFixed(4) + " G (" + (bytes / k).toFixed(1) + " M" + ")"
+        return (bytes / m).toFixed(2) + " G (" + (bytes / k).toFixed(1) + " M" + ")"
     } else {
-        return (bytes / m).toFixed(5) + " G"
+        return (bytes / m).toFixed(3) + " G"
     }
 }
 
@@ -234,7 +234,7 @@ function FormatBytesSizeM(bytes) {
     if (bytes <= 0) {
         return "0 M"
     } else {
-        return (bytes / k).toFixed(3) + " M"
+        return (bytes / k).toFixed(2) + " M"
     }
 }
 
@@ -251,9 +251,9 @@ function FormatBytesSizeG(bytes) {
     if (bytes <= 0) {
         return "0 G"
     } else if (bytes > 0 && bytes < m) {
-        return (bytes / k).toFixed(3) + " M"
+        return (bytes / k).toFixed(2) + " M"
     } else {
-        return (bytes / m).toFixed(3) + " G"
+        return (bytes / m).toFixed(2) + " G"
     }
 }
 
@@ -296,11 +296,11 @@ function FormatPacketSize(packet) {
     } else if (packet >= b && packet < k) {
         return (packet / b).toFixed(2) + " K"
     } else if (packet >= k && packet < m) {
-        return (packet / k).toFixed(3) + " M"
+        return (packet / k).toFixed(2) + " M"
     } else if (packet >= m && packet < g) {
-        return (packet / m).toFixed(4) + " G"
+        return (packet / m).toFixed(2) + " G"
     } else {
-        return (packet / m).toFixed(5) + " G"
+        return (packet / m).toFixed(3) + " G"
     }
 }
 

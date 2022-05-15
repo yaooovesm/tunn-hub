@@ -5,7 +5,7 @@
         <div class="title-text">性能监控
         </div>
       </div>
-      <div style="padding: 55px 30px">
+      <div style="padding: 35px 20px">
         <el-row :gutter="10">
           <el-col :span="8">
             <c-p-u-monitor ref="cpu"/>
@@ -64,7 +64,6 @@ export default {
         data: {}
       }).then(res => {
         let response = res.data
-        console.log(response.data)
         if (this.$refs.memory !== null) {
           this.$refs.memory.set(response.data.memory)
         }

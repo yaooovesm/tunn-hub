@@ -33,7 +33,7 @@
           </div>
           <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
           <div class="detail-unit">
-            <span>TunnHub消耗内存 <span style="color: #007bbb;float: right">({{
+            <span>TunnHub消耗 <span style="color: #007bbb;float: right">({{
                 ((this.memory.app_used / this.memory.total) * 100).toFixed(2)
               }}%)</span> </span>
             {{ $utils.FormatBytesSizeM(memory.app_used) }}
@@ -80,7 +80,7 @@ export default {
       }
       this.memory = data
       this.total_percentage = Number(this.memory.usage.toFixed(1))
-      this.app_percentage = Number((this.memory.app_used / this.memory.total).toFixed(1))
+      this.app_percentage = Number((this.memory.app_used / this.memory.total).toFixed(1)) * 100
     }
   }
 }
@@ -90,7 +90,7 @@ export default {
 .percentage-value {
   display: block;
   margin-top: 10px;
-  font-size: 25px;
+  font-size: 18px;
 }
 
 .percentage-label {

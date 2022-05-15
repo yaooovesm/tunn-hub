@@ -18,7 +18,7 @@
           <span></span>
         </template>
         <template #content>
-          {{ getPageName($route.path) }}
+          <span style="font-size: 16px;color: #404040">{{ getPageName($route.path) }}</span>
         </template>
       </el-page-header>
     </div>

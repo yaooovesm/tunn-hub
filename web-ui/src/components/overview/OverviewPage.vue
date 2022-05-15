@@ -1,19 +1,19 @@
 <template>
   <div style="padding-top: 40px">
     <el-row v-if="$storage.User.isLogin" :gutter="10">
-      <el-col :span="22" :offset="1">
+      <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview/>
       </el-col>
-      <el-col :xs="22" :sm="22" :md="10" :lg="10" :xl="10" :offset="1" style="margin-top: 30px">
+      <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11">
         <monitor-overview/>
       </el-col>
-      <el-col :xs="22" :sm="22" :md="6" :lg="6" :xl="6" style="margin-top: 30px">
+      <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" :offset="1" style="margin-top: 30px">
         <i-p-pool-overview/>
       </el-col>
-      <el-col :xs="22" :sm="22" :md="6" :lg="6" :xl="6" style="margin-top: 30px">
+      <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" style="margin-top: 30px">
         <users-overview/>
       </el-col>
-      <el-col :xs="22" :sm="22" :md="8" :lg="8" :xl="8" :offset="1" style="margin-top: 30px">
+      <el-col :xs="22" :sm="22" :md="8" :lg="8" :xl="8" style="margin-top: 30px">
         <server-config-overview/>
       </el-col>
     </el-row>

@@ -8,77 +8,147 @@
       <div style="padding: 20px">
         <el-row :gutter="30">
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-            <div style="margin-bottom: 30px;text-align: left">
-              <div class="subtitle-large">速率</div>
+            <div style="margin-bottom: 30px;text-align: center">
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      服务器接收(RX)
-                    </div>
-                    <div class="dashboard-unit-text">
-                      <span style="color: rgba(0,123,187,0.8)">{{ $utils.FormatBytesSpeed(status.rx.FlowSpeed) }}</span>
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      包速率 {{ $utils.FormatPacketSpeed(status.rx.PacketSpeed) }}
-                    </div>
-                  </div>
+                  <el-popover
+                      placement="bottom"
+                      title="接收速率"
+                      :width="230"
+                      trigger="hover"
+                  >
+                    <template #reference>
+                      <div>
+                        <el-progress type="dashboard"
+                                     :percentage="Number((status.rx.FlowSpeed/1024/1024*8/1000).toFixed(2)*100)"
+                                     style="position: relative">
+                          <template #default>
+                            <span class="percentage-value">{{ $utils.FormatBytesSpeed(status.rx.FlowSpeed) }}</span>
+                            <span class="percentage-label">接收</span>
+                          </template>
+                        </el-progress>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div>
+                        <div class="detail-unit">
+                          <span>消耗带宽 </span> {{ (status.rx.FlowSpeed / 1024 / 1024 * 8).toFixed(1) }}Mbps
+                        </div>
+                        <div class="detail-unit">
+                          <span>流量速率 </span> {{ $utils.FormatBytesSpeed(status.rx.FlowSpeed) }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>包速率</span>
+                          {{ $utils.FormatPacketSpeed(status.rx.PacketSpeed) }}
+                        </div>
+                      </div>
+                    </template>
+                  </el-popover>
                 </el-col>
                 <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      服务器发送(TX)
-                    </div>
-                    <div class="dashboard-unit-text">
-                      <span style="color: rgba(0,123,187,0.8)">
-                      {{ $utils.FormatBytesSpeed(status.tx.FlowSpeed) }}
-                      </span>
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      包速率 {{ $utils.FormatPacketSpeed(status.tx.PacketSpeed) }}
-                    </div>
-                  </div>
+                  <el-popover
+                      placement="bottom"
+                      title="发送速率"
+                      :width="230"
+                      trigger="hover"
+                  >
+                    <template #reference>
+                      <div>
+                        <el-progress type="dashboard"
+                                     :percentage="Number((status.tx.FlowSpeed/1024/1024*8/1000).toFixed(2)*100)"
+                                     style="position: relative">
+                          <template #default>
+                            <span class="percentage-value">{{ $utils.FormatBytesSpeed(status.tx.FlowSpeed) }}</span>
+                            <span class="percentage-label">发送</span>
+                          </template>
+                        </el-progress>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div>
+                        <div class="detail-unit">
+                          <span>消耗带宽 </span> {{ (status.tx.FlowSpeed / 1024 / 1024 * 8).toFixed(1) }}Mbps
+                        </div>
+                        <div class="detail-unit">
+                          <span>流量速率 </span> {{ $utils.FormatBytesSpeed(status.tx.FlowSpeed) }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>包速率</span>
+                          {{ $utils.FormatPacketSpeed(status.tx.PacketSpeed) }}
+                        </div>
+                      </div>
+                    </template>
+                  </el-popover>
                 </el-col>
               </el-row>
             </div>
           </el-col>
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-            <div style="margin-bottom: 30px;text-align: left">
-              <div class="subtitle-large">流量统计</div>
+            <div style="margin-bottom: 30px;text-align: center">
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      服务器接收(RX)
-                    </div>
-                    <div class="dashboard-unit-text">
-                      <span style="color: rgba(0,123,187,0.8)">
-                        {{ $utils.FormatBytesSizeG(status.rx.Flow) }}
-                      </span>
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      数据包 {{ $utils.FormatPacketSize(status.rx.Packet) }}
-                    </div>
-                  </div>
+                  <el-popover
+                      placement="bottom"
+                      title="接收流量"
+                      :width="230"
+                      trigger="hover"
+                  >
+                    <template #reference>
+                      <div>
+                        <el-progress type="dashboard"
+                                     :percentage="100"
+                                     style="position: relative">
+                          <template #default>
+                            <span class="percentage-value">{{ $utils.FormatBytesSizeG(status.rx.Flow) }}</span>
+                            <span class="percentage-label">接收流量</span>
+                          </template>
+                        </el-progress>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div>
+                        <div class="detail-unit">
+                          <span>接收流量 </span> {{ $utils.FormatBytesSizeG(status.rx.Flow) }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>接收数据包 </span> {{ $utils.FormatPacketSize(status.rx.Packet) }}
+                        </div>
+                      </div>
+                    </template>
+                  </el-popover>
                 </el-col>
                 <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      服务器发送(TX)
-                    </div>
-                    <div class="dashboard-unit-text">
-                      <span style="color: rgba(0,123,187,0.8)">
-                        {{ $utils.FormatBytesSizeG(status.tx.Flow) }}
-                      </span>
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      数据包 {{ $utils.FormatPacketSize(status.tx.Packet) }}
-                    </div>
-                  </div>
+                  <el-popover
+                      placement="bottom"
+                      title="发送流量"
+                      :width="230"
+                      trigger="hover"
+                  >
+                    <template #reference>
+                      <div>
+                        <el-progress type="dashboard"
+                                     :percentage="100"
+                                     style="position: relative"
+                                     :indeterminate="true"
+                                     :duration="1">
+                          <template #default>
+                            <span class="percentage-value">{{ $utils.FormatBytesSizeG(status.tx.Flow) }}</span>
+                            <span class="percentage-label">发送流量</span>
+                          </template>
+                        </el-progress>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div>
+                        <div class="detail-unit">
+                          <span>发送流量 </span> {{ $utils.FormatBytesSizeG(status.tx.Flow) }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>发送数据包 </span> {{ $utils.FormatPacketSize(status.tx.Packet) }}
+                        </div>
+                      </div>
+                    </template>
+                  </el-popover>
                 </el-col>
               </el-row>
             </div>
@@ -188,5 +258,29 @@ export default {
   font-size: 12px;
   text-align: right;
   margin-top: 8px;
+}
+
+.percentage-value {
+  display: block;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.percentage-label {
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.detail-unit {
+  text-align: right;
+  font-size: 12px;
+  color: #007bbb;
+}
+
+.detail-unit span {
+  color: #404040;
+  float: left;
+  display: inline-block;
 }
 </style>
