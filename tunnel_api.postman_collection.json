@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4ce2f6e5-54f8-4e40-b8ac-3676f7659a03",
+		"_postman_id": "b3c44849-e916-4dd0-86c8-0bee2da0ff3d",
 		"name": "tunnel_api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -488,7 +488,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/disconnect/id/848f141a2fc647dca219b4bd28df156a",
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/disconnect/id/cb94976f29054e57b089cd7b411f908d",
 							"protocol": "{{protocol}}",
 							"host": [
 								"{{base_url}}{{api_ver}}server"
@@ -496,7 +496,33 @@
 							"path": [
 								"disconnect",
 								"id",
-								"848f141a2fc647dca219b4bd28df156a"
+								"cb94976f29054e57b089cd7b411f908d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过ID重置用户连接",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/reconnect/id/cb94976f29054e57b089cd7b411f908d",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"reconnect",
+								"id",
+								"cb94976f29054e57b089cd7b411f908d"
 							]
 						}
 					},
@@ -546,6 +572,30 @@
 							"path": [
 								"ippool",
 								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取服务器运行状况",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/monitor",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"monitor"
 							]
 						}
 					},
@@ -690,6 +740,31 @@
 							"path": [
 								"delete",
 								"64580aa8a0544605a23e541272a886d7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取导入网络列表",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/route/available",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"route",
+								"available"
 							]
 						}
 					},
