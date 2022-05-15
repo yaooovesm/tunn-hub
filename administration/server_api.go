@@ -92,3 +92,12 @@ func ApiIPPoolGeneral(ctx *gin.Context) {
 func ApiIPPoolInfoList(ctx *gin.Context) {
 	responseSuccess(ctx, ServerServiceInstance().GetIPPoolAllocInfo(), "")
 }
+
+//
+// ApiGetServerSystemData
+// @Description:
+// @param ctx
+//
+func ApiGetServerSystemData(ctx *gin.Context) {
+	responseSuccess(ctx, ServerServiceInstance().monitorService.GetSystemData(), "")
+}

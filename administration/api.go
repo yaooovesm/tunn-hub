@@ -76,6 +76,7 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		serverGroup.GET("/reconnect/id/:id", ApiReconnectById)
 		serverGroup.GET("/ippool", ApiIPPoolGeneral)
 		serverGroup.GET("/ippool/list", ApiIPPoolInfoList)
+		serverGroup.GET("/monitor", ApiGetServerSystemData)
 	}
 	//config
 	{

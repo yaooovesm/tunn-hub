@@ -27,7 +27,9 @@ func ServerServiceInstance() *serverService {
 // @return *serverService
 //
 func newServerService() *serverService {
-	serverServiceInstance = &serverService{}
+	serverServiceInstance = &serverService{
+		monitorService: newMonitorService(4000),
+	}
 	return serverServiceInstance
 }
 
@@ -36,6 +38,7 @@ func newServerService() *serverService {
 // @Description:
 //
 type serverService struct {
+	monitorService     *monitorService
 	rxFlowCounter      *traffic.FlowStatisticsFP
 	txFlowCounter      *traffic.FlowStatisticsFP
 	ctx                context.Context
