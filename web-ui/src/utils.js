@@ -229,6 +229,40 @@ function FormatBytesSize(bytes) {
  * @returns {string}
  * @constructor
  */
+function FormatBytesSizeM(bytes) {
+    let k = 1024 * 1024
+    if (bytes <= 0) {
+        return "0 M"
+    } else {
+        return (bytes / k).toFixed(3) + " M"
+    }
+}
+
+/**
+ *
+ * @param bytes
+ * @returns {string}
+ * @constructor
+ */
+function FormatBytesSizeG(bytes) {
+    let b = 1024
+    let k = b * 1024
+    let m = k * 1024
+    if (bytes <= 0) {
+        return "0 G"
+    } else if (bytes > 0 && bytes < m) {
+        return (bytes / k).toFixed(3) + " M"
+    } else {
+        return (bytes / m).toFixed(3) + " G"
+    }
+}
+
+/**
+ *
+ * @param bytes
+ * @returns {string}
+ * @constructor
+ */
 function FormatBytesSpeed(bytes) {
     return FormatBytesSize(bytes) + "/s"
 }
@@ -280,6 +314,8 @@ export default {
     UnixMilliToDate,
     SecondToDate,
     FormatBytesSize,
+    FormatBytesSizeM,
+    FormatBytesSizeG,
     FormatBytesSpeed,
     FormatPacketSpeed,
     FormatPacketSize,
