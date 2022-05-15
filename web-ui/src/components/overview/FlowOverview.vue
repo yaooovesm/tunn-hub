@@ -20,7 +20,7 @@
                     <template #reference>
                       <div>
                         <el-progress type="dashboard"
-                                     :percentage="Number((status.rx.FlowSpeed/1024/1024*8/1000).toFixed(2)*100)"
+                                     :percentage="Number(status.rx.bandwidth_usage.toFixed(2))"
                                      style="position: relative">
                           <template #default>
                             <span class="percentage-value">{{ $utils.FormatBytesSpeed(status.rx.FlowSpeed) }}</span>
@@ -32,7 +32,11 @@
                     <template #default>
                       <div>
                         <div class="detail-unit">
-                          <span>消耗带宽 </span> {{ (status.rx.FlowSpeed / 1024 / 1024 * 8).toFixed(1) }}Mbps
+                          <span>消耗带宽
+                            <span style="color: #007bbb;float: right">({{
+                                status.rx.bandwidth_usage.toFixed(2)
+                              }}%)</span>
+                          </span> {{ status.rx.bandwidth.toFixed(1) }} Mbps
                         </div>
                         <div class="detail-unit">
                           <span>流量速率 </span> {{ $utils.FormatBytesSpeed(status.rx.FlowSpeed) }}
@@ -55,7 +59,7 @@
                     <template #reference>
                       <div>
                         <el-progress type="dashboard"
-                                     :percentage="Number((status.tx.FlowSpeed/1024/1024*8/1000).toFixed(2)*100)"
+                                     :percentage="Number(status.tx.bandwidth_usage.toFixed(2))"
                                      style="position: relative">
                           <template #default>
                             <span class="percentage-value">{{ $utils.FormatBytesSpeed(status.tx.FlowSpeed) }}</span>
@@ -67,7 +71,12 @@
                     <template #default>
                       <div>
                         <div class="detail-unit">
-                          <span>消耗带宽 </span> {{ (status.tx.FlowSpeed / 1024 / 1024 * 8).toFixed(1) }}Mbps
+                          <span>消耗带宽
+                            <span style="color: #007bbb;float: right">({{
+                                status.tx.bandwidth_usage.toFixed(2)
+                              }}%)</span>
+                          </span>
+                          {{ status.tx.bandwidth.toFixed(1) }} Mbps
                         </div>
                         <div class="detail-unit">
                           <span>流量速率 </span> {{ $utils.FormatBytesSpeed(status.tx.FlowSpeed) }}
@@ -172,6 +181,7 @@ export default {
   name: "FlowOverview",
   data() {
     return {
+      bandwidth: 1000,
       updateTime: new Date(),
       loading: false,
       timer: undefined,
@@ -180,13 +190,17 @@ export default {
           Flow: 0,
           FlowSpeed: 0,
           Packet: 0,
-          PacketSpeed: 0
+          PacketSpeed: 0,
+          bandwidth: 0,
+          bandwidth_usage: 0,
         },
         tx: {
           Flow: 0,
           FlowSpeed: 0,
           Packet: 0,
-          PacketSpeed: 0
+          PacketSpeed: 0,
+          bandwidth: 0,
+          bandwidth_usage: 0,
         }
       },
     }
@@ -212,6 +226,10 @@ export default {
       }).then(res => {
         let response = res.data
         this.status = response.data
+        this.status.rx.bandwidth = this.status.rx.FlowSpeed / 1024 / 1024 * 8
+        this.status.rx.bandwidth_usage = this.status.rx.bandwidth / this.bandwidth * 100
+        this.status.tx.bandwidth = this.status.tx.FlowSpeed / 1024 / 1024 * 8
+        this.status.tx.bandwidth_usage = this.status.tx.bandwidth / this.bandwidth * 100
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {
