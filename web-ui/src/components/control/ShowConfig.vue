@@ -124,31 +124,63 @@
               <el-descriptions-item width="100%" label="网络导入">
                 <span v-if="route.imports.length===0">无</span>
                 <div v-else>
-                  <el-tag
-                      v-for="r in route.imports"
-                      :key="r"
-                      type="info"
-                      effect="dark"
-                      :disable-transitions="false"
-                      style="margin-right: 10px;margin-bottom: 5px"
-                  >
-                    {{ r.network }}
-                  </el-tag>
+                  <span v-for="route in route.imports" :key="route">
+                    <el-popover
+                        placement="top-start"
+                        :width="150"
+                        trigger="hover"
+                    >
+                      <template #reference>
+                        <el-tag
+                            type="info"
+                            effect="dark"
+                            :disable-transitions="false"
+                            style="margin-right: 10px;margin-bottom: 5px"
+                        >
+                          {{ route.network }}
+                        </el-tag>
+                      </template>
+                      <template #default>
+                        <div class="detail-unit">
+                          <span>名称 </span> {{ route.name === '' ? '未命名' : route.name }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>网络 </span> {{ route.network }}
+                        </div>
+                      </template>
+                    </el-popover>
+                  </span>
                 </div>
               </el-descriptions-item>
               <el-descriptions-item width="100%" label="网络暴露">
                 <span v-if="route.exports.length===0">无</span>
                 <div v-else>
-                  <el-tag
-                      v-for="r in route.exports"
-                      :key="r"
-                      type="info"
-                      effect="dark"
-                      :disable-transitions="false"
-                      style="margin-right: 10px;margin-bottom: 5px"
-                  >
-                    {{ r.network }}
-                  </el-tag>
+                  <span v-for="route in route.exports" :key="route">
+                    <el-popover
+                        placement="top-start"
+                        :width="150"
+                        trigger="hover"
+                    >
+                      <template #reference>
+                        <el-tag
+                            type="info"
+                            effect="dark"
+                            :disable-transitions="false"
+                            style="margin-right: 10px;margin-bottom: 5px"
+                        >
+                          {{ route.network }}
+                        </el-tag>
+                      </template>
+                      <template #default>
+                        <div class="detail-unit">
+                          <span>名称 </span> {{ route.name === '' ? '未命名' : route.name }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>网络 </span> {{ route.network }}
+                        </div>
+                      </template>
+                    </el-popover>
+                  </span>
                 </div>
               </el-descriptions-item>
             </el-descriptions>
@@ -226,5 +258,15 @@ export default {
 </script>
 
 <style scoped>
+.detail-unit {
+  text-align: right;
+  font-size: 12px;
+  color: #007bbb;
+}
 
+.detail-unit span {
+  color: #404040;
+  float: left;
+  display: inline-block;
+}
 </style>

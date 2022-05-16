@@ -10,6 +10,7 @@
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <div style="margin-bottom: 30px;text-align: center">
               <el-row :gutter="20">
+                <!--接收-->
                 <el-col :span="12">
                   <el-popover
                       placement="bottom"
@@ -49,6 +50,7 @@
                     </template>
                   </el-popover>
                 </el-col>
+                <!--发送-->
                 <el-col :span="12">
                   <el-popover
                       placement="bottom"
@@ -95,21 +97,71 @@
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <div style="margin-bottom: 30px;text-align: center">
               <el-row :gutter="20">
+                <!--处理速度-->
                 <el-col :span="12">
                   <el-popover
                       placement="bottom"
-                      title="接收流量"
+                      title="网络状态"
                       :width="230"
                       trigger="hover"
                   >
                     <template #reference>
                       <div>
                         <el-progress type="dashboard"
-                                     :percentage="100"
+                                     :percentage="Number(status.total.bandwidth_usage.toFixed(2))"
                                      style="position: relative">
                           <template #default>
-                            <span class="percentage-value">{{ $utils.FormatBytesSizeG(status.rx.Flow) }}</span>
-                            <span class="percentage-label">接收流量</span>
+                            <span class="percentage-value">{{
+                                $utils.FormatPacketSpeed(status.total.PacketSpeed)
+                              }}</span>
+                            <span class="percentage-label" style="margin-top: 5px">处理速度</span>
+                          </template>
+                        </el-progress>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div>
+                        <div class="detail-unit">
+                          <div class="detail-unit">
+                          <span>消耗带宽
+                            <span style="color: #007bbb;float: right">({{
+                                status.total.bandwidth_usage.toFixed(2)
+                              }}%)</span>
+                          </span>
+                            {{ status.total.bandwidth.toFixed(1) }} Mbps
+                          </div>
+                          <span>数据包总量 </span> {{ $utils.FormatPacketSize(status.total.Packet) }}
+                        </div>
+                        <div class="detail-unit">
+                          <span>数据包速度 </span> {{ $utils.FormatPacketSpeed(status.total.PacketSpeed) }}
+                        </div>
+                        <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
+                      </div>
+                    </template>
+                  </el-popover>
+                </el-col>
+                <!--流量统计-->
+                <el-col :span="12">
+                  <el-popover
+                      placement="bottom"
+                      title="流量统计"
+                      :width="230"
+                      trigger="hover"
+                  >
+                    <template #reference>
+                      <div>
+                        <el-progress type="dashboard"
+                                     :percentage="Number(status.total.bandwidth_usage.toFixed(2))"
+                                     style="position: relative">
+                          <template #default>
+                            <span class="percentage-value" style="font-size: 14px"><span style="color: #67c23a">↓</span> {{
+                                $utils.FormatBytesSizeG(status.rx.Flow)
+                              }}</span>
+                            <span class="percentage-value" style="font-size: 14px;margin-top: 4px"><span
+                                style="color: #67c23a">↑</span> {{
+                                $utils.FormatBytesSizeG(status.tx.Flow)
+                              }}</span>
+                            <span class="percentage-label" style="margin-top: 5px">流量</span>
                           </template>
                         </el-progress>
                       </div>
@@ -122,33 +174,7 @@
                         <div class="detail-unit">
                           <span>接收数据包 </span> {{ $utils.FormatPacketSize(status.rx.Packet) }}
                         </div>
-                      </div>
-                    </template>
-                  </el-popover>
-                </el-col>
-                <el-col :span="12">
-                  <el-popover
-                      placement="bottom"
-                      title="发送流量"
-                      :width="230"
-                      trigger="hover"
-                  >
-                    <template #reference>
-                      <div>
-                        <el-progress type="dashboard"
-                                     :percentage="100"
-                                     style="position: relative"
-                                     :indeterminate="true"
-                                     :duration="1">
-                          <template #default>
-                            <span class="percentage-value">{{ $utils.FormatBytesSizeG(status.tx.Flow) }}</span>
-                            <span class="percentage-label">发送流量</span>
-                          </template>
-                        </el-progress>
-                      </div>
-                    </template>
-                    <template #default>
-                      <div>
+                        <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
                         <div class="detail-unit">
                           <span>发送流量 </span> {{ $utils.FormatBytesSizeG(status.tx.Flow) }}
                         </div>
@@ -201,6 +227,12 @@ export default {
           PacketSpeed: 0,
           bandwidth: 0,
           bandwidth_usage: 0,
+        },
+        total: {
+          bandwidth: 0,
+          bandwidth_usage: 0,
+          Packet: 0,
+          PacketSpeed: 0,
         }
       },
     }
@@ -230,9 +262,17 @@ export default {
         this.status.rx.bandwidth_usage = this.status.rx.bandwidth / this.bandwidth * 100
         this.status.tx.bandwidth = this.status.tx.FlowSpeed / 1024 / 1024 * 8
         this.status.tx.bandwidth_usage = this.status.tx.bandwidth / this.bandwidth * 100
+        let total_bandwidth = this.status.tx.bandwidth + this.status.rx.bandwidth
+        this.status.total = {
+          bandwidth: total_bandwidth,
+          bandwidth_usage: total_bandwidth / this.bandwidth * 100,
+          Packet: this.status.rx.Packet + this.status.tx.Packet,
+          PacketSpeed: this.status.rx.PacketSpeed + this.status.tx.PacketSpeed,
+        }
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {
+        console.log(err)
         this.$utils.HandleError(err)
         this.loading = false
       })

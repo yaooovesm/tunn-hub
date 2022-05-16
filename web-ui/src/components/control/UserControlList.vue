@@ -103,9 +103,9 @@
               <!--              </span>-->
             </template>
           </el-table-column>
-          <el-table-column label="流量统计" width="150" prop="flow_count" sortable>
+          <el-table-column label="流量统计" width="150" prop="flow_count" sortable show-overflow-tooltip>
             <template #default="scope">
-              {{ $utils.FormatBytesSize(scope.row.flow_count) }}
+              {{ $utils.FormatBytesSizeM(scope.row.flow_count) }}
             </template>
           </el-table-column>
           <!--          <el-table-column label="上次登录" width="160" prop="last_login" sortable>-->

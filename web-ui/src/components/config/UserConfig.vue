@@ -37,8 +37,6 @@
                 >
                   <template #reference>
                     <el-tag
-                        v-for="route in importRoutes"
-                        :key="route"
                         closable
                         effect="dark"
                         type="info"
@@ -279,15 +277,6 @@ export default {
       this.exportRoutes.push(route)
       this.$refs.export_dialog.close()
     }
-    // handleAddExport: function () {
-    //   if (this.addExportValue !== '') {
-    //     this.exportRoutes.push({
-    //       network: this.addExportValue,
-    //       option: "export"
-    //     })
-    //   }
-    //   this.addExportValue = ""
-    // }
   }
 }
 </script>

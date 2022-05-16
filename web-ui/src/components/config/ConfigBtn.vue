@@ -1,11 +1,11 @@
 <template>
   <div>
     <div v-if="configId!==''">
-      <el-button size="small" type="primary" @click="$refs.config.show(configId,account)">用户配置</el-button>
+      <el-button size="small" type="primary" @click="$refs.config.show(configId,account)">网络配置</el-button>
       <user-config ref="config"/>
     </div>
     <div v-else>
-      <el-button size="small" type="primary" disabled>用户配置</el-button>
+      <el-button size="small" type="primary" disabled>网络配置</el-button>
       <el-tooltip
           effect="dark"
           content='配置丢失请联系管理员'
