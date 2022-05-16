@@ -114,7 +114,7 @@
                             <span class="percentage-value">{{
                                 $utils.FormatPacketSpeed(status.total.PacketSpeed)
                               }}</span>
-                            <span class="percentage-label" style="margin-top: 5px">处理速度</span>
+                            <span class="percentage-label">处理速度</span>
                           </template>
                         </el-progress>
                       </div>

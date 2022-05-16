@@ -5,40 +5,45 @@
         <div class="title-text">用户概况
         </div>
       </div>
-      <div style="padding: 20px">
+      <div style="padding: 27px 20px">
         <el-row :gutter="30">
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="text-align: left">
+            <div>
+              <span style="text-align: left;display: inline-block;font-size: 13px">在线用户</span>
+              <el-progress :percentage="Number((status.online_percentage.toFixed(1)))"
+                           :color="customColors"
+                           style="width: 100%">
+                <template #default>
+                  <span style="font-size: 10px;display: block;width: 140px;text-align: right">
+                    <span style="display: inline-block">在线率
+                      <span style="color: #007bbb">{{
+                          ((status.online) / status.allow * 100).toFixed(1)
+                        }}% </span>
+                    </span>
+                     当前 <span style="color: #007bbb">{{
+                      status.online
+                    }}</span> 在线
+                  </span>
+                </template>
+              </el-progress>
+            </div>
+            <div style="margin-top: 20px">
+              <span style="text-align: left;display: inline-block;font-size: 13px">已注册用户</span>
+              <el-progress :percentage="Number(status.allow_percentage.toFixed(1))"
+                           color="#1989fa"
+                           style="width: 100%">
+                <template #default>
+                  <span style="font-size: 10px;display: block;width: 140px;text-align: right">
+                    总量 <span style="color: #007bbb">{{ status.total }}</span> ，当前 <span
+                      style="color: #007bbb">{{ status.allow }}</span> 可用</span>
+                </template>
+              </el-progress>
+            </div>
+            <el-divider/>
+            <user-create-dialog ref="user_create"/>
             <div style="margin-bottom: 30px;text-align: left">
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      注册用户
-                    </div>
-                    <div class="dashboard-unit-text">
-                      {{ status.total }}
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      已禁用 {{ status.disabled }}
-                    </div>
-                  </div>
-                </el-col>
-                <el-col :span="12">
-                  <div class="dashboard-unit">
-                    <div class="subtitle" style="text-align: left;line-height: 10px;margin-left: 10px">
-                      在线用户
-                    </div>
-                    <div class="dashboard-unit-text">
-                      <span style="color: #67C23A">{{ status.online }}</span> / {{ status.allow }}
-                    </div>
-                    <div class="dashboard-unit-text-small"
-                         style="color: #909399;margin-top: 8px;text-align: center;">
-                      离线 {{ status.offline }}
-                    </div>
-                  </div>
-                </el-col>
-              </el-row>
+              <el-button type="primary" size="small" @click="$router.push({path:'/dashboard/users'})">用户管理</el-button>
+              <el-button type="primary" size="small" @click="$refs.user_create.show()">快速创建</el-button>
             </div>
           </el-col>
         </el-row>
@@ -55,9 +60,11 @@
 
 <script>
 import axios from "axios";
+import UserCreateDialog from "@/components/control/UserCreateDialog";
 
 export default {
   name: "UsersOverview",
+  components: {UserCreateDialog},
   mounted() {
     this.update()
   },
@@ -71,7 +78,16 @@ export default {
         online: 0,
         total: 0,
         allow: 0,
+        allow_percentage: 0,
+        online_percentage: 0,
       },
+      customColors: [
+        {color: '#5cb87a', percentage: 20},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 60},
+        {color: '#e6a23c', percentage: 80},
+        {color: '#e6a23c', percentage: 100},
+      ]
     }
   },
   methods: {
@@ -86,6 +102,8 @@ export default {
         this.status = response.data
         this.status.offline = this.status.total - this.status.disabled - this.status.online
         this.status.allow = this.status.total - this.status.disabled
+        this.status.online_percentage = (this.status.online / this.status.allow) * 100
+        this.status.allow_percentage = (this.status.allow / this.status.total) * 100
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {

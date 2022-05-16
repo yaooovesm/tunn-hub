@@ -5,33 +5,70 @@
         <div class="title-text">服务器配置
         </div>
       </div>
-      <div style="padding: 20px">
+      <div style="padding:17px 20px">
         <el-row>
           <el-col :span="24">
-            <div style="margin-bottom: 30px;text-align: left;padding-bottom: 9px">
+            <div style="text-align: left;">
               <el-descriptions
                   direction="vertical"
                   :column="3"
                   size="small"
                   border
               >
-                <el-descriptions-item label-class-name="overview-description-label" label="服务器地址" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="服务器地址">
                   {{ config.address }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="内网地址" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="内网地址">
                   {{ config.cidr }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="传输协议" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="传输协议">
                   {{ config.protocol }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="数据加密" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="数据加密">
                   {{ config.encrypt }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="MTU" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="MTU">
                   {{ config.mtu }}
                 </el-descriptions-item>
-                <el-descriptions-item label-class-name="overview-description-label" label="并行通道数" width="33.3%">
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="并行通道数">
                   {{ config.multi }}
+                </el-descriptions-item>
+                <el-descriptions-item width="33.3%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="服务器版本">
+                  {{ runtime.app }}
+                </el-descriptions-item>
+                <el-descriptions-item width="66.6%" label-class-name="overview-description-label"
+                                      class-name="overview-description"
+                                      label="运行平台">
+                  <span>
+                    <svg class="icon" aria-hidden="true" v-if="runtime.os==='windows'"
+                         style="width: 1.1em;height: 1.0em;">
+                      <use xlink:href="#icon-Windows"></use>
+                    </svg>
+                    <svg class="icon" aria-hidden="true" v-else-if="runtime.os==='linux'"
+                         style="width: 1.2em;height: 1.1em;">
+                      <use xlink:href="#icon-linux"></use>
+                    </svg>
+                    <svg class="icon" aria-hidden="true" v-else-if="runtime.os==='darwin'">
+                      <use xlink:href="#icon-IOS"></use>
+                    </svg>
+                    {{ runtime.os === 'darwin' ? "OSX" : runtime.os }}_{{ runtime.arch }} {{
+                      runtime.platform
+                    }} {{ runtime.version }}
+                  </span>
                 </el-descriptions-item>
               </el-descriptions>
             </div>
@@ -68,6 +105,13 @@ export default {
         mtu: 0,
         multi: 0,
       },
+      runtime: {
+        app: "",
+        arch: "",
+        os: "",
+        platform: "",
+        version: "",
+      }
     }
   },
   methods: {
@@ -85,7 +129,11 @@ export default {
         this.config.encrypt = response.data.data_process.encrypt
         this.config.mtu = response.data.global.mtu
         this.config.multi = response.data.global.multi_connection
-        this.raw = response.data
+        this.runtime.app = response.data.runtime.app
+        this.runtime.arch = response.data.runtime.arch
+        this.runtime.os = response.data.runtime.os
+        this.runtime.platform = response.data.runtime.platform
+        this.runtime.version = response.data.runtime.version
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {
@@ -100,5 +148,12 @@ export default {
 <style>
 .overview-description-label {
   background-color: #f2f2f2 !important;
+  padding: 5px 10px !important;
+  font-size: 13px !important;
+}
+
+.overview-description {
+  padding: 5px 10px !important;
+  font-size: 11px !important;
 }
 </style>

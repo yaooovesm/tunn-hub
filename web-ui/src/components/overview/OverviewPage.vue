@@ -1,6 +1,6 @@
 <template>
-  <div style="padding-top: 40px">
-    <el-row v-if="$storage.User.isLogin" :gutter="10">
+  <div style="padding-top: 50px">
+    <el-row v-if="$storage.User.isLogin" :gutter="20">
       <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview/>
       </el-col>
@@ -8,10 +8,10 @@
         <monitor-overview/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" :offset="1" style="margin-top: 30px">
-        <i-p-pool-overview/>
+        <i-p-pool-overview style="cursor: pointer" @click="$router.push({path:'/dashboard/control'})"/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" style="margin-top: 30px">
-        <users-overview/>
+        <users-overview style="cursor: pointer" @click="$router.push({path:'/dashboard/users'})"/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="8" :lg="8" :xl="8" style="margin-top: 30px">
         <server-config-overview/>
