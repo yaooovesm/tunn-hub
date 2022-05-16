@@ -331,8 +331,9 @@ func (s *AuthServerV3) login(tunn *transmitter.Tunnel, packet *TransportPacket, 
 			}
 		}
 	}
+	//取消主动合入服务端暴露网络，由用户自行导入
 	//合入服务端export
-	pushedConfig.Routes = append(pushedConfig.Routes, getExportRoutes()...)
+	//pushedConfig.Routes = append(pushedConfig.Routes, getExportRoutes()...)
 	pushedConfigByte, _ := json.Marshal(pushedConfig)
 	//更新系统路由
 	s.SysRouteTable.DeployAll()
