@@ -29,18 +29,37 @@
           </div>
           <div style="padding: 20px">
             <div v-if="importRoutes.length>0">
-              <el-tag
-                  v-for="route in importRoutes"
-                  :key="route"
-                  closable
-                  effect="dark"
-                  type="info"
-                  :disable-transitions="false"
-                  @close="handleDeleteImportRoute(route)"
-                  style="margin-right: 10px;margin-bottom: 5px"
-              >
-                {{ route.network }}
-              </el-tag>
+              <span v-for="route in importRoutes" :key="route">
+                <el-popover
+                    placement="top-start"
+                    :width="150"
+                    trigger="hover"
+                >
+                  <template #reference>
+                    <el-tag
+                        v-for="route in importRoutes"
+                        :key="route"
+                        closable
+                        effect="dark"
+                        type="info"
+                        :disable-transitions="false"
+                        @close="handleDeleteImportRoute(route)"
+                        style="margin-right: 10px;margin-bottom: 5px"
+                    >
+                      {{ route.network }}
+                    </el-tag>
+                  </template>
+                  <template #default>
+                    <div class="detail-unit">
+                      <span>名称 </span> {{ route.name === '' ? '未命名' : route.name }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>网络 </span> {{ route.network }}
+                    </div>
+                  </template>
+                </el-popover>
+              </span>
+
             </div>
             <div v-else>
               <span style="font-size: 12px;color: #909399">还没有导入网络</span>
@@ -59,31 +78,43 @@
           </div>
           <div style="padding: 20px">
             <div v-if="exportRoutes.length>0">
-              <el-tag
-                  v-for="route in exportRoutes"
-                  :key="route"
-                  closable
-                  type="info"
-                  effect="dark"
-                  :disable-transitions="false"
-                  @close="handleDeleteExportRoute(route)"
-                  style="margin-right: 10px;margin-bottom: 5px"
-              >
-                {{ route.network }}
-              </el-tag>
+              <span v-for="route in exportRoutes"
+                    :key="route">
+                <el-popover
+                    placement="top-start"
+                    :width="150"
+                    trigger="hover"
+                >
+                  <template #reference>
+                    <el-tag
+                        closable
+                        type="info"
+                        effect="dark"
+                        :disable-transitions="false"
+                        @close="handleDeleteExportRoute(route)"
+                        style="margin-right: 10px;margin-bottom: 5px"
+                    >
+                      {{ route.network }}
+                    </el-tag>
+                  </template>
+                  <template #default>
+                    <div class="detail-unit">
+                      <span>名称 </span> {{ route.name === '' ? '未命名' : route.name }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>网络 </span> {{ route.network }}
+                    </div>
+                  </template>
+                </el-popover>
+              </span>
+
             </div>
             <div v-else>
               <span style="font-size: 12px;color: #909399">还没有暴露网络</span>
             </div>
             <div>
-              <el-input
-                  v-model="addExportValue"
-                  style="margin-top: 10px;width: 300px"
-                  placeholder="e.g. 192.168.1.0/24"
-                  size="small"
-              >
-              </el-input>
-              <el-button @click="handleAddExport" size="small" style="margin-left: 5px">添加
+              <route-export-dialog ref="export_dialog" @submit="handleAddExport"/>
+              <el-button @click="$refs.export_dialog.show()" size="small" style="margin-top: 8px">添加
               </el-button>
             </div>
           </div>
@@ -123,10 +154,11 @@
 import axios from "axios";
 import {ElMessageBox} from "element-plus";
 import RouteImportSelector from "@/components/config/RouteImportSelector";
+import RouteExportDialog from "@/components/config/RouteExportDialog";
 
 export default {
   name: "UserConfig",
-  components: {RouteImportSelector},
+  components: {RouteExportDialog, RouteImportSelector},
   data() {
     return {
       loading: false,
@@ -243,19 +275,33 @@ export default {
         }
       }
     },
-    handleAddExport: function () {
-      if (this.addExportValue !== '') {
-        this.exportRoutes.push({
-          network: this.addExportValue,
-          option: "export"
-        })
-      }
-      this.addExportValue = ""
+    handleAddExport: function (route) {
+      this.exportRoutes.push(route)
+      this.$refs.export_dialog.close()
     }
+    // handleAddExport: function () {
+    //   if (this.addExportValue !== '') {
+    //     this.exportRoutes.push({
+    //       network: this.addExportValue,
+    //       option: "export"
+    //     })
+    //   }
+    //   this.addExportValue = ""
+    // }
   }
 }
 </script>
 
 <style scoped>
+.detail-unit {
+  text-align: right;
+  font-size: 12px;
+  color: #007bbb;
+}
 
+.detail-unit span {
+  color: #404040;
+  float: left;
+  display: inline-block;
+}
 </style>

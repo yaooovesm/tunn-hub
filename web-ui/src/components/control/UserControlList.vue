@@ -65,7 +65,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="status.config.device.cidr" fixed label="内网地址" width="150"/>
-          <el-table-column prop="account" fixed label="账号">
+          <el-table-column prop="account" fixed label="账号" show-overflow-tooltip>
             <template #default="scope">
               {{ scope.row.account }}
               <!--              <span style="color: #F56C6C;font-size: 12px">{{ scope.row.disabled === 1 ? "已禁用" : "" }}</span>-->
