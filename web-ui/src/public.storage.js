@@ -3,6 +3,7 @@ let User = {
     token: "",
     info: undefined,
     password: "",
+    reporter: 0,
 }
 
 /**
@@ -17,6 +18,7 @@ function Load() {
         User.info = loUsr.info
         User.token = loUsr.token
         User.password = loUsr.password
+        User.reporter = loUsr.reporter
     }
 }
 

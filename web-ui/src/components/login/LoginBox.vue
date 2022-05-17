@@ -147,6 +147,7 @@ export default {
             this.$storage.User.info = response.data.info
             this.$storage.User.token = response.data.token
             this.$storage.User.isLogin = true
+            this.$storage.User.reporter = response.data.reporter
             this.$storage.User.password = this.$md5(this.loginData.password)
             if (response.data.info.auth === "admin") {
               this.$router.push({path: "/dashboard/overview"})
@@ -155,7 +156,6 @@ export default {
             }
             localStorage.setItem("tunnel_server_user", JSON.stringify(this.$storage.User))
           } else {
-            console.log("err --> ", response.error)
             this.$utils.Error("登录失败", response.msg)
           }
         } else {

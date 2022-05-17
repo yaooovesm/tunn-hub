@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"tunn-hub/administration/model"
+	"tunn-hub/config"
 )
 
 //
@@ -30,8 +31,9 @@ func ApiUserLogin(ctx *gin.Context) {
 	//去除敏感信息
 	info.RemoveSensitive()
 	res := map[string]interface{}{
-		"token": token,
-		"info":  info,
+		"token":    token,
+		"info":     info,
+		"reporter": config.Current.Admin.ReporterPort,
 	}
 	responseSuccess(ctx, res, "登录成功")
 }
