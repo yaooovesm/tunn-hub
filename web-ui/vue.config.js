@@ -2,8 +2,9 @@ module.exports = {
     publicPath: "./",
     devServer: {
         port: 80,
+        proxy: 'https://127.0.0.1:8888'
         //proxy: 'http://localhost:8080'
-        proxy: 'https://vpn.gz.junqirao.icu:60203'
+        //proxy: 'https://vpn.gz.junqirao.icu:60203'
     },
     pages: {
         index: {
