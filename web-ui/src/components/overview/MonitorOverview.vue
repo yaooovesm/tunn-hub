@@ -44,7 +44,8 @@ export default {
   data() {
     return {
       updateTime: new Date(),
-      loading: false
+      loading: false,
+      timer: undefined,
     }
   },
   mounted() {
@@ -52,6 +53,9 @@ export default {
     this.timer = setInterval(() => {
       this.update(true)
     }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.timer)
   },
   methods: {
     update: function (silence) {
