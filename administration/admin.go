@@ -117,6 +117,9 @@ func (ad *ServerAdmin) Run() {
 	//setup api
 	api := NewServerAdminApi(ad.engine)
 	api.Serv()
+	//serve reporter
+	reporter := NewReporter(ad.cfg)
+	reporter.Serve()
 	//run
 	go func() {
 		log.Info("admin work at : ", address)
