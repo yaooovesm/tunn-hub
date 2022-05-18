@@ -65,8 +65,16 @@ import UserCreateDialog from "@/components/control/UserCreateDialog";
 export default {
   name: "UsersOverview",
   components: {UserCreateDialog},
+  props: {
+    passive: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
-    this.update()
+    if (!this.passive) {
+      this.update()
+    }
   },
   data() {
     return {

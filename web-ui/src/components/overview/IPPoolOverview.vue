@@ -96,8 +96,16 @@ import axios from "axios";
 
 export default {
   name: "IPPoolOverview",
+  props: {
+    passive: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
-    this.update()
+    if (!this.passive) {
+      this.update()
+    }
   },
   data() {
     return {
@@ -124,6 +132,14 @@ export default {
     }
   },
   methods: {
+    set: function (data) {
+      this.status = data
+      let bit = this.status.network.substring(this.status.network.indexOf("/") + 1)
+      this.status.networkTotal = Math.pow(2, 32 - bit) - 2
+      this.status.network_percentage = (this.status.networkTotal - this.status.static - this.status.used) / this.status.networkTotal * 100
+      this.status.pool_percentage = ((this.status.size - this.status.used) / this.status.size) * 100
+      this.updateTime = new Date()
+    },
     update: function () {
       this.loading = true
       axios({
@@ -132,12 +148,7 @@ export default {
         data: {}
       }).then(res => {
         let response = res.data
-        this.status = response.data
-        let bit = this.status.network.substring(this.status.network.indexOf("/") + 1)
-        this.status.networkTotal = Math.pow(2, 32 - bit) - 2
-        this.status.network_percentage = (this.status.networkTotal - this.status.static - this.status.used) / this.status.networkTotal * 100
-        this.status.pool_percentage = ((this.status.size - this.status.used) / this.status.size) * 100
-        this.updateTime = new Date()
+        this.set(response.data)
         this.loading = false
       }).catch((err) => {
         this.$utils.HandleError(err)

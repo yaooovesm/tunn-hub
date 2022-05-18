@@ -147,6 +147,7 @@
 import axios from "axios";
 import "../../assets/icon/iconfont"
 import {ElMessageBox} from "element-plus";
+import ReporterClient from "@/reporter.client";
 
 
 export default {
@@ -158,6 +159,7 @@ export default {
   },
   data() {
     return {
+      reporterClient: undefined,
       timer: undefined,
       updateTime: new Date(),
       loading: false,
@@ -195,15 +197,31 @@ export default {
     }
   },
   mounted() {
-    this.update(false)
-    this.timer = setInterval(() => {
-      this.update(true)
-    }, 5000)
+    this.connectToReporter()
   },
   unmounted() {
-    clearInterval(this.timer)
+    this.reporterClient.Close()
   },
   methods: {
+    connectToReporter: function () {
+      this.loading = true
+      let id = this.id
+      let that = this
+      this.reporterClient = new ReporterClient(
+          {
+            "status": {
+              name: "/api/v1/user/status/:id",
+              params: {"id": id}
+            }
+          }, function (data) {
+            that.Status = JSON.parse(data).status.Data
+            that.updateTime = new Date()
+          }, function () {
+          }, 5000
+      )
+      this.reporterClient.Start()
+      this.loading = false
+    },
     update: function (silence) {
       if (!silence) {
         this.loading = true
@@ -246,8 +264,6 @@ export default {
           this.$utils.Success("操作成功，请耐心等待生效", response.msg)
         }).catch((err) => {
           this.$utils.HandleError(err)
-        }).finally(() => {
-          this.update(false)
         })
       }).catch(() => {
       })
@@ -275,8 +291,6 @@ export default {
           this.$utils.Success("操作成功，请耐心等待生效", response.msg)
         }).catch((err) => {
           this.$utils.HandleError(err)
-        }).finally(() => {
-          this.update(false)
         })
       }).catch(() => {
       })

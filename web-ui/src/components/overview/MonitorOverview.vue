@@ -48,16 +48,38 @@ export default {
       timer: undefined,
     }
   },
+  props: {
+    passive: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
-    this.update(false)
-    this.timer = setInterval(() => {
-      this.update(true)
-    }, 5000)
+    if (!this.passive) {
+      this.update(false)
+      this.timer = setInterval(() => {
+        this.update(true)
+      }, 5000)
+    }
   },
   unmounted() {
-    clearInterval(this.timer)
+    if (!this.passive) {
+      clearInterval(this.timer)
+    }
   },
   methods: {
+    set: function (data) {
+      if (this.$refs.memory !== null) {
+        this.$refs.memory.set(data.memory)
+      }
+      if (this.$refs.cpu != null) {
+        this.$refs.cpu.set(data.cpu)
+      }
+      if (this.$refs.disk != null) {
+        this.$refs.disk.set(data.disk)
+      }
+      this.updateTime = new Date()
+    },
     update: function (silence) {
       if (!silence) {
         this.loading = true
@@ -68,15 +90,7 @@ export default {
         data: {}
       }).then(res => {
         let response = res.data
-        if (this.$refs.memory !== null) {
-          this.$refs.memory.set(response.data.memory)
-        }
-        if (this.$refs.cpu != null) {
-          this.$refs.cpu.set(response.data.cpu)
-        }
-        if (this.$refs.disk != null) {
-          this.$refs.disk.set(response.data.disk)
-        }
+        this.set(response.data)
         this.updateTime = new Date()
         this.loading = false
       }).catch((err) => {

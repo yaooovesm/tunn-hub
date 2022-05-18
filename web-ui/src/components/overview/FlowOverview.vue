@@ -237,16 +237,41 @@ export default {
       },
     }
   },
+  props: {
+    passive: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
-    this.update(false)
-    this.timer = setInterval(() => {
-      this.update(true)
-    }, 5000)
+    if (!this.passive) {
+      this.update(false)
+      this.timer = setInterval(() => {
+        this.update(true)
+      }, 5000)
+    }
   },
   unmounted() {
-    clearInterval(this.timer)
+    if (!this.passive) {
+      clearInterval(this.timer)
+    }
   },
   methods: {
+    set: function (data) {
+      this.status = data
+      this.status.rx.bandwidth = this.status.rx.FlowSpeed / 1024 / 1024 * 8
+      this.status.rx.bandwidth_usage = this.status.rx.bandwidth / this.bandwidth * 100
+      this.status.tx.bandwidth = this.status.tx.FlowSpeed / 1024 / 1024 * 8
+      this.status.tx.bandwidth_usage = this.status.tx.bandwidth / this.bandwidth * 100
+      let total_bandwidth = this.status.tx.bandwidth + this.status.rx.bandwidth
+      this.status.total = {
+        bandwidth: total_bandwidth,
+        bandwidth_usage: total_bandwidth / this.bandwidth * 100,
+        Packet: this.status.rx.Packet + this.status.tx.Packet,
+        PacketSpeed: this.status.rx.PacketSpeed + this.status.tx.PacketSpeed,
+      }
+      this.updateTime = new Date()
+    },
     update: function (silence) {
       if (!silence) {
         this.loading = true
@@ -257,22 +282,9 @@ export default {
         data: {}
       }).then(res => {
         let response = res.data
-        this.status = response.data
-        this.status.rx.bandwidth = this.status.rx.FlowSpeed / 1024 / 1024 * 8
-        this.status.rx.bandwidth_usage = this.status.rx.bandwidth / this.bandwidth * 100
-        this.status.tx.bandwidth = this.status.tx.FlowSpeed / 1024 / 1024 * 8
-        this.status.tx.bandwidth_usage = this.status.tx.bandwidth / this.bandwidth * 100
-        let total_bandwidth = this.status.tx.bandwidth + this.status.rx.bandwidth
-        this.status.total = {
-          bandwidth: total_bandwidth,
-          bandwidth_usage: total_bandwidth / this.bandwidth * 100,
-          Packet: this.status.rx.Packet + this.status.tx.Packet,
-          PacketSpeed: this.status.rx.PacketSpeed + this.status.tx.PacketSpeed,
-        }
-        this.updateTime = new Date()
+        this.set(response.data)
         this.loading = false
       }).catch((err) => {
-        console.log(err)
         this.$utils.HandleError(err)
         this.loading = false
       })
