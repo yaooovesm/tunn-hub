@@ -1,7 +1,7 @@
 package administration
 
 import (
-	"fmt"
+	"encoding/json"
 	log "github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -14,6 +14,54 @@ import (
 	"tunn-hub/transmitter"
 )
 
+//
+// ReportFetchRequest
+// @Description:
+//
+type ReportFetchRequest struct {
+	Token     string                       `json:"token"`
+	Resources map[string]FetchResourceInfo `json:"resources"` //custom_key:resource_key
+	Interval  int                          `json:"interval"`
+}
+
+//
+// Decode
+// @Description:
+// @receiver r
+// @param data
+// @return error
+//
+func (r *ReportFetchRequest) Decode(data []byte) error {
+	defer func() {
+		if r.Interval <= 0 {
+			r.Interval = 5000
+		}
+	}()
+	return json.Unmarshal(data, r)
+}
+
+//
+// PermissionCheck
+// @Description:
+// @receiver r
+// @param remote
+// @return error
+//
+func (r *ReportFetchRequest) PermissionCheck(remote net.IP) error {
+	currentLevel := None
+	for key := range r.Resources {
+		resKey := r.Resources[key]
+		if lev, ok := permissionAssignMap[resKey.Name]; ok {
+			currentLevel = currentLevel.Compare(lev)
+		}
+	}
+	return TokenServiceInstance().CheckTokenCode(r.Token, currentLevel, remote)
+}
+
+//
+// Reporter
+// @Description:
+//
 type Reporter struct {
 	address  string
 	engine   *gin.Engine
@@ -64,12 +112,7 @@ func (r *Reporter) Serve() {
 			_, _ = writer.Write([]byte(err.Error()))
 			return
 		}
-		//err = TokenServiceInstance().CheckToken(ctx, User)
-		//if err != nil {
-		//	_, _ = writer.Write([]byte(err.Error()))
-		//	return
-		//}
-		go HandleWSApiDispatch(ws)
+		go HandleReportDispatch(ws)
 
 	})
 	go func() {
@@ -82,23 +125,55 @@ func (r *Reporter) Serve() {
 }
 
 //
-// HandleWSApiDispatch
+// HandleReportDispatch
 // @Description:
 // @param conn
 //
-func HandleWSApiDispatch(ws *websocket.Conn) {
+func HandleReportDispatch(ws *websocket.Conn) {
 	conn := transmitter.WrapWSConn(ws)
+	remote := conn.RemoteAddr()
 	defer func(conn *transmitter.WSConn) {
+		if err := recover(); err != nil {
+			_ = log.Warn("[reporter] error from ", remote, " : ", err)
+		}
 		_ = conn.Close()
+		log.Debug("[reporter] connection from ", remote, " is closed")
 	}(conn)
-	log.Info("[reporter] connection accepted from ", conn.RemoteAddr())
+	log.Debug("[reporter] connection accepted from ", remote)
+	//recv fetch request
 	buffer := make([]byte, 4096)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		_ = log.Warn("[reporter] an error occurred at read from ", remote, " : ", err)
+		return
+	}
+	request := ReportFetchRequest{}
+	err = request.Decode(buffer[:n])
+	if err != nil {
+		_ = log.Warn("[reporter] an error occurred at parse request from ", remote, " : ", err)
+		return
+	}
+	remoteStr := remote.String()
+	err = request.PermissionCheck(net.ParseIP(remoteStr[:strings.Index(remoteStr, ":")]))
+	if err != nil {
+		_ = log.Warn("[reporter] permission check failed at ", remote, " : ", err)
+		return
+	}
 	for {
-		n, err := conn.Read(buffer)
+		//处理推送
+		data := FetchResources(request.Resources)
+		marshal, err := json.Marshal(data)
 		if err != nil {
-			_ = log.Warn("[reporter] an error occurred at ", conn.RemoteAddr(), " : ", err)
+			_, _ = conn.Write(FetchResourceResult{
+				Data:  nil,
+				Error: err.Error(),
+			}.Byte())
 			break
 		}
-		fmt.Println("ws read --> ", string(buffer[:n]))
+		_, err = conn.Write(marshal)
+		if err != nil {
+			break
+		}
+		time.Sleep(time.Millisecond * time.Duration(request.Interval))
 	}
 }

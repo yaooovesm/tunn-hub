@@ -49,6 +49,28 @@ var AuthLevelMap = map[UserAuthLevel]int{
 }
 
 //
+// Compare
+// @Description:
+// @receiver l
+// @param l2
+// @return high
+//
+func (l UserAuthLevel) Compare(l2 UserAuthLevel) (high UserAuthLevel) {
+	if v1, ok := AuthLevelMap[l]; !ok {
+		return l2
+	} else {
+		if v2, ok := AuthLevelMap[l2]; !ok {
+			return l
+		} else {
+			if v1 > v2 {
+				return l
+			}
+			return l2
+		}
+	}
+}
+
+//
 // TokenService
 // @Description:
 //
@@ -219,13 +241,26 @@ func (t *TokenService) IsExist(account string, code string) error {
 //
 func (t *TokenService) CheckToken(ctx *gin.Context, level UserAuthLevel) error {
 	code := ctx.GetHeader("token")
+	ip, _ := ctx.RemoteIP()
+	return t.CheckTokenCode(code, level, ip)
+}
+
+//
+// CheckTokenCode
+// @Description:
+// @receiver t
+// @param code
+// @param level
+// @param remote
+// @return error
+//
+func (t *TokenService) CheckTokenCode(code string, level UserAuthLevel, remote net.IP) error {
 	if !t.hasToken(code) {
 		return ErrNotLogin
 	}
 	if t.isExpired(code) {
 		return ErrTokenExpired
 	}
-	remote, _ := ctx.RemoteIP()
 	if !t.isPermittedIp(code, remote) {
 		return ErrRemoteHostNotPermitted
 	}
