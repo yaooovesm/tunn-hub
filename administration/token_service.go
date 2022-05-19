@@ -267,6 +267,8 @@ func (t *TokenService) CheckTokenCode(code string, level UserAuthLevel, remote n
 	if !t.hasPermissions(code, level) {
 		return ErrNoPermissions
 	}
+	//续期
+	t.exp.Store(code, time.Now().UnixMilli()+DefaultTokenTimeout)
 	return nil
 }
 
