@@ -9,6 +9,8 @@ class ReporterClient {
                 publicStorage.Load()
                 let ws = new WebSocket("ws://" + window.location.hostname + ":" + publicStorage.User.reporter + "/reporter")
                 this.Close = function () {
+                    //send close
+                    ws.send("close")
                     ws.close()
                     if (close !== null) {
                         close()
@@ -41,9 +43,6 @@ class ReporterClient {
                     }
                 }
                 ws.onclose = function () {
-                    if (close !== null) {
-                        close()
-                    }
                 }
             }
         }

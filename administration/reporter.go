@@ -136,7 +136,7 @@ func HandleReportDispatch(ws *websocket.Conn) {
 		if err := recover(); err != nil {
 			_ = log.Warn("[reporter] error from ", remote, " : ", err)
 		}
-		_ = conn.Close()
+		_ = ws.Close()
 		log.Debug("[reporter] connection from ", remote, " is closed")
 	}(conn)
 	log.Debug("[reporter] connection accepted from ", remote)
@@ -159,7 +159,17 @@ func HandleReportDispatch(ws *websocket.Conn) {
 		_ = log.Warn("[reporter] permission check failed at ", remote, " : ", err)
 		return
 	}
-	for {
+	stop := false
+	go func() {
+		n, err = conn.Read(buffer)
+		if err != nil {
+			return
+		}
+		if n > 0 {
+			stop = true
+		}
+	}()
+	for !stop {
 		//处理推送
 		data := FetchResources(request.Resources)
 		marshal, err := json.Marshal(data)
