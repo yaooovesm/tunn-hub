@@ -49,9 +49,13 @@ func (i *FetchResourceInfo) Fetch() FetchResourceResult {
 		}
 	case "/api/v1/user/list":
 		users, err := UserServiceInstance().ListUsers()
+		var e = ""
+		if err != nil {
+			e = err.Error()
+		}
 		return FetchResourceResult{
 			users,
-			err.Error(),
+			e,
 		}
 	case "/api/v1/server/flow":
 		return FetchResourceResult{
