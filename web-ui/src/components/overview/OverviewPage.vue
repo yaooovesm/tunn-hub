@@ -1,5 +1,6 @@
 <template>
   <div style="padding-top: 50px">
+    <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client"/>
     <el-row v-if="$storage.User.isLogin" :gutter="20">
       <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview ref="flow" :passive="true"/>
@@ -27,11 +28,12 @@ import UsersOverview from "@/components/overview/UsersOverview";
 import ServerConfigOverview from "@/components/overview/ServerConfigOverview";
 import IPPoolOverview from "@/components/overview/IPPoolOverview";
 import MonitorOverview from "@/components/overview/MonitorOverview";
-import ReporterClient from "@/reporter.client";
+import ReporterClient from "@/components/ReporterClient";
 
 export default {
   name: "OverviewPage",
   components: {
+    ReporterClient,
     MonitorOverview,
     IPPoolOverview,
     ServerConfigOverview,
@@ -40,16 +42,35 @@ export default {
   },
   data() {
     return {
-      loading: false
+      loading: false,
+      res: {
+        "flow": {
+          name: "/api/v1/server/flow",
+        },
+        "ippool": {
+          name: "/api/v1/server/ippool",
+        },
+        "monitor": {
+          name: "/api/v1/server/monitor",
+        }
+      }
     }
   },
   mounted() {
+    this.$refs.reporter_client.Start()
     //this.connectToReporter()
   },
   unmounted() {
+    //this.$refs.reporter_client.Close()
     //this.reporterClient.Close("ovw component")
   },
   methods: {
+    onRecv: function (data) {
+      let resp = JSON.parse(data)
+      this.$refs.flow.set(resp.flow.Data)
+      this.$refs.ippool.set(resp.ippool.Data)
+      this.$refs.monitor.set(resp.monitor.Data)
+    },
     connectToReporter: function () {
       this.loading = true
       let that = this

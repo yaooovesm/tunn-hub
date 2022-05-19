@@ -1,5 +1,6 @@
 <template>
   <div v-loading="loading">
+    <reporter-client @recv="onRecv" :resources="res" ref="reporter_client" :interval="5000"/>
     <el-card shadow="always" body-style="padding:0">
       <div class="title" style="margin-top: 20px;margin-bottom: 20px;">
         <div class="title-text">客户端
@@ -147,11 +148,12 @@
 import axios from "axios";
 import "../../assets/icon/iconfont"
 import {ElMessageBox} from "element-plus";
-import ReporterClient from "@/reporter.client";
+import ReporterClient from "@/components/ReporterClient";
 
 
 export default {
   name: "ClientCard",
+  components: {ReporterClient},
   props: {
     id: {
       type: String
@@ -163,6 +165,7 @@ export default {
       timer: undefined,
       updateTime: new Date(),
       loading: false,
+      res: {},
       Status: {
         address: "",
         online: false,
@@ -198,11 +201,23 @@ export default {
   },
   mounted() {
     //this.connectToReporter()
+    this.res = {
+      "status": {
+        name: "/api/v1/user/status/:id",
+        params: {"id": this.id}
+      }
+    }
+    this.$refs.reporter_client.Start()
   },
   unmounted() {
+    //this.$refs.reporter_client.Close()
     //this.reporterClient.Close("client card component")
   },
   methods: {
+    onRecv: function (data) {
+      this.Status = JSON.parse(data).status.Data
+      this.updateTime = new Date()
+    },
     connectToReporter: function () {
       this.loading = true
       let id = this.id
