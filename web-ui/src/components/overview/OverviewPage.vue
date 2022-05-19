@@ -44,10 +44,10 @@ export default {
     }
   },
   mounted() {
-    this.connectToReporter()
+    //this.connectToReporter()
   },
   unmounted() {
-    this.reporterClient.Close()
+    //this.reporterClient.Close("ovw component")
   },
   methods: {
     connectToReporter: function () {
@@ -70,10 +70,14 @@ export default {
             that.$refs.ippool.set(resp.ippool.Data)
             that.$refs.monitor.set(resp.monitor.Data)
           }, function () {
+          }, function (err) {
+            console.log(err)
           }, 2000
       )
-      this.reporterClient.Start()
-      this.loading = false
+      this.$nextTick(() => {
+        this.reporterClient.Start("ovw component")
+        this.loading = false
+      });
     }
   }
 

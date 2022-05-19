@@ -204,6 +204,7 @@ import UserUpdate from "@/components/users/UserUpdate";
 import ShowConfig from "@/components/control/ShowConfig";
 import {ElMessageBox} from "element-plus";
 import UserConfig from "@/components/config/UserConfig";
+import ReporterClient from "@/reporter.client";
 
 export default {
   name: "UserControlList",
@@ -221,14 +222,52 @@ export default {
   },
   mounted() {
     this.searchUser(false)
-    this.timer = setInterval(() => {
-      this.searchUser(true)
-    }, 5000)
+    // this.timer = setInterval(() => {
+    //   this.searchUser(true)
+    // }, 5000)
+    //this.connectToReporter()
   },
   unmounted() {
-    clearInterval(this.timer)
+    //this.reporterClient.Close("userctl component")
+    //clearInterval(this.timer)
   },
   methods: {
+    connectToReporter: function () {
+      this.loading = true
+      let that = this
+      this.reporterClient = new ReporterClient(
+          {
+            "list": {
+              name: "/api/v1/user/list",
+            }
+          }, function (data) {
+            let response = JSON.parse(data).list
+            let search = []
+            for (let i = 0; i < response.Data.length; i++) {
+              if (response.Data[i].status.online === false) {
+                //过滤离线
+                if (!that.showOffline) {
+                  continue
+                }
+              }
+              let user = response.Data[i].info
+              user.status = response.Data[i].status
+              if (user.id !== "" && user.id.indexOf(that.search) !== -1 ||
+                  user.account !== "" && user.account.indexOf(that.search) !== -1 ||
+                  user.email !== "" && user.email.indexOf(that.search) !== -1) {
+                search.push(user)
+              }
+            }
+            that.users = search
+            that.updateTime = new Date()
+          }, function () {
+          }, function (err) {
+            console.log(err)
+          }, 5000
+      )
+      this.reporterClient.Start("userctl component")
+      this.loading = false
+    },
     showConfig: function (config, account) {
       this.$refs.config.show(config, account)
     },

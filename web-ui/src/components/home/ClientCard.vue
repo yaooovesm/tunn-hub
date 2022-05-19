@@ -197,10 +197,10 @@ export default {
     }
   },
   mounted() {
-    this.connectToReporter()
+    //this.connectToReporter()
   },
   unmounted() {
-    this.reporterClient.Close()
+    //this.reporterClient.Close("client card component")
   },
   methods: {
     connectToReporter: function () {
@@ -217,9 +217,11 @@ export default {
             that.Status = JSON.parse(data).status.Data
             that.updateTime = new Date()
           }, function () {
+          }, function (err) {
+            console.log(err)
           }, 5000
       )
-      this.reporterClient.Start()
+      this.reporterClient.Start("client card component")
       this.loading = false
     },
     update: function (silence) {
