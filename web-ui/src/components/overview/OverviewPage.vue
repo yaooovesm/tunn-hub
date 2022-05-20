@@ -1,6 +1,6 @@
 <template>
   <div style="padding-top: 50px">
-    <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client"/>
+    <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client" v-if="connect"/>
     <el-row v-if="$storage.User.isLogin" :gutter="20">
       <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview ref="flow" :passive="true"/>
@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      connect: false,
       loading: false,
       res: {
         "flow": {
@@ -57,12 +58,15 @@ export default {
     }
   },
   mounted() {
-    this.$refs.reporter_client.Start()
-    //this.connectToReporter()
+    this.loading = true
+    this.connect = true
+    this.$nextTick(() => {
+      this.$refs.reporter_client.Start()
+      this.loading = false
+    })
   },
   unmounted() {
-    //this.$refs.reporter_client.Close()
-    //this.reporterClient.Close("ovw component")
+    this.connect = false
   },
   methods: {
     onRecv: function (data) {
@@ -71,35 +75,6 @@ export default {
       this.$refs.ippool.set(resp.ippool.Data)
       this.$refs.monitor.set(resp.monitor.Data)
     },
-    connectToReporter: function () {
-      this.loading = true
-      let that = this
-      this.reporterClient = new ReporterClient(
-          {
-            "flow": {
-              name: "/api/v1/server/flow",
-            },
-            "ippool": {
-              name: "/api/v1/server/ippool",
-            },
-            "monitor": {
-              name: "/api/v1/server/monitor",
-            }
-          }, function (data) {
-            let resp = JSON.parse(data)
-            that.$refs.flow.set(resp.flow.Data)
-            that.$refs.ippool.set(resp.ippool.Data)
-            that.$refs.monitor.set(resp.monitor.Data)
-          }, function () {
-          }, function (err) {
-            console.log(err)
-          }, 2000
-      )
-      this.$nextTick(() => {
-        this.reporterClient.Start("ovw component")
-        this.loading = false
-      });
-    }
   }
 
 }

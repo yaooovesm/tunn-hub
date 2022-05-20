@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"tunn-hub/config"
 	"tunn-hub/transmitter"
@@ -67,6 +68,8 @@ type Reporter struct {
 	address  string
 	engine   *gin.Engine
 	upgrader *websocket.Upgrader
+	clients  map[string]*websocket.Conn
+	lock     sync.RWMutex
 }
 
 //
@@ -98,6 +101,8 @@ func NewReporter(cfg config.Admin) *Reporter {
 			},
 			EnableCompression: false,
 		},
+		clients: map[string]*websocket.Conn{},
+		lock:    sync.RWMutex{},
 	}
 }
 
@@ -113,7 +118,7 @@ func (r *Reporter) Serve() {
 			_, _ = writer.Write([]byte(err.Error()))
 			return
 		}
-		go HandleReportDispatch(ws)
+		go r.HandleReportDispatch(ws)
 
 	})
 	go func() {
@@ -130,16 +135,9 @@ func (r *Reporter) Serve() {
 // @Description:
 // @param conn
 //
-func HandleReportDispatch(ws *websocket.Conn) {
+func (r *Reporter) HandleReportDispatch(ws *websocket.Conn) {
 	conn := transmitter.WrapWSConn(ws)
 	remote := conn.RemoteAddr()
-	defer func(conn *transmitter.WSConn) {
-		if err := recover(); err != nil {
-			_ = log.Warn("[reporter] error from ", remote, " : ", err)
-		}
-		_ = ws.Close()
-		log.Debug("[reporter] connection from ", remote, " is closed")
-	}(conn)
 	log.Debug("[reporter] connection accepted from ", remote)
 	//recv fetch request
 	buffer := make([]byte, 4096)
@@ -160,6 +158,20 @@ func HandleReportDispatch(ws *websocket.Conn) {
 		_ = log.Warn("[reporter] permission check failed at ", remote, " : ", err)
 		return
 	}
+	r.lock.Lock()
+	if exist, ok := r.clients[request.Token]; ok && exist != nil {
+		_ = exist.Close()
+	}
+	r.clients[request.Token] = ws
+	r.lock.Unlock()
+	defer func(conn *transmitter.WSConn) {
+		if err := recover(); err != nil {
+			_ = log.Warn("[reporter] error from ", remote, " : ", err)
+		}
+		_ = ws.Close()
+		delete(r.clients, request.Token)
+		log.Debug("[reporter] connection from ", remote, " is closed")
+	}(conn)
 	stop := false
 	go func() {
 		n, err = conn.Read(buffer)

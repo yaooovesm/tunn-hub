@@ -1,6 +1,6 @@
 <template>
   <div v-loading="loading">
-    <reporter-client @recv="onRecv" :resources="res" ref="reporter_client" :interval="5000"/>
+    <reporter-client @recv="onRecv" :resources="res" ref="reporter_client" :interval="5000" v-if="connect"/>
     <el-card shadow="always" body-style="padding:0">
       <div class="title" style="margin-top: 20px;margin-bottom: 20px;">
         <div class="title-text">客户端
@@ -161,6 +161,7 @@ export default {
   },
   data() {
     return {
+      connect: false,
       reporterClient: undefined,
       timer: undefined,
       updateTime: new Date(),
@@ -200,44 +201,26 @@ export default {
     }
   },
   mounted() {
-    //this.connectToReporter()
-    this.res = {
-      "status": {
-        name: "/api/v1/user/status/:id",
-        params: {"id": this.id}
+    this.loading = true
+    this.connect = true
+    this.$nextTick(() => {
+      this.res = {
+        "status": {
+          name: "/api/v1/user/status/:id",
+          params: {"id": this.id}
+        }
       }
-    }
-    this.$refs.reporter_client.Start()
+      this.$refs.reporter_client.Start()
+      this.loading = false
+    })
   },
   unmounted() {
-    //this.$refs.reporter_client.Close()
-    //this.reporterClient.Close("client card component")
+    this.connect = false
   },
   methods: {
     onRecv: function (data) {
       this.Status = JSON.parse(data).status.Data
       this.updateTime = new Date()
-    },
-    connectToReporter: function () {
-      this.loading = true
-      let id = this.id
-      let that = this
-      this.reporterClient = new ReporterClient(
-          {
-            "status": {
-              name: "/api/v1/user/status/:id",
-              params: {"id": id}
-            }
-          }, function (data) {
-            that.Status = JSON.parse(data).status.Data
-            that.updateTime = new Date()
-          }, function () {
-          }, function (err) {
-            console.log(err)
-          }, 5000
-      )
-      this.reporterClient.Start("client card component")
-      this.loading = false
     },
     update: function (silence) {
       if (!silence) {
