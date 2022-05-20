@@ -1,5 +1,16 @@
 <template>
-  <div style="display: none"></div>
+  <div v-if="error!==''" style="margin-bottom: 10px">
+    <el-alert v-if="error!==''" title="数据不可用" :description="error" type="error"
+              style="box-shadow: 1px 1px 5px rgba(50, 50, 50, 0.2);">
+      <template #default>
+        <div style="text-align: left;color: #777777">{{ error }}</div>
+      </template>
+      <template #title>
+        <i class="iconfont icon-times-circle" style="font-size: 10px"></i> <span
+          style="font-size: 13px;color: #2c3e50;font-weight: bold">数据不可用</span>
+      </template>
+    </el-alert>
+  </div>
 </template>
 
 <script>
@@ -19,6 +30,7 @@ export default {
     return {
       ws: null,
       started: false,
+      error: ""
     }
   },
   mounted() {
@@ -28,6 +40,7 @@ export default {
   },
   methods: {
     Start: function () {
+      this.error = ""
       if ("WebSocket" in window) {
         let that = this
         publicStorage.Load()
@@ -58,6 +71,7 @@ export default {
         this.started = true
       } else {
         this.$emit("error", "unsupported")
+        this.error = "浏览器不支持"
       }
     },
     Close: function () {

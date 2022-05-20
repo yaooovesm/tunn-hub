@@ -1,7 +1,9 @@
 <template>
-  <div style="padding-top: 50px">
-    <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client" v-if="connect"/>
+  <div style="padding-top: 30px">
     <el-row v-if="$storage.User.isLogin" :gutter="20">
+      <el-col :span="22" :offset="1" style="margin-bottom: 10px" v-if="connect">
+        <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client" v-if="connect"/>
+      </el-col>
       <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview ref="flow" :passive="true"/>
       </el-col>
