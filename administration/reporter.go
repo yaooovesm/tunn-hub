@@ -2,7 +2,6 @@ package administration
 
 import (
 	"encoding/json"
-	"fmt"
 	log "github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -193,7 +192,6 @@ func (r *Reporter) HandleReportDispatch(ws *websocket.Conn) {
 			}.Byte())
 			break
 		}
-		fmt.Println("push --> ", string(marshal))
 		_, err = conn.Write(marshal)
 		if err != nil {
 			break
