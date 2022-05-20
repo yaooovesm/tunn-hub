@@ -6,6 +6,7 @@
         top="30vh"
         :close-on-click-modal="false"
         custom-class="default-dialog"
+        :append-to-body="true"
         destroy-on-close
         draggable
     >

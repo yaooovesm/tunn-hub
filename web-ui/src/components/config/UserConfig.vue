@@ -7,6 +7,7 @@
         :close-on-click-modal="false"
         custom-class="default-dialog"
         destroy-on-close
+        :append-to-body="true"
         draggable
     >
       <template #title>
