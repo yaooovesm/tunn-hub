@@ -213,6 +213,23 @@ func ApiSetUserDisable(ctx *gin.Context) {
 }
 
 //
+// ApiResetFlowCounter
+// @Description:
+// @param ctx
+//
+func ApiResetFlowCounter(ctx *gin.Context) {
+	info := model.UserInfo{
+		Id: ctx.Param("id"),
+	}
+	err := UserServiceInstance().ResetFlowCounter(&info)
+	if err != nil {
+		responseError(ctx, err, "重置流量计数器失败")
+		return
+	}
+	responseSuccess(ctx, "", "用户["+info.Account+"]重置流量计数器成功")
+}
+
+//
 // ApiDeleteUser
 // @Description:
 // @param ctx

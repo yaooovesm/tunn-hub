@@ -78,6 +78,23 @@ func ApiUpdateConfigById(ctx *gin.Context) {
 }
 
 //
+// ApiResetConfigById
+// @Description:
+// @param ctx
+//
+func ApiResetConfigById(ctx *gin.Context) {
+	cfg := model.ClientConfig{
+		Id: ctx.Param("id"),
+	}
+	err := UserServiceInstance().configService.ResetById(cfg)
+	if err != nil {
+		responseError(ctx, err, "重置失败")
+		return
+	}
+	responseSuccess(ctx, cfg, "重置成功")
+}
+
+//
 // ApiCreateConfig
 // @Description:
 // @param ctx

@@ -8,20 +8,21 @@ import (
 var permissionAssignMap = map[string]UserAuthLevel{
 	//api
 	//user
-	"/api/v1/user/:account":        User,
-	"/api/v1/user/info/:id":        User,
-	"/api/v1/user/status/:id":      User,
-	"/api/v1/user/id/:id":          User,
-	"/api/v1/user/list":            Administrator,
-	"/api/v1/user/list/info":       Administrator,
-	"/api/v1/user/create":          Administrator,
-	"/api/v1/user/disable/:id":     Administrator,
-	"/api/v1/user/update/:id":      User,
-	"/api/v1/user/delete":          Administrator,
-	"/api/v1/user/login":           None,
-	"/api/v1/user/logout/:account": User,
-	"/api/v1/user/general":         Administrator,
-	"/api/v1/user/config/:id":      User,
+	"/api/v1/user/:account":          User,
+	"/api/v1/user/info/:id":          User,
+	"/api/v1/user/status/:id":        User,
+	"/api/v1/user/id/:id":            User,
+	"/api/v1/user/list":              Administrator,
+	"/api/v1/user/list/info":         Administrator,
+	"/api/v1/user/create":            Administrator,
+	"/api/v1/user/disable/:id":       Administrator,
+	"/api/v1/user/update/:id":        User,
+	"/api/v1/user/delete":            Administrator,
+	"/api/v1/user/login":             None,
+	"/api/v1/user/logout/:account":   User,
+	"/api/v1/user/general":           Administrator,
+	"/api/v1/user/config/:id":        User,
+	"/api/v1/user/counter/reset/:id": Administrator,
 	//token
 	"/api/v1/token/":      None,
 	"/api/v1/token/check": None,
@@ -41,6 +42,7 @@ var permissionAssignMap = map[string]UserAuthLevel{
 	"/api/v1/cfg/create":          Administrator,
 	"/api/v1/cfg/update":          User,
 	"/api/v1/cfg/route/available": User,
+	"/api/v1/cfg/reset/:id":       User,
 }
 
 //通过账号验证是否为对应用户操作

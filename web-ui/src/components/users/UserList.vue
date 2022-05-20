@@ -67,6 +67,8 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="updateUser(scope.row)">修改</el-dropdown-item>
+                    <el-dropdown-item divided @click="resetFlowCounter(scope.row)" style="color: #E6A23C">重置流量
+                    </el-dropdown-item>
                     <el-dropdown-item divided :style="scope.row.disabled?'color:#67C23A':'color: #F56C6C'"
                                       @click="disableUser(scope.row)">{{ scope.row.disabled ? "解禁" : "禁用" }}
                     </el-dropdown-item>
@@ -74,6 +76,8 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
+              <config-btn style="display: inline-flex;margin-left: 10px" :config-id="scope.row.config_id"
+                          :account="scope.row.account"/>
             </template>
           </el-table-column>
         </el-table>
@@ -108,10 +112,11 @@ import axios from "axios";
 import UserDetail from "@/components/users/UserDetail";
 import {ElMessageBox} from "element-plus";
 import UserUpdate from "@/components/users/UserUpdate";
+import ConfigBtn from "@/components/config/ConfigBtn";
 
 export default {
   name: "UserList",
-  components: {UserUpdate, UserDetail},
+  components: {UserUpdate, UserDetail, ConfigBtn},
   data() {
     return {
       search: "",
@@ -208,6 +213,31 @@ export default {
           data: {
             id: user.id,
           }
+        }).then(res => {
+          let response = res.data
+          this.$utils.Success("操作成功", response.msg)
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          this.searchUser()
+        })
+      }).catch(() => {
+      })
+    },
+    resetFlowCounter: function (user) {
+      ElMessageBox.confirm(
+          '是否清空用户流量计数器',
+          '警告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        axios({
+          method: "get",
+          url: "/api/v1/user/counter/reset/" + user.id,
+          data: {}
         }).then(res => {
           let response = res.data
           this.$utils.Success("操作成功", response.msg)

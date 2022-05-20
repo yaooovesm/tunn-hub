@@ -142,6 +142,7 @@
         </el-card>
       </div>
       <template #footer>
+        <el-button :loading="loading" style="margin-left: 10px" @click="reset" type="warning">重置</el-button>
         <el-button :loading="loading" type="primary" @click="save">保存</el-button>
         <el-button :loading="loading" @click="close">关闭</el-button>
       </template>
@@ -173,6 +174,35 @@ export default {
     }
   },
   methods: {
+    reset: function () {
+      this.loading = true
+      ElMessageBox.confirm(
+          '是否重置该配置文件',
+          '警告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        axios({
+          method: "get",
+          url: "/api/v1/cfg/reset/" + this.configId,
+          data: {}
+        }).then(res => {
+          let response = res.data
+          this.$utils.Success("操作成功", response.msg)
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          this.loading = false
+          this.load()
+        })
+      }).catch(() => {
+      }).finally(() => {
+        this.loading = false
+      })
+    },
     show: function (configId, account) {
       if (configId === "" || account === "") {
         this.$utils.Error("配置丢失", "请联系管理员")

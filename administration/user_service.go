@@ -358,6 +358,28 @@ func (serv userService) SetUserDisable(info *model.UserInfo) error {
 }
 
 //
+// ResetFlowCounter
+// @Description:
+// @receiver serv
+// @param info
+// @return error
+//
+func (serv userService) ResetFlowCounter(info *model.UserInfo) error {
+	origin := model.UserInfo{Id: info.Id}
+	err := serv.infoService.Query(&origin)
+	if err != nil {
+		return err
+	}
+	origin.FlowCount = 0
+	err = serv.infoService.Save(&origin)
+	if err != nil {
+		return err
+	}
+	_ = info.Copy(origin)
+	return nil
+}
+
+//
 // DeleteUser
 // @Description:
 // @receiver serv

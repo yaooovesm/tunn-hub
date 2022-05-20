@@ -178,6 +178,21 @@ func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.Clie
 }
 
 //
+// ResetById
+// @Description:
+// @receiver u
+// @param cfg
+// @return error
+//
+func (u *userClientConfigService) ResetById(cfg model.ClientConfig) error {
+	cfg.Routes = []config.Route{}
+	cfg.Device = config.Device{}
+	storage := cfg.ToStorageModel()
+	db := u.db.Where("id=?", cfg.Id).Save(&storage)
+	return db.Error
+}
+
+//
 // Create
 // @Description:
 // @receiver u
