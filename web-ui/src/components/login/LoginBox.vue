@@ -25,7 +25,7 @@
     </el-row>
     <el-divider style="margin-top: 50px;margin-bottom: 30px"/>
     <div class="footer">
-      Ver {{ version }}
+      Tunnhub v{{ version }}
       <span v-if="develop">[开发版本]
         <el-tooltip
             effect="dark"

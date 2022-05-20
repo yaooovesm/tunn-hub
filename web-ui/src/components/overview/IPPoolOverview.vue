@@ -5,7 +5,7 @@
         <div class="title-text">地址池
         </div>
       </div>
-      <div style="padding: 23px 20px">
+      <div style="padding: 23px 20px;cursor: pointer" @click="$router.push({path:'/dashboard/control'})">
         <el-row :gutter="30">
           <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
             <div style="text-align: left">

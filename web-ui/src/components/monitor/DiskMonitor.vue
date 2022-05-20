@@ -7,7 +7,8 @@
   >
     <template #reference>
       <div>
-        <el-progress type="dashboard" :percentage="Number(disk.usage.toFixed(1))" style="position: relative">
+        <el-progress :color="customColors" type="dashboard" :percentage="Number(disk.usage.toFixed(1))"
+                     style="position: relative">
           <template #default="{ percentage }">
             <span class="percentage-value" v-if="disk.error===''">{{ percentage }}%</span>
             <span class="percentage-value" v-else>
@@ -45,7 +46,14 @@ export default {
         used: 0,
         usage: 0,
         error: ""
-      }
+      },
+      customColors: [
+        {color: '#5cb87a', percentage: 20},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 60},
+        {color: '#e6a23c', percentage: 90},
+        {color: '#f56c6c', percentage: 100},
+      ]
     }
   },
   methods: {

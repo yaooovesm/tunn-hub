@@ -8,7 +8,7 @@
     >
       <template #reference>
         <div>
-          <el-progress type="dashboard" :percentage="total_percentage" style="position: relative">
+          <el-progress :color="customColors" type="dashboard" :percentage="total_percentage" style="position: relative">
             <template #default="{ percentage }">
               <span class="percentage-value" v-if="memory.error===''">{{ percentage }}%</span>
               <span class="percentage-value" v-else>
@@ -17,7 +17,7 @@
               <span class="percentage-label">内存</span>
             </template>
           </el-progress>
-          <el-progress color="black" type="dashboard" :percentage="app_percentage"
+          <el-progress :color="customColors" type="dashboard" :percentage="app_percentage"
                        style="position: absolute;transform:translateX(-126px);opacity: 0.45;">
             <template #default>
               <span></span>
@@ -66,7 +66,14 @@ export default {
         error: ""
       },
       total_percentage: 0,
-      app_percentage: 0
+      app_percentage: 0,
+      customColors: [
+        {color: '#5cb87a', percentage: 20},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 60},
+        {color: '#e6a23c', percentage: 90},
+        {color: '#f56c6c', percentage: 100},
+      ]
     }
   },
   methods: {

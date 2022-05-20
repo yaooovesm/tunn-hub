@@ -11,11 +11,10 @@
         <monitor-overview ref="monitor" :passive="true"/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" :offset="1" style="margin-top: 30px">
-        <i-p-pool-overview ref="ippool" style="cursor: pointer" @click="$router.push({path:'/dashboard/control'})"
-                           :passive="true"/>
+        <i-p-pool-overview ref="ippool" :passive="true"/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="7" :lg="7" :xl="7" style="margin-top: 30px">
-        <users-overview style="cursor: pointer" @click="$router.push({path:'/dashboard/users'})"/>
+        <users-overview/>
       </el-col>
       <el-col :xs="22" :sm="22" :md="8" :lg="8" :xl="8" style="margin-top: 30px">
         <server-config-overview/>

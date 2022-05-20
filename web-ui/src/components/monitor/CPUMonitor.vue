@@ -8,7 +8,8 @@
     >
       <template #reference>
         <div>
-          <el-progress type="dashboard" :percentage="Number(cpu.usage.toFixed(1))" style="position: relative">
+          <el-progress :color="customColors" type="dashboard" :percentage="Number(cpu.usage.toFixed(1))"
+                       style="position: relative">
             <template #default="{ percentage }">
               <span class="percentage-value" v-if="cpu.error===''">{{ percentage }}%</span>
               <span class="percentage-value" v-else>
@@ -17,7 +18,7 @@
               <span class="percentage-label">处理器</span>
             </template>
           </el-progress>
-          <el-progress color="black" type="dashboard" :percentage="Number(cpu.app_used.toFixed(1))"
+          <el-progress :color="customColors" type="dashboard" :percentage="Number(cpu.app_used.toFixed(1))"
                        style="position: absolute;transform:translateX(-126px);opacity: 0.45;">
             <template #default>
               <span></span>
@@ -52,8 +53,15 @@ export default {
       cpu: {
         usage: 0.0,
         app_used: 0.0,
-        error: ""
+        error: "",
       },
+      customColors: [
+        {color: '#5cb87a', percentage: 20},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 60},
+        {color: '#e6a23c', percentage: 90},
+        {color: '#f56c6c', percentage: 100},
+      ]
     }
   },
   methods: {
