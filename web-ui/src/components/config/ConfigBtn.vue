@@ -9,7 +9,7 @@
       <el-tooltip
           effect="dark"
           content='配置丢失请联系管理员'
-          placement="right-start"
+          placement="bottom"
       >
         <i class="iconfont icon-exclamation-circle"
            style="color: #F56C6C;font-size: 12px;margin-left: 5px;line-height: 24px"></i>
