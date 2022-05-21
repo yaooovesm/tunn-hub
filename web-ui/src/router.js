@@ -9,6 +9,7 @@ import publicStorage from "@/public.storage";
 import utils from "@/utils";
 import UserPanel from "@/components/users/UserPanel";
 import OverviewPage from "@/components/overview/OverviewPage";
+import CertPanel from "@/components/certification/CertPanel";
 
 const routers = [
     {
@@ -50,6 +51,14 @@ const routers = [
                 meta: {
                     requireLogin: true
                 },
+            },
+            {
+                path: '/dashboard/cert',
+                name: 'dashboard_cert',
+                component: CertPanel,
+                meta: {
+                    requireLogin: true
+                }
             }
         ]
     },

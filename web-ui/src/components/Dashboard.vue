@@ -38,15 +38,22 @@
                 <span>控制台</span>
               </template>
             </el-menu-item>
-            <!--控制台-->
+            <!--用户管理-->
             <el-menu-item index="/dashboard/users" style="height: 50px" v-if="$storage.IsAdmin()">
               <i class="iconfont icon-renyuan" style="font-size: 20px;margin-right: 5px"></i>
               <template v-slot:title>
                 <span>用户管理</span>
               </template>
             </el-menu-item>
+            <!--认证管理-->
+            <el-menu-item index="/dashboard/cert" style="height: 50px;" v-if="$storage.IsAdmin()">
+              <i class="iconfont icon-renyuanmiyue" style="font-size: 20px;margin-right: 5px"></i>
+              <template v-slot:title>
+                <span>认证管理</span>
+              </template>
+            </el-menu-item>
             <el-menu-item :index="$route.path"
-                          :style="$storage.IsAdmin()?'height: 50px;margin-top: calc(100vh - 313px)':'height: 50px;margin-top: calc(100vh - 163px)'"
+                          :style="$storage.IsAdmin()?'height: 50px;margin-top: calc(100vh - 363px)':'height: 50px;margin-top: calc(100vh - 163px)'"
                           @click="collapse">
               <i :class="'iconfont icon-angle-'+icon" style="font-size: 11px;margin-right: 10px;margin-left: 4px"></i>
               <template v-slot:title>

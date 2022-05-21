@@ -68,6 +68,8 @@ export default {
           return "ControlPanel"
         case "/dashboard/users":
           return "Accounts"
+        case "/dashboard/cert":
+          return "Certification"
         default:
           return ""
       }
