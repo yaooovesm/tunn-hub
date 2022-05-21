@@ -2,6 +2,9 @@ package administration
 
 import (
 	"github.com/gin-gonic/gin"
+	"time"
+	"tunn-hub/config"
+	"tunn-hub/security"
 	"tunn-hub/version"
 )
 
@@ -100,4 +103,40 @@ func ApiIPPoolInfoList(ctx *gin.Context) {
 //
 func ApiGetServerSystemData(ctx *gin.Context) {
 	responseSuccess(ctx, ServerServiceInstance().monitorService.GetSystemData(), "")
+}
+
+//
+// ApiCreateTLSCert
+// @Description:
+// @param ctx
+//
+func ApiCreateTLSCert(ctx *gin.Context) {
+	req := struct {
+		Overwrite bool     `json:"overwrite"`
+		Addresses []string `json:"addresses"`
+		Names     []string `json:"names"`
+		Before    int64    `json:"before"`
+	}{}
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		response400(ctx)
+		return
+	}
+	path := "./cert/"
+	certification := security.NewTunnX509Certification(req.Addresses, req.Names, time.UnixMilli(req.Before))
+	name, err := certification.CreateAndWriteWithRandomName(path)
+	if err != nil {
+		responseError(ctx, err, "")
+		return
+	}
+	if req.Overwrite {
+		config.Current.Security.CertPem = path + name + ".cert"
+		config.Current.Security.KeyPem = path + name + ".key"
+		err := config.Current.Storage()
+		if err != nil {
+			responseError(ctx, err, "")
+			return
+		}
+	}
+	responseSuccess(ctx, name, "")
 }

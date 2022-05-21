@@ -7,20 +7,31 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"github.com/gofrs/uuid"
+	"io/ioutil"
 	"math/big"
 	"net"
+	"os"
+	"strings"
 	"time"
 )
 
 //
 // NewTunnX509Certification
 // @Description:
-// @param addresses
+// @param addrs
 // @param names
 // @param before
 // @return *TunnX509Certification
 //
-func NewTunnX509Certification(addresses []net.IP, names []string, before time.Time) *TunnX509Certification {
+func NewTunnX509Certification(addrs []string, names []string, before time.Time) *TunnX509Certification {
+	addresses := make([]net.IP, 0)
+	for i := range addrs {
+		ip := net.ParseIP(addrs[i])
+		if ip != nil {
+			addresses = append(addresses, ip)
+		}
+	}
 	return &TunnX509Certification{
 		IpAddresses: addresses,
 		DNSNames:    names,
@@ -69,6 +80,39 @@ func (c *TunnX509Certification) Create() (cert []byte, privateKey []byte, err er
 		},
 	}
 	return createCertAndKey(template)
+}
+
+//
+// CreateAndWriteWithRandomName
+// @Description:
+// @receiver c
+// @param path
+//
+func (c *TunnX509Certification) CreateAndWriteWithRandomName(path string) (string, error) {
+	stat, err := os.Stat(path)
+	if err != nil || !stat.IsDir() {
+		err := os.MkdirAll(path, 0600)
+		if err != nil {
+			return "", err
+		}
+	}
+	cert, key, err := c.Create()
+	if err != nil {
+		return "", err
+	}
+	uid, _ := uuid.NewV4()
+	name := strings.ReplaceAll(uid.String(), "-", "")
+	certPath := path + name + ".cert"
+	keyPath := path + name + ".key"
+	err = ioutil.WriteFile(certPath, cert, 0644)
+	if err != nil {
+		return "", err
+	}
+	err = ioutil.WriteFile(keyPath, key, 0644)
+	if err != nil {
+		return "", err
+	}
+	return name, nil
 }
 
 //

@@ -35,6 +35,7 @@ var permissionAssignMap = map[string]UserAuthLevel{
 	"/api/v1/server/ippool":            Administrator,
 	"/api/v1/server/ippool/list":       Administrator,
 	"/api/v1/server/monitor":           Administrator,
+	"/api/v1/server/cert/create":       Administrator,
 	//config
 	"/api/v1/cfg/:id":             User,
 	"/api/v1/cfg/list":            Administrator,
