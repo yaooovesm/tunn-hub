@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b3c44849-e916-4dd0-86c8-0bee2da0ff3d",
+		"_postman_id": "592b8d5c-ed5e-4205-b6c7-326c662ec1e7",
 		"name": "tunnel_api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -390,6 +390,32 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "重置流量计数器",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}user/counter/reset/cb94976f29054e57b089cd7b411f908d",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}user"
+							],
+							"path": [
+								"counter",
+								"reset",
+								"cb94976f29054e57b089cd7b411f908d"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -700,7 +726,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"64580aa8a0544605a23e541272a886d7\",\r\n    \"routes\":[\r\n        {\"network\":\"200.100.100.100/32\",\"option\":\"import\"}\r\n    ],\r\n    \"device\":{}\r\n}",
+							"raw": "{\r\n    \"id\": \"22208353c38d441e8be4724199435f91\",\r\n    \"routes\":[\r\n        {\"network\":\"10.10.10.10/32\",\"option\":\"import\"}\r\n    ],\r\n    \"device\":{}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -765,6 +791,31 @@
 							"path": [
 								"route",
 								"available"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通过配置ID重置",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}cfg/reset/22208353c38d441e8be4724199435f91",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}cfg"
+							],
+							"path": [
+								"reset",
+								"22208353c38d441e8be4724199435f91"
 							]
 						}
 					},
