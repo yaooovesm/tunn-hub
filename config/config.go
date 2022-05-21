@@ -9,6 +9,8 @@ import (
 	"tunn-hub/config/protocol"
 )
 
+var Location = ""
+
 var Current = Config{}
 
 //
@@ -115,6 +117,20 @@ func (cfg *Config) MergePushed(push PushedConfig) {
 	cfg.DataProcess.CipherType = push.DataProcess.CipherType
 }
 
+func (cfg *Config) Storage() error {
+	storage := ServerConfigStorage{
+		Global:      cfg.Global,
+		Routes:      cfg.Routes,
+		Device:      cfg.Device,
+		Auth:        cfg.Auth,
+		DataProcess: cfg.DataProcess,
+		Security:    cfg.Security,
+		Admin:       cfg.Admin,
+		IPPool:      cfg.IPPool,
+	}
+	return storage.Dump(Location)
+}
+
 //
 // Load
 // @Description:
@@ -122,7 +138,10 @@ func (cfg *Config) MergePushed(push PushedConfig) {
 func Load() {
 	c := flag.String("c", "", "config path")
 	flag.Parse()
-	Current.ReadFromFile(*c)
+	Location = *c
+	storage := ServerConfigStorage{}
+	storage.ReadFromFile(Location)
+	Current = storage.ToConfig()
 	Current.Check()
 	Current.Runtime.Collect()
 }
