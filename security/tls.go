@@ -30,6 +30,8 @@ func NewTunnX509Certification(addrs []string, names []string, before time.Time) 
 		ip := net.ParseIP(addrs[i])
 		if ip != nil {
 			addresses = append(addresses, ip)
+		} else {
+			names = append(names, addrs[i])
 		}
 	}
 	return &TunnX509Certification{

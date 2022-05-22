@@ -79,6 +79,7 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		serverGroup.GET("/ippool/list", ApiIPPoolInfoList)
 		serverGroup.GET("/monitor", ApiGetServerSystemData)
 		serverGroup.POST("/cert/create", ApiCreateTLSCert)
+		serverGroup.GET("/cert/download", ApiDownloadCurrentCert)
 	}
 	//config
 	{

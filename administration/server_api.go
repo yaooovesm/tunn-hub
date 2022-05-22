@@ -2,6 +2,7 @@ package administration
 
 import (
 	"github.com/gin-gonic/gin"
+	"path"
 	"time"
 	"tunn-hub/config"
 	"tunn-hub/security"
@@ -122,21 +123,39 @@ func ApiCreateTLSCert(ctx *gin.Context) {
 		response400(ctx)
 		return
 	}
-	path := "./cert/"
+	dir := "./cert/"
 	certification := security.NewTunnX509Certification(req.Addresses, req.Names, time.UnixMilli(req.Before))
-	name, err := certification.CreateAndWriteWithRandomName(path)
+	name, err := certification.CreateAndWriteWithRandomName(dir)
 	if err != nil {
 		responseError(ctx, err, "")
 		return
 	}
 	if req.Overwrite {
-		config.Current.Security.CertPem = path + name + ".cert"
-		config.Current.Security.KeyPem = path + name + ".key"
+		oldCert := config.Current.Security.CertPem
+		oldKey := config.Current.Security.KeyPem
+		config.Current.Security.CertPem = dir + name + ".cert"
+		config.Current.Security.KeyPem = dir + name + ".key"
 		err := config.Current.Storage()
 		if err != nil {
 			responseError(ctx, err, "")
 			return
 		}
+		config.Current.Security.CertPem = oldCert
+		config.Current.Security.KeyPem = oldKey
 	}
 	responseSuccess(ctx, name, "")
+}
+
+//
+// ApiDownloadCurrentCert
+// @Description:
+// @param ctx
+//
+func ApiDownloadCurrentCert(ctx *gin.Context) {
+	filename := path.Base(config.Current.Security.CertPem)
+	fileContentDisposition := "attachment;filename=\"" + filename + "\""
+	ctx.Header("Content-Type", "application/octet-stream")
+	ctx.Header("Content-Disposition", fileContentDisposition)
+	ctx.Header("FileName", filename)
+	ctx.File(config.Current.Security.CertPem)
 }
