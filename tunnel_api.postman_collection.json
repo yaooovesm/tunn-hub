@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "592b8d5c-ed5e-4205-b6c7-326c662ec1e7",
+		"_postman_id": "122ab315-6436-470b-8a74-594593a5e3de",
 		"name": "tunnel_api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -622,6 +622,65 @@
 							],
 							"path": [
 								"monitor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建证书",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"overwrite\": true,\r\n    \"addresses\": [\"127.0.0.1\",\"172.18.28.101\"],\r\n    \"names\": [\"localhost\"],\r\n    \"before\": 1673142425000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/cert/create",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"cert",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "下载证书",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{base_url}}{{api_ver}}server/cert/download",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{base_url}}{{api_ver}}server"
+							],
+							"path": [
+								"cert",
+								"download"
 							]
 						}
 					},
