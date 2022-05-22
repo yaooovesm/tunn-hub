@@ -44,7 +44,8 @@ export default {
       if ("WebSocket" in window) {
         let that = this
         publicStorage.Load()
-        let ws = new WebSocket("ws://" + window.location.hostname + ":" + publicStorage.User.reporter + "/reporter")
+        let protocol = window.location.protocol === "http:" ? "ws" : "wss"
+        let ws = new WebSocket(protocol + "://" + window.location.hostname + ":" + publicStorage.User.reporter + "/reporter")
         ws.onopen = function () {
           ws.send(JSON.stringify(
               {

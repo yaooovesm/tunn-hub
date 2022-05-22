@@ -122,9 +122,16 @@ func (r *Reporter) Serve() {
 	})
 	go func() {
 		log.Info("reporter work at : ", r.address)
-		err := http.ListenAndServe(r.address, nil)
-		if err != nil {
-			_ = log.Error("report service stopped : ", err)
+		if config.Current.Admin.Https {
+			err := http.ListenAndServeTLS(r.address, config.Current.Security.CertPem, config.Current.Security.KeyPem, nil)
+			if err != nil {
+				_ = log.Error("report service stopped : ", err)
+			}
+		} else {
+			err := http.ListenAndServe(r.address, nil)
+			if err != nil {
+				_ = log.Error("report service stopped : ", err)
+			}
 		}
 	}()
 }
