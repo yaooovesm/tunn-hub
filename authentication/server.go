@@ -408,14 +408,29 @@ func (s *AuthServerV3) logout(tunn *transmitter.Tunnel, packet *TransportPacket)
 		}, PacketTypeLogin, packet.UUID, tunn)
 		return
 	}
-	s.clearByUUID(packet.UUID)
-	log.Info("[authentication][user:", cfg.User.Account, "] logout success")
-	s.reply(AuthReply{
-		Ok:      true,
-		Error:   "",
-		Message: "登出成功",
-	}, PacketTypeLogout, packet.UUID, tunn)
-	s.handler.AfterLogout(packet)
+	//s.clearByUUID(packet.UUID)
+	//log.Info("[authentication][user:", cfg.User.Account, "] logout success")
+	//s.reply(AuthReply{
+	//	Ok:      true,
+	//	Error:   "",
+	//	Message: "登出成功",
+	//}, PacketTypeLogout, packet.UUID, tunn)
+	//s.handler.AfterLogout(packet)
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	if c, ok := s.online[packet.UUID]; ok && c != nil {
+		s.reply(AuthReply{
+			Ok:      true,
+			Error:   "",
+			Message: "登出成功",
+		}, PacketTypeLogout, packet.UUID, c.Tunn)
+		//log.Info("[uuid:", packet.UUID, "] connection will be clean in 1s")
+		//time.Sleep(time.Second * 1)
+		//clear
+		s.handler.OnKick(packet)
+		s.handler.BeforeClear(s.online[packet.UUID])
+		delete(s.online, packet.UUID)
+	}
 }
 
 //
