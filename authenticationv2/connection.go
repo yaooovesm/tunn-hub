@@ -15,10 +15,6 @@ type Connection struct {
 	Conn   *transmitter.Tunnel
 }
 
-func (c *Connection) ReConnect() {
-
-}
-
 //
 // Disconnect
 // @Description:
