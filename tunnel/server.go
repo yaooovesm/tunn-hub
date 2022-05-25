@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 	"tunn-hub/administration"
-	"tunn-hub/authentication"
+	"tunn-hub/authenticationv2"
 	"tunn-hub/cache"
 	"tunn-hub/config"
 	"tunn-hub/device"
@@ -39,7 +39,7 @@ type Server struct {
 	Context          context.Context
 	Cancel           context.CancelFunc
 	Error            error
-	AuthServer       *authentication.AuthServerV3
+	AuthServer       *authenticationv2.Server //AuthServer     *authentication.AuthServerV3
 	tunnels          map[string]*transmitter.MultiConn
 	ipTable          *cache.IpTableV2
 	rxFlowProcessors map[string]*traffic.FlowProcessors
@@ -79,11 +79,16 @@ func NewServer(handler ServerConnHandler) *Server {
 func (s *Server) Init() error {
 	s.router = networking.NewRouteTable(true, 8)
 	//use default
-	authServerV3, err := authentication.NewServerV3(&AuthServerHandler{Server: s}, nil)
+	//authServerV3, err := authentication.NewServerV3(&AuthServerHandler{Server: s}, nil)
+	//if err != nil {
+	//	return err
+	//}
+	//s.AuthServer = authServerV3
+	authServer, err := authenticationv2.NewServer(&AuthServerHandler{Server: s}, nil)
 	if err != nil {
 		return err
 	}
-	s.AuthServer = authServerV3
+	s.AuthServer = authServer
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	s.Context = ctx
 	s.Cancel = cancelFunc

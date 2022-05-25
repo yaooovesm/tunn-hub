@@ -5,7 +5,7 @@ import (
 	"net"
 	"tunn-hub/administration"
 	"tunn-hub/administration/model"
-	"tunn-hub/authentication"
+	"tunn-hub/authenticationv2"
 	"tunn-hub/config"
 	"tunn-hub/device"
 	"tunn-hub/traffic"
@@ -143,7 +143,7 @@ func (h *AuthServerHandler) AddTunnelRoute(dst string, uuid string) error {
 // @param conn
 // @param packet
 //
-func (h *AuthServerHandler) OnMessage(packet *authentication.TransportPacket) {
+func (h *AuthServerHandler) OnMessage(packet *authenticationv2.TransportPacket) {
 	log.Info("[uuid:", packet.UUID, "] send message to server : ", string(packet.Payload))
 }
 
@@ -154,7 +154,7 @@ func (h *AuthServerHandler) OnMessage(packet *authentication.TransportPacket) {
 // @param packet
 // @param Address
 //
-func (h *AuthServerHandler) OnReport(packet *authentication.TransportPacket) {
+func (h *AuthServerHandler) OnReport(packet *authenticationv2.TransportPacket) {
 	log.Info("[uuid:", packet.UUID, "] report data to server : ", len(packet.Payload), " bytes")
 }
 
@@ -165,7 +165,7 @@ func (h *AuthServerHandler) OnReport(packet *authentication.TransportPacket) {
 // @param packet
 // @param Address
 //
-func (h *AuthServerHandler) AfterLogin(packet *authentication.TransportPacket, address string, cfg config.Config) {
+func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.Config) {
 	log.Info("[Account:", cfg.User.Account, "][Address:", address, "][uuid:", packet.UUID, "] login success")
 	//setup flow processor
 	//tx
@@ -224,9 +224,9 @@ func (h *AuthServerHandler) AfterLogin(packet *authentication.TransportPacket, a
 // @param packet
 // @param Address
 //
-func (h *AuthServerHandler) AfterLogout(packet *authentication.TransportPacket) {
+func (h *AuthServerHandler) AfterLogout(packet *authenticationv2.TransportPacket) {
 	log.Info("[uuid:", packet.UUID, "] clear online")
-	h.clearOnline(packet.UUID)
+	h.ClearOnline(packet.UUID)
 }
 
 //
@@ -234,9 +234,9 @@ func (h *AuthServerHandler) AfterLogout(packet *authentication.TransportPacket) 
 // @Description:
 // @receiver h
 //
-func (h *AuthServerHandler) OnKick(packet *authentication.TransportPacket) {
+func (h *AuthServerHandler) OnKick(packet *authenticationv2.TransportPacket) {
 	log.Info("[kick][uuid:", packet.UUID, "] clear online")
-	h.clearOnline(packet.UUID)
+	h.ClearOnline(packet.UUID)
 }
 
 //
@@ -248,15 +248,15 @@ func (h *AuthServerHandler) OnKick(packet *authentication.TransportPacket) {
 //
 func (h *AuthServerHandler) Disconnect(uuid string, err error) {
 	log.Info("[uuid:", uuid, "] disconnected : ", err.Error())
-	h.clearOnline(uuid)
+	h.ClearOnline(uuid)
 }
 
 //
-// clearOnline
+// ClearOnline
 // @Description:
 // @receiver h
 //
-func (h *AuthServerHandler) clearOnline(uuid string) {
+func (h *AuthServerHandler) ClearOnline(uuid string) {
 	if mt, ok := h.Server.tunnels[uuid]; ok && mt != nil {
 		mt.Close()
 		h.Server.lock.Lock()
@@ -271,7 +271,7 @@ func (h *AuthServerHandler) clearOnline(uuid string) {
 // @receiver h
 // @param connection
 //
-func (h *AuthServerHandler) BeforeClear(connection *authentication.Connection) {
+func (h *AuthServerHandler) BeforeClear(connection *authenticationv2.Connection) {
 	if connection != nil && administration.UserServiceInstance() != nil {
 		administration.UserServiceInstance().SetOffline(connection.Config.User.Account)
 	}
