@@ -43,8 +43,8 @@ type serverService struct {
 	txFlowCounter      *traffic.FlowStatisticsFP
 	ctx                context.Context
 	cancel             context.CancelFunc
-	kickFunc           func(address string) error
-	reconnectFunc      func(address string) error
+	kickFunc           func(uuid string) error
+	reconnectFunc      func(uuid string) error
 	searchFunc         func(uuid string) (cfg config.Config, err error)
 	transmitterVersion transmitter.Version
 	wsKey              string
@@ -73,8 +73,8 @@ func (serv *serverService) SetupServer(rx, tx *traffic.FlowStatisticsFP,
 // @param kickFunc
 //
 func (serv *serverService) SetupAuthServer(
-	kickFunc func(address string) error,
-	reconnectFunc func(address string) error,
+	kickFunc func(uuid string) error,
+	reconnectFunc func(uuid string) error,
 	searchFunc func(uuid string) (cfg config.Config, err error),
 	version transmitter.Version,
 	wsKey string,
