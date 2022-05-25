@@ -317,3 +317,32 @@ func (p *IPAddressPool) ReturnBack(ip string) {
 	//删除静态分配
 	delete(p.staticTable, ip)
 }
+
+//
+// ReturnBackById
+// @Description:
+// @receiver p
+// @param id
+//
+func (p *IPAddressPool) ReturnBackById(id string) {
+	for ip := range p.info {
+		if p.info[ip].UUID == id {
+			for i := range p.used {
+				if p.used[i].String() == ip {
+					p.used[i] = nil
+				}
+			}
+			delete(p.info, ip)
+		}
+	}
+	for ip := range p.staticTable {
+		if p.staticTable[ip].UUID == id {
+			for i := range p.used {
+				if p.used[i].String() == ip {
+					p.used[i] = nil
+				}
+			}
+			delete(p.staticTable, ip)
+		}
+	}
+}

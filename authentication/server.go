@@ -29,8 +29,8 @@ type AuthServerV3 struct {
 	online        map[string]*Connection
 	handler       AuthServerHandler
 	lock          sync.Mutex
-	PublicKey     []byte
-	WSKey         string
+	PublicKey     []byte //传输到服务器的数据需要使用Key加密
+	WSKey         string //ws接入点
 	version       transmitter.Version
 	upgrader      *websocket.Upgrader
 	validator     IValidator
@@ -203,7 +203,10 @@ func (s *AuthServerV3) HandleClientConnect(conn net.Conn, uuid string) {
 		}
 		if err != nil {
 			s.handler.Disconnect(uuid, err)
-			s.clearByUUID(uuid)
+			s.handler.BeforeClear(s.online[uuid])
+			s.IPPool.ReturnBackById(uuid)
+			delete(s.online, uuid)
+			//s.clearByUUID(uuid)
 			return
 		}
 		//组合数据包
@@ -405,32 +408,19 @@ func (s *AuthServerV3) logout(tunn *transmitter.Tunnel, packet *TransportPacket)
 			Ok:      false,
 			Error:   "user authentication failed : " + err.Error(),
 			Message: "用户验证失败",
-		}, PacketTypeLogin, packet.UUID, tunn)
+		}, PacketTypeLogout, packet.UUID, tunn)
 		return
 	}
-	//s.clearByUUID(packet.UUID)
-	//log.Info("[authentication][user:", cfg.User.Account, "] logout success")
-	//s.reply(AuthReply{
-	//	Ok:      true,
-	//	Error:   "",
-	//	Message: "登出成功",
-	//}, PacketTypeLogout, packet.UUID, tunn)
-	//s.handler.AfterLogout(packet)
-	s.lock.Lock()
-	defer s.lock.Unlock()
-	if c, ok := s.online[packet.UUID]; ok && c != nil {
-		s.reply(AuthReply{
-			Ok:      true,
-			Error:   "",
-			Message: "登出成功",
-		}, PacketTypeLogout, packet.UUID, c.Tunn)
-		//log.Info("[uuid:", packet.UUID, "] connection will be clean in 1s")
-		//time.Sleep(time.Second * 1)
-		//clear
-		s.handler.OnKick(packet)
-		s.handler.BeforeClear(s.online[packet.UUID])
-		delete(s.online, packet.UUID)
-	}
+	s.reply(AuthReply{
+		Ok:      true,
+		Error:   "",
+		Message: "登出成功",
+	}, PacketTypeLogout, packet.UUID, tunn)
+	//clear
+	s.handler.Disconnect(packet.UUID, nil)
+	s.handler.BeforeClear(s.online[packet.UUID])
+	delete(s.online, packet.UUID)
+	s.IPPool.ReturnBackById(packet.UUID)
 }
 
 //
@@ -460,6 +450,7 @@ func (s *AuthServerV3) KickByUUID(uuid string) error {
 			//clear
 			s.handler.OnKick(packet)
 			s.handler.BeforeClear(s.online[uuid])
+			s.IPPool.ReturnBackById(uuid)
 			delete(s.online, uuid)
 		}()
 		return nil
@@ -493,33 +484,34 @@ func (s *AuthServerV3) RestartByUUID(uuid string) error {
 			//clear
 			s.handler.OnKick(packet)
 			s.handler.BeforeClear(s.online[uuid])
+			s.IPPool.ReturnBackById(uuid)
 			delete(s.online, uuid)
 		}()
 		return nil
 	}
 }
 
-//
-// clearByUUID
-// @Description:
-// @receiver s
-// @param uuid
-//
-func (s *AuthServerV3) clearByUUID(uuid string) {
-	s.handler.BeforeClear(s.online[uuid])
-	s.lock.Lock()
-	if c, ok := s.online[uuid]; ok && c != nil {
-		cidr := c.Config.Device.CIDR
-		if cidr != "" {
-			ip, _, err := net.ParseCIDR(cidr)
-			if err == nil {
-				s.IPPool.ReturnBack(ip.To4().String())
-			}
-		}
-	}
-	delete(s.online, uuid)
-	s.lock.Unlock()
-}
+////
+//// clearByUUID
+//// @Description:
+//// @receiver s
+//// @param uuid
+////
+//func (s *AuthServerV3) clearByUUID(uuid string) {
+//	s.handler.BeforeClear(s.online[uuid])
+//	//s.lock.Lock()
+//	if c, ok := s.online[uuid]; ok && c != nil {
+//		cidr := c.Config.Device.CIDR
+//		if cidr != "" {
+//			ip, _, err := net.ParseCIDR(cidr)
+//			if err == nil {
+//				s.IPPool.ReturnBack(ip.To4().String())
+//			}
+//		}
+//	}
+//	delete(s.online, uuid)
+//	//s.lock.Unlock()
+//}
 
 //
 // BroadcastMsg
