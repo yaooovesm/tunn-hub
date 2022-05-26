@@ -445,3 +445,14 @@ func (serv userService) GenerateUserConfig(id string) (config.PushedConfig, erro
 func (serv *userService) CommitAllFlowCount() {
 	serv.statusService.CommitAllFlowCounts()
 }
+
+//
+// AvailableExports
+// @Description:
+// @receiver serv
+// @return []config.Route
+// @return error
+//
+func (serv *userService) AvailableExports() ([]config.Route, error) {
+	return serv.configService.AvailableExports()
+}

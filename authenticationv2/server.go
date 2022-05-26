@@ -166,6 +166,8 @@ ReadLoop:
 			case PacketTypeLogout:
 				//退出登录
 				s.logout(tunn, p)
+			case PacketTypeOperation:
+				s.HandleOperation(tunn, p)
 			case PacketTypeMsg:
 				s.handler.OnMessage(p)
 			case PacketTypeReport:
@@ -293,6 +295,13 @@ func (s *Server) login(tunn *transmitter.Tunnel, packet *TransportPacket, addres
 	s.handler.AfterLogin(packet, address, cfg)
 }
 
+//
+// logout
+// @Description:
+// @receiver s
+// @param tunn
+// @param packet
+//
 func (s *Server) logout(tunn *transmitter.Tunnel, packet *TransportPacket) {
 	//检查是否有在线
 	if c, ok := s.Online[packet.UUID]; !ok || c == nil {

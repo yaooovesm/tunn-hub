@@ -3,13 +3,14 @@ package authenticationv2
 type PacketType int
 
 const (
-	PacketTypeUnknown = 255
-	PacketTypeMsg     = 0
-	PacketTypeReport  = 1
-	PacketTypeLogin   = 10
-	PacketTypeLogout  = 11
-	PacketTypeKick    = 12
-	PacketTypeRestart = 13
+	PacketTypeUnknown   = 255
+	PacketTypeMsg       = 0
+	PacketTypeReport    = 1
+	PacketTypeOperation = 2
+	PacketTypeLogin     = 10
+	PacketTypeLogout    = 11
+	PacketTypeKick      = 12
+	PacketTypeRestart   = 13
 )
 
 //
