@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	log "github.com/cihub/seelog"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/websocket"
@@ -406,12 +405,6 @@ func (s *Server) confirm(conn *transmitter.WSConn) (uuid string, err error) {
 // @return bool
 //
 func (s *Server) CheckByUUID(uuid string) bool {
-	fmt.Println("-------------------------------")
-	fmt.Println("current:")
-	online := s.Online
-	marshal, _ := json.Marshal(online)
-	fmt.Println(string(marshal))
-	fmt.Println("-------------------------------")
 	if c, ok := s.Online[uuid]; ok && c != nil && c.UUID == uuid {
 		return true
 	}

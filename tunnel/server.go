@@ -32,14 +32,13 @@ const (
 // @Description:
 //
 type Server struct {
-	lock sync.Mutex
-	//IFace            *water.Interface
+	lock             sync.Mutex
 	IFace            device.Device
 	Config           config.Config
 	Context          context.Context
 	Cancel           context.CancelFunc
 	Error            error
-	AuthServer       *authenticationv2.Server //AuthServer     *authentication.AuthServerV3
+	AuthServer       *authenticationv2.Server
 	tunnels          map[string]*transmitter.MultiConn
 	ipTable          *cache.IpTableV2
 	rxFlowProcessors map[string]*traffic.FlowProcessors
