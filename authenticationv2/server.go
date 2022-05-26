@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	log "github.com/cihub/seelog"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/websocket"
@@ -277,19 +278,20 @@ func (s *Server) login(tunn *transmitter.Tunnel, packet *TransportPacket, addres
 	if s.WSKey != "" && len(s.WSKey) > 0 {
 		data["ws_key"] = s.WSKey
 	}
-	b, _ := json.Marshal(data)
-	s.reply(AuthReply{
-		Ok:      true,
-		Error:   "",
-		Message: string(b),
-	}, PacketTypeLogin, packet.UUID, tunn)
-	s.handler.AfterLogin(packet, address, cfg)
 	//设置在线状态
 	s.Online[packet.UUID] = &Connection{
 		UUID:   packet.UUID,
 		Config: cfg,
 		Conn:   tunn,
 	}
+	b, _ := json.Marshal(data)
+	//回复客户端
+	s.reply(AuthReply{
+		Ok:      true,
+		Error:   "",
+		Message: string(b),
+	}, PacketTypeLogin, packet.UUID, tunn)
+	s.handler.AfterLogin(packet, address, cfg)
 }
 
 func (s *Server) logout(tunn *transmitter.Tunnel, packet *TransportPacket) {
@@ -404,6 +406,12 @@ func (s *Server) confirm(conn *transmitter.WSConn) (uuid string, err error) {
 // @return bool
 //
 func (s *Server) CheckByUUID(uuid string) bool {
+	fmt.Println("-------------------------------")
+	fmt.Println("current:")
+	online := s.Online
+	marshal, _ := json.Marshal(online)
+	fmt.Println(string(marshal))
+	fmt.Println("-------------------------------")
 	if c, ok := s.Online[uuid]; ok && c != nil && c.UUID == uuid {
 		return true
 	}

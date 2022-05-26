@@ -250,7 +250,9 @@ func (s *Server) confirm(conn net.Conn) (uuid string, err error) {
 			return err
 		}
 		//验证登录
-		if !s.AuthServer.CheckByUUID(string(bytes[:n])) {
+		recv := string(bytes[:n])
+		if !s.AuthServer.CheckByUUID(recv) {
+			log.Info("[uuid:", recv, "] rejected")
 			return errors.New("invalid connection")
 		}
 		//rewrite
