@@ -180,9 +180,7 @@ func (serv userService) GetUserInfoById(id string) (model.UserInfo, error) {
 // @return model.UserInfo
 //
 func (serv userService) GetUserInfoByAccount(account string) (model.UserInfo, error) {
-	info := model.UserInfo{Account: account}
-	err := serv.infoService.Query(&info)
-	return info, err
+	return serv.infoService.GetInfoByAccount(account)
 }
 
 //
@@ -455,4 +453,64 @@ func (serv *userService) CommitAllFlowCount() {
 //
 func (serv *userService) AvailableExports() ([]config.Route, error) {
 	return serv.configService.AvailableExports()
+}
+
+//
+// GetConfigByConnectUUID
+// @Description:
+// @receiver serv
+// @param uuid
+// @return model.ClientConfig
+// @return error
+//
+func (serv *userService) GetConfigByConnectUUID(uuid string) (model.ClientConfig, error) {
+	cfg, err := ServerServiceInstance().searchFunc(uuid)
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
+	userInfo, err := serv.GetUserInfoByAccount(cfg.User.Account)
+	sto, err := serv.configService.GetById(userInfo.ConfigId)
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
+	return sto, nil
+}
+
+//
+// UpdateRoutesByConnectUUID
+// @Description:
+// @receiver serv
+// @param uuid
+// @param routes
+// @return error
+//
+func (serv *userService) UpdateRoutesByConnectUUID(uuid string, routes []config.Route) error {
+	cfg, err := ServerServiceInstance().searchFunc(uuid)
+	if err != nil {
+		return err
+	}
+	account := cfg.User.Account
+	userInfo, err := serv.GetUserInfoByAccount(account)
+	if err != nil {
+		return err
+	}
+	_, err = serv.configService.UpdateById(model.ClientConfig{
+		Id:     userInfo.ConfigId,
+		Routes: routes,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//
+// ResetRoutesByConnectUUID
+// @Description:
+// @receiver serv
+// @param uuid
+// @return error
+//
+func (serv *userService) ResetRoutesByConnectUUID(uuid string) error {
+	return serv.UpdateRoutesByConnectUUID(uuid, []config.Route{})
 }

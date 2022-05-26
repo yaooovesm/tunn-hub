@@ -3,12 +3,16 @@ package authenticationv2
 import (
 	"encoding/json"
 	"tunn-hub/administration"
+	"tunn-hub/config"
 	"tunn-hub/transmitter"
 )
 
 type OperationName string
 
 const (
+	OperationGetConfig           OperationName = "OperationGetConfig"
+	OperationUpdateRoutes        OperationName = "OperationUpdateRoutes"
+	OperationResetRoutes         OperationName = "ResetRoutes"
 	OperationGetAvailableExports OperationName = "GetAvailableExports"
 )
 
@@ -85,6 +89,19 @@ func (o *Operation) Process() AuthReply {
 	case OperationGetAvailableExports:
 		exports, err := administration.UserServiceInstance().AvailableExports()
 		return o.reply(exports, err)
+	case OperationUpdateRoutes:
+		params := o.GetParams("routes")
+		var routes []config.Route
+		b, _ := json.Marshal(params)
+		_ = json.Unmarshal(b, &routes)
+		err := administration.UserServiceInstance().UpdateRoutesByConnectUUID(o.UUID, routes)
+		return o.reply("", err)
+	case OperationResetRoutes:
+		err := administration.UserServiceInstance().ResetRoutesByConnectUUID(o.UUID)
+		return o.reply("", err)
+	case OperationGetConfig:
+		cfg, err := administration.UserServiceInstance().GetConfigByConnectUUID(o.UUID)
+		return o.reply(cfg, err)
 	}
 	return AuthReply{
 		Ok:      false,

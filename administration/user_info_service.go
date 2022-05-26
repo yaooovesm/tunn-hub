@@ -70,6 +70,24 @@ func (u *userInfoService) accountExist(account string) (model.UserInfo, error) {
 }
 
 //
+// GetInfoByAccount
+// @Description:
+// @receiver u
+// @param account
+// @return model.UserInfo
+// @return error
+//
+func (u *userInfoService) GetInfoByAccount(account string) (model.UserInfo, error) {
+	info := model.UserInfo{Account: account}
+	u.EncryptInfo(&info)
+	db := u.db.Where("account = ?", info.Account).First(&info)
+	if db.Error != nil {
+		return model.UserInfo{}, db.Error
+	}
+	return info, nil
+}
+
+//
 // GetIdByAccount
 // @Description: 通过账号查询用户,用于客户端(非admin)登录时注册用户信息使用
 // @receiver u
