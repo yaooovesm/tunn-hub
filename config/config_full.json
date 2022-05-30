@@ -1,0 +1,45 @@
+{
+  "global": {
+    "address": "127.0.0.1",
+    "port": 10240,
+    "protocol": "wss",
+    "mtu": 1400,
+    "pprof": 10242,
+    "multi_connection": 1
+  },
+  "route": [
+    {
+      "name":"test_route",
+      "option": "export",
+      "network": "10.10.10.10/32"
+    }
+  ],
+  "device": {
+    "cidr": "172.22.0.1/24",
+    "dns": "223.5.5.5"
+  },
+  "auth": {
+    "address": "0.0.0.0",
+    "port": 10241
+  },
+  "data_process": {
+    "encrypt": "XOR"
+  }
+,
+  "security": {
+    "cert" : "./cert.pem",
+    "key": "./key.pem"
+  },
+  "admin": {
+    "address": "0.0.0.0",
+    "port": 8888,
+    "reporter": 8889,
+    "https": true,
+    "db_file": "./tunn_server.db"
+  },
+  "ip_pool": {
+    "start": "172.22.0.11",
+    "end": "172.22.0.100",
+    "network": "172.22.0.0/24"
+  }
+}
