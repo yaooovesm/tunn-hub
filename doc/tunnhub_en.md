@@ -202,6 +202,12 @@ Example
 
 #### Startup
 
+Preparation<br>
+sqlite database file: tunn_server.db <br>
+config file: [link](../config/tunnhub_config_full.json) <br>
+cert.pem: [link](../assets/cert.pem) <br>
+key.pem: [link](../assets/key.pem)
+
 ! Windows needs Privileges <br>
 ! Windows needs download [wintun](https://www.wintun.net/) driver with executable file
 

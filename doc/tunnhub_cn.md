@@ -204,6 +204,12 @@ ip_pool.network
 
 #### 启动
 
+启动前准备<br>
+数据库文件: tunn_server.db <br>
+配置文件: [链接](../config/tunnhub_config_full.json) <br>
+默认证书: [链接](../assets/cert.pem) <br>
+默认密钥: [链接](../assets/key.pem)
+
 ! Windows需要以管理员模式启动 <br>
 ! Windows需要下载 [wintun](https://www.wintun.net/) 驱动并与可执行文件在同一目录下
 
