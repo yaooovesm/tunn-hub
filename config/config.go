@@ -112,16 +112,25 @@ func (cfg *Config) MergePushed(push PushedConfig) {
 	cfg.DataProcess.CipherType = push.DataProcess.CipherType
 }
 
+//
+// Storage
+// @Description:
+// @receiver cfg
+// @return error
+//
 func (cfg *Config) Storage() error {
 	storage := ServerConfigStorage{
-		Global:      cfg.Global,
-		Routes:      cfg.Routes,
-		Device:      cfg.Device,
-		Auth:        cfg.Auth,
-		DataProcess: cfg.DataProcess,
-		Security:    cfg.Security,
-		Admin:       cfg.Admin,
-		IPPool:      cfg.IPPool,
+		Global: cfg.Global,
+		Routes: cfg.Routes,
+		Device: cfg.Device,
+		Auth:   cfg.Auth,
+		//在保存时移除随机密钥
+		DataProcess: DataProcess{
+			CipherType: cfg.DataProcess.CipherType,
+		},
+		Security: cfg.Security,
+		Admin:    cfg.Admin,
+		IPPool:   cfg.IPPool,
 	}
 	return storage.Dump(Location)
 }
