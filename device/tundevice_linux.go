@@ -2,6 +2,7 @@ package device
 
 import (
 	"errors"
+	log "github.com/cihub/seelog"
 	"github.com/songgao/water"
 	"os/exec"
 	"strconv"
@@ -78,14 +79,10 @@ func (d *TunDevice) Setup() error {
 	if err != nil {
 		return err
 	}
-	//不在此处引入路由，由systemrt.SystemRouteTable统一托管
-	//routes := config.Current.Routes
-	//for i := range routes {
-	//	if routes[i].Option == config.RouteOptionImport {
-	//		log.Info("import route : ", routes[i].Network)
-	//		networking.AddSystemRoute(routes[i].Network, d.Name())
-	//	}
-	//}
+	if d.config.DNS != "" {
+		_ = log.Warn("device.dns config only work in windows value is ignored : ", d.config.DNS)
+		_ = log.Warn("you need to setup dns manually")
+	}
 	return nil
 }
 

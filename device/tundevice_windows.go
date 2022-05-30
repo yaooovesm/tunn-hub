@@ -74,14 +74,10 @@ func (d *TunDevice) Setup() error {
 	if err != nil {
 		return err
 	}
-	//不在此处引入路由，由systemrt.SystemRouteTable统一托管
-	//routes := config.Current.Routes
-	//for i := range routes {
-	//	if routes[i].Option == config.RouteOptionImport {
-	//		log.Info("import route : ", routes[i].Network)
-	//		networking.AddSystemRoute(routes[i].Network, d.Name())
-	//	}
-	//}
+	err = d.setDNS(d.config.DNS)
+	if err != nil {
+		return err
+	}
 	//auto up in windows
 	return nil
 }
@@ -114,6 +110,27 @@ func (d *TunDevice) setCIDR(cidr string) error {
 		d.cidr = cidr
 	}
 	return err
+}
+
+//
+// setDNS
+// @Description:
+// @receiver d
+// @param dns
+// @return error
+//
+func (d *TunDevice) setDNS(dns string) error {
+	if dns == "" {
+		return nil
+	}
+	//netsh interface ip  set dnsservers Name="tunnel" source=static address=223.5.5.5 register=primary validate=no
+	if d.iface == nil {
+		return errors.New("device not found")
+	}
+	name := d.Name()
+	cmd := exec.Command("PowerShell",
+		"netsh", "interface", "ip", "set", "dnsservers", "Name=\""+name+"\"", "source=static", "address="+dns, "register=primary", "validate=no")
+	return cmd.Run()
 }
 
 //
