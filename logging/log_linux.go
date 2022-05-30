@@ -14,7 +14,7 @@ import (
 func getConfigString(logPah string) string {
 	file := ""
 	if logPah != "" {
-		file = "        <rollingfile type=\"size\" filename=\"" + file + "\" maxsize=\"102400\" maxrolls=\"5\"/>\n"
+		file = "        <rollingfile type=\"size\" filename=\"" + logPah + "\" maxsize=\"102400\" maxrolls=\"5\"/>\n"
 	}
 	debug := ""
 	if version.Develop {
@@ -48,7 +48,16 @@ func getConfigString(logPah string) string {
 // @Description:
 //
 func Initialize() {
-	configString := getConfigString("")
+	storagePath := "./log/"
+	s, err := os.Stat(storagePath)
+	if err != nil {
+		_ = log.Warn("set log file error : ", err)
+	}
+	if os.IsNotExist(err) || !s.IsDir() {
+		_ = os.MkdirAll(storagePath, 0644)
+	}
+	storageFile := storagePath + time.Now().Format("2006_01_02") + ".log"
+	configString := getConfigString(storageFile)
 	logger, err := log.LoggerFromConfigAsString(configString)
 	if err != nil {
 		return

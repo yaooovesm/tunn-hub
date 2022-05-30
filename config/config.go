@@ -36,11 +36,10 @@ type Config struct {
 //
 type Global struct {
 	Tunnel
-	MTU          int    `json:"mtu"`
-	Pprof        int    `json:"pprof"`
-	DefaultRoute bool   `json:"default_route"`
-	MultiConn    int    `json:"multi_connection"`
-	StoragePath  string `json:"storage_path"`
+	MTU          int  `json:"mtu"`
+	Pprof        int  `json:"pprof"`
+	DefaultRoute bool `json:"default_route"`
+	MultiConn    int  `json:"multi_connection"`
 }
 
 //
@@ -82,6 +81,12 @@ func (cfg *Config) SetDefaultValue() {
 	cfg.Global.Protocol = protocol.TCP
 	cfg.Global.MTU = 1400
 	cfg.Global.DefaultRoute = false
+	//限制multi conn
+	if cfg.Global.MultiConn <= 0 {
+		cfg.Global.MultiConn = 1
+	} else if cfg.Global.MultiConn > 32 {
+		cfg.Global.MultiConn = 32
+	}
 }
 
 //
@@ -90,14 +95,6 @@ func (cfg *Config) SetDefaultValue() {
 // @receiver cfg
 //
 func (cfg *Config) Check() {
-	storagePath := cfg.Global.StoragePath
-	if storagePath != "" && storagePath[len(storagePath)-1:] != "/" {
-		cfg.Global.StoragePath += "/"
-	}
-	//if cfg.Global.Protocol == protocol.WSS || cfg.Global.Protocol == protocol.WS {
-	//	log.Info("protocol ", cfg.Global.Protocol, " : multi_connection reset to 1")
-	//	cfg.Global.MultiConn = 1
-	//}
 }
 
 //
