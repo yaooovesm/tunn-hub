@@ -2,6 +2,7 @@ package administration
 
 import (
 	"bytes"
+	"encoding/base64"
 	"github.com/xtaci/kcp-go"
 	"tunn-hub/traffic"
 )
@@ -54,7 +55,7 @@ func NewCrypt(key []byte) (crypt Crypt, err error) {
 // @return string
 //
 func (c Crypt) Encrypt(data string) string {
-	return string(c.encrypt.Process([]byte(data)))
+	return base64.StdEncoding.EncodeToString(c.encrypt.Process([]byte(data)))
 }
 
 //
@@ -65,5 +66,9 @@ func (c Crypt) Encrypt(data string) string {
 // @return string
 //
 func (c Crypt) Decrypt(data string) string {
-	return string(c.decrypt.Process([]byte(data)))
+	raw, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return ""
+	}
+	return string(c.decrypt.Process(raw))
 }
