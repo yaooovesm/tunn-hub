@@ -1,0 +1,19 @@
+{
+  "user": {
+    "Account": "account",
+    "Password": "password"
+  },
+  "auth": {
+    "Address": "aaa.bbb.ccc",
+    "Port": 10241
+  },
+  "security": {
+    "cert": "cert.pem"
+  },
+  "admin": {
+    "address": "127.0.0.1",
+    "port": 8080,
+    "user": "admin",
+    "password": "P@ssw0rd"
+  }
+}
