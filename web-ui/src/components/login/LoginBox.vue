@@ -14,10 +14,10 @@
             style="max-width: 460px"
         >
           <el-form-item label="用户">
-            <el-input v-model="loginData.account"/>
+            <el-input v-model="loginData.account" @keyup.enter="login"/>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="loginData.password" show-password/>
+            <el-input v-model="loginData.password" @keyup.enter="login" show-password/>
           </el-form-item>
         </el-form>
         <el-button type="primary" @click="login" style="margin-top: 40px;width: 100%">Login</el-button>
