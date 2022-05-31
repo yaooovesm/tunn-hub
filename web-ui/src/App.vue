@@ -18,6 +18,20 @@ export default {
     }
   },
   mounted() {
+    window.onload = function () {
+      if (!window.sessionStorage["login"]) {
+        localStorage.removeItem("tunnel_server_user")
+        location.reload()
+      } else {
+        window.sessionStorage.removeItem("login");
+      }
+    };
+    window.onunload = function () {
+      window.sessionStorage["login"] = true;
+    };
+    window.onbeforeunload = function () {
+      window.sessionStorage["login"] = true;
+    };
     this.checkLogin()
     window.onbeforeunload = (e) => {
       this.$storage.Load()
