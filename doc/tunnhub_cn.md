@@ -55,17 +55,39 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 ------
 
 需要安装Go1.18.2或者更高版本 [下载](https://golang.google.cn/dl/) <br>
-编译时需要GCC环境，Windows用户请安装 [mingw-w64](https://www.mingw-w64.org/)
+编译时需要GCC环境，Windows用户请安装 [mingw-w64](https://www.mingw-w64.org/) <br>
+需要安装nodejs环境 [下载](https://nodejs.org/en/download/)
 
 准备
 
 ```shell
 #拉取仓库
-git clone https://gitee.com/jackrabbit872568318/tunn-hub.git
+git clone https://github.com/yaooovesm/tunn-hub.git
 
 #进入目录
 cd ./tunn-hub
+```
 
+编译webui
+
+```shell
+#@ tunn-hub/
+#进入目录
+cd webui
+
+#下载依赖
+npm install
+
+#build
+npm run build
+```
+
+! 将打包的dist目录移动到 tunn-hub/cmd 并将文件夹更名为static
+
+编译TunnHub
+
+```shell
+#@ tunn-hub/
 #下载依赖
 set GO111MODULE=on
 go mod tidy
@@ -73,8 +95,6 @@ go mod tidy
 #进入cmd目录
 cd cmd
 ```
-
-编译
 
 ```shell
 # @linux

@@ -53,7 +53,8 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 ------
 
 Needs Go1.18.2 or higher [download](https://golang.google.cn/dl/) <br>
-Needs GCC, Windows use [mingw-w64](https://www.mingw-w64.org/)
+Needs GCC, Windows use [mingw-w64](https://www.mingw-w64.org/) <br>
+Needs nodejs [download](https://nodejs.org/en/download/)
 
 Prepare
 
@@ -63,16 +64,34 @@ git clone https://gitee.com/jackrabbit872568318/tunn-hub.git
 
 #into repository directory
 cd ./tunn-hub
+```
 
-#download dependencies
+Compile WebUI
+
+```shell
+#@ tunn-hub/
+#change directory to tunn-hub/webui
+cd webui
+
+#dependencies
+npm install
+
+#build
+npm run build
+```
+
+! after build, move 'dist' to tunn-hub/cmd and rename as 'static'
+
+Compile TunnHub
+
+```shell
+#dependencies
 set GO111MODULE=on
 go mod tidy
 
-#into cmd directory
+#change direction to tunn-hub/cmd
 cd cmd
 ```
-
-Compile
 
 ```shell
 # @linux

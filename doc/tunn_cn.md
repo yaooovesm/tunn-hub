@@ -2,7 +2,7 @@
 
 <br>
 
-[中文文档](tunn_cn.md) | [English](tunn_en.md)
+[中文文档](./README_CN.md) | [English](./README_EN.md)
 
 
 <br>
@@ -36,7 +36,7 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 
 ------
 
-2022/05/27 @ 1.0.0.220527
+2022/05/31 @ 1.0.0.220531
 
 - WebUI
 - 系统路由导入自动化
@@ -61,17 +61,38 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 
 ------
 
-需要安装Go1.18.2或者更高版本 [下载](https://golang.google.cn/dl/)
+需要安装Go1.18.2或者更高版本 [下载](https://golang.google.cn/dl/) <br>
+需要安装nodejs环境 [下载](https://nodejs.org/en/download/)
 
 准备
 
 ```shell
 #拉取仓库
-git clone https://gitee.com/jackrabbit872568318/tunn.git
+git clone https://github.com/yaooovesm/tunn.git
 
 #进入目录
 cd ./tunn
+```
 
+编译webui
+
+```shell
+#@ tunn/
+#进入目录
+cd webui
+
+#下载依赖
+npm install
+
+#build
+npm run build
+```
+
+! 将打包的dist目录移动到 tunn/cmd 并将文件夹更名为static
+
+编译Tunn
+
+```shell
 #下载依赖
 set GO111MODULE=on
 go mod tidy
@@ -79,8 +100,6 @@ go mod tidy
 #进入cmd目录
 cd cmd
 ```
-
-编译
 
 ```shell
 # @linux
@@ -100,7 +119,7 @@ go build -o tunn.exe
 
 #### 客户端配置示例
 
-[配置文件](../config/tunn_config_full.json)
+[配置文件](../config/config_full.json)
 
 说明
 
@@ -155,6 +174,7 @@ admin.password
 #### 启动
 
 ! 当Linux客户端暴露网络时需要手动设置路由转发，并且开启内核转发。
+
 ```shell
 #开启内核转发
 echo 1 > /proc/sys/net/ipv4/ip_forward
@@ -164,7 +184,7 @@ iptables -t nat -A  POSTROUTING -s [tunn network] -j MASQUERADE
 ```
 
 ! Windows需要以管理员模式启动 <br>
-! Windows需要下载 [wintun](https://www.wintun.net/) 驱动并与可执行文件在同一目录下 
+! Windows需要下载 [wintun](https://www.wintun.net/) 驱动并与可执行文件在同一目录下
 
 启动参数
 
