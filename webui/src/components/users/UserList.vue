@@ -178,7 +178,7 @@ export default {
       ).then(() => {
         axios({
           method: "post",
-          url: "/api/v1/user/disable" + user.id,
+          url: "/api/v1/user/disable/" + user.id,
           data: {
             id: user.id,
             disabled: user.disabled === 1 ? 0 : 1
