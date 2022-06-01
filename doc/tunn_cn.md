@@ -90,6 +90,14 @@ npm run build
 
 ! 将打包的dist目录移动到 tunn/cmd 并将文件夹更名为static
 
+或
+
+直接使用已经编译好的webui
+
+```shell
+unzip assets/static.zip -d cmd/
+```
+
 编译Tunn
 
 ```shell

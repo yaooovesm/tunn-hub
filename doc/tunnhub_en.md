@@ -82,6 +82,14 @@ npm run build
 
 ! after build, move 'dist' to tunn-hub/cmd and rename as 'static'
 
+or
+
+use static.zip
+
+```shell
+unzip assets/static.zip -d cmd/
+```
+
 Compile TunnHub
 
 ```shell

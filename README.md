@@ -17,7 +17,7 @@ legal responsibility.
 
 ![img](./doc/img/general.jpg)
 
-# Instruction
+## Instruction
 
 ------
 
@@ -35,3 +35,9 @@ TunnHub&nbsp; [GitHub](https://github.com/yaooovesm/tunn-hub) | [Gitee](https://
 
 Tunn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [GitHub](https://github.com/yaooovesm/tunn)
 | [Gitee](https://gitee.com/jackrabbit872568318/tunn)
+
+## Example
+
+------
+
+使用场景示例 [中文](./doc/full_install.md)
