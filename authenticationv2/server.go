@@ -440,6 +440,9 @@ func (s *Server) KickByUUID(uuid string) error {
 			Message: "disconnected by server",
 		}, PacketTypeKick, packet.UUID, c.Conn)
 		//设置离线
+		//延时1秒后清空连接,否则客户端会因为连接断开而先意外断开
+		log.Info("[uuid:", uuid, "] kick : connection close in 1s")
+		time.Sleep(time.Second * 1)
 		s.DisconnectById(uuid, ErrKick)
 		return nil
 	}
@@ -464,6 +467,9 @@ func (s *Server) RestartByUUID(uuid string) error {
 			Error:   "",
 			Message: "restart by server",
 		}, PacketTypeRestart, packet.UUID, c.Conn)
+		//延时1秒后清空连接,否则客户端会因为连接断开而先意外断开
+		log.Info("[uuid:", uuid, "] restart : connection close in 1s")
+		time.Sleep(time.Second * 1)
 		s.DisconnectById(uuid, ErrRestart)
 		return nil
 	}
