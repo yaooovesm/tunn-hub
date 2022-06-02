@@ -77,7 +77,7 @@ func TestReaderWriterFunction(t *testing.T) {
 func TestReaderWriterSpeed(t *testing.T) {
 	logging.Initialize()
 	version := V2
-	flow := 10 * 1024 * 1024 * 1024
+	flow := 2 * 1024 * 1024 * 1024
 	size := flow / 1400
 	fmt.Println("trans size = ", flow/1024/1024/1024, " G")
 	fmt.Println("size       = ", size)
@@ -131,12 +131,12 @@ func TestReaderWriterSpeed(t *testing.T) {
 					pl, err := reader.Read()
 					if err != nil {
 						fmt.Println("[server] read error : ", err)
-						return
+						break
 					}
 					if !bytes.Equal(pl, b) {
 						fmt.Println("not equal")
 						t.Fail()
-						return
+						break
 					}
 					rxfs.Process(pl)
 					atomic.AddInt64(&count, 1)
@@ -158,8 +158,8 @@ func TestReaderWriterSpeed(t *testing.T) {
 	fmt.Println("[client] connected...")
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-
 	go func() {
+		fmt.Println("[client] transmit started...")
 		writer := NewTunWriter(conn, version)
 		txStart = time.Now().UnixNano()
 		for i := 0; i < size; i++ {
@@ -210,4 +210,184 @@ func TestReaderWriterSpeed(t *testing.T) {
 		tx --> packet= 1000000  flow = 1335.14404296875 m avg_speed = 105.45447118596059 m/s avg_cost = 12660.8576 ns avg_packet_speed = 78983.59112734986  pps
 		----------------------------------------------------------
 	*/
+}
+
+/**
+100mbps -> 105%
+100mbps -> 105%
+50mbps  -> 105%
+30mbps  -> 107%
+10mbps  -> 105%
+5mbps   -> 105%
+
+*/
+func TestSpeedLimiter(t *testing.T) {
+	logging.Initialize()
+	version := V1
+	running := true
+	bandwidth := 1000
+	flow := 20 * bandwidth * 1024 * 1024
+	size := flow / 1400
+	speedExpect := float64(bandwidth) / 8
+	fmt.Println("exp                = ", speedExpect, "M/s")
+	fmt.Println("trans size         = ", float64(flow)/1024/1024/1024, " G")
+	fmt.Println("packet total       = ", size)
+	mtu := 1400
+	var count int64
+
+	var rxStart int64
+	var rxEnd int64
+
+	var txStart int64
+	var txEnd int64
+
+	// go tool pprof -http=:8000 http://127.0.0.1:9988/debug/pprof/profile
+	go func() {
+		log.Info("pprof serve on 0.0.0.0:9988")
+		if err := http.ListenAndServe("0.0.0.0:9988", nil); err != nil {
+			_ = log.Warn("pprof start failed : ", err)
+		}
+	}()
+
+	var b []byte
+	for i := 0; i < mtu; i++ {
+		b = append(b, byte(rand.Intn(254)))
+	}
+
+	rxfs := traffic.FlowStatisticsFP{Name: "rx"}
+	rx := traffic.NewFlowProcessor()
+	rx.Register(&rxfs, "rx_speed")
+
+	txlmt := traffic.NewLimiterFP(bandwidth, mtu)
+	txfs := traffic.FlowStatisticsFP{Name: "tx"}
+	tx := traffic.NewFlowProcessor()
+	tx.Register(&txfs, "tx_speed")
+	tx.Register(&txlmt, "tx_limiter")
+
+	tcpAddr, _ := net.ResolveTCPAddr("tcp4", "0.0.0.0:8888")
+	listener, err := net.ListenTCP("tcp", tcpAddr)
+	if err != nil {
+		fmt.Println("[server] create server failed : ", err)
+		return
+	}
+	//print
+	go func() {
+		for running {
+			fmt.Println("[", rxfs.Name, "] packet_speed=", rxfs.PacketSpeed, "p/s flow_speed=", rxfs.FlowSpeed/1024/1024, "mb/s (", rxfs.FlowSpeed/1024, "kb/s)")
+			fmt.Println("[", txfs.Name, "] packet_speed=", txfs.PacketSpeed, "p/s flow_speed=", txfs.FlowSpeed/1024/1024, "mb/s (", txfs.FlowSpeed/1024, "kb/s)")
+			fmt.Println()
+			fmt.Println()
+			time.Sleep(time.Millisecond * 1000)
+		}
+	}()
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	//RX
+	go func() {
+		for {
+			conn, err := listener.AcceptTCP()
+			if err != nil {
+				fmt.Println("[server] server error :", err)
+				return
+			}
+			_ = conn.SetNoDelay(false)
+			go func() {
+				reader := NewTunReader(conn, version)
+				rxStart = time.Now().UnixNano()
+				fmt.Println("rx started ...")
+				for {
+					pl, err := reader.Read()
+					if err != nil {
+						fmt.Println("[server] read error : ", err)
+						break
+					}
+					if !bytes.Equal(pl, b) {
+						fmt.Println("not equal")
+						t.Fail()
+						break
+					}
+					rx.Process(pl)
+					atomic.AddInt64(&count, 1)
+					if count == int64(size) {
+						break
+					}
+				}
+				rxEnd = time.Now().UnixNano()
+				wg.Done()
+			}()
+		}
+	}()
+	time.Sleep(time.Second)
+	tcpAddr, _ = net.ResolveTCPAddr("tcp4", "127.0.0.1:8888")
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		fmt.Println("[client] start client failed : ", err)
+		return
+	}
+	_ = conn.SetNoDelay(false)
+	fmt.Println("[client] connected...")
+	//TX
+	go func() {
+		writer := NewTunWriter(conn, version)
+		txStart = time.Now().UnixNano()
+		fmt.Println("tx started ...")
+		for i := 0; i < size; i++ {
+			_, err = writer.Write(tx.Process(b))
+			if err != nil {
+				fmt.Println("[client] write error : ", err)
+				return
+			}
+		}
+		txEnd = time.Now().UnixNano()
+		_ = writer.Conn().Close()
+		wg.Done()
+	}()
+	wg.Wait()
+
+	rxCost := rxEnd - rxStart
+	rxTotal := float64(rxfs.Flow) / 1024 / 1024
+	rxAvgSpeed := rxTotal / (float64(rxCost) / float64(1000000000))
+	rxExpSpeed := 100 - ((rxAvgSpeed / speedExpect) * 100)
+	rxAvgPacket := float64(size) / (float64(rxCost) / float64(1000000000))
+	rxAvgCost := float64(rxCost) / float64(size)
+
+	txCost := txEnd - txStart
+	txTotal := float64(txfs.Flow) / 1024 / 1024
+	txAvgSpeed := txTotal / (float64(txCost) / float64(1000000000))
+	txExpSpeed := 100 - ((txAvgSpeed / speedExpect) * 100)
+	txAvgPacket := float64(size) / (float64(txCost) / float64(1000000000))
+	txAvgCost := float64(txCost) / float64(size)
+	running = false
+	time.Sleep(time.Millisecond * 2000)
+	fmt.Println()
+	fmt.Println()
+	fmt.Println("传输比 ", count, "/", size)
+	fmt.Println()
+	fmt.Println("RX")
+	fmt.Println("----------------------------------------------------------")
+	fmt.Println("流量         --> ", rxTotal, "M(", rxTotal/1024, " G)")
+	fmt.Println("数据包       --> ", rxfs.Packet)
+	fmt.Println("流量平均速度  --> ", rxAvgSpeed, "M/s")
+	if rxExpSpeed > 0 {
+		fmt.Println("较预期速度    -->  -", rxExpSpeed, "%")
+	} else {
+		fmt.Println("较预期速度    -->  +", rxExpSpeed*-1, "%")
+	}
+	fmt.Println("包平均速度    --> ", rxAvgPacket, "pps")
+	fmt.Println("平均处理时间  --> ", rxAvgCost, "ns")
+	fmt.Println("----------------------------------------------------------")
+	fmt.Println()
+	fmt.Println("TX")
+	fmt.Println("----------------------------------------------------------")
+	fmt.Println("流量         --> ", txTotal, "M(", txTotal/1024, " G)")
+	fmt.Println("数据包       --> ", txfs.Packet)
+	fmt.Println("流量平均速度  --> ", txAvgSpeed, "M/s")
+	if txExpSpeed > 0 {
+		fmt.Println("较预期速度    -->  -", txExpSpeed, "%")
+	} else {
+		fmt.Println("较预期速度    -->  +", txExpSpeed*-1, "%")
+	}
+	fmt.Println("包平均速度    --> ", txAvgPacket, "pps")
+	fmt.Println("平均处理时间  --> ", txAvgCost, "ns")
+	fmt.Println("----------------------------------------------------------")
 }
