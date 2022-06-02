@@ -41,3 +41,12 @@ func (c *ZSTDDecompressFP) Process(raw []byte) []byte {
 	}
 	return res
 }
+
+//
+// Close
+// @Description:
+// @receiver c
+//
+func (c *ZSTDDecompressFP) Close() {
+	c.decoder.Close()
+}

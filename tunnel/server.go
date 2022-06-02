@@ -42,7 +42,7 @@ type Server struct {
 	tunnels          map[string]*transmitter.MultiConn
 	ipTable          *cache.IpTableV2
 	rxFlowProcessors map[string]*traffic.FlowProcessors
-	txFlowCounters   map[string]*traffic.FlowProcessors
+	txFlowProcessors map[string]*traffic.FlowProcessors
 	TxFP             *traffic.FlowProcessors
 	RxFP             *traffic.FlowProcessors
 	mtu              int
@@ -107,7 +107,7 @@ func (s *Server) Init() error {
 	s.ipTable = cache.NewIpTableV2(time.Minute*30, time.Minute*15)
 	s.tunnels = make(map[string]*transmitter.MultiConn)
 	s.rxFlowProcessors = make(map[string]*traffic.FlowProcessors)
-	s.txFlowCounters = make(map[string]*traffic.FlowProcessors)
+	s.txFlowProcessors = make(map[string]*traffic.FlowProcessors)
 	//全局RX流量处理
 	s.RxFP = traffic.NewFlowProcessor()
 	s.RxFP.Name = "global_rx"

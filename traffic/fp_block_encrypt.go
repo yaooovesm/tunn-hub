@@ -44,3 +44,11 @@ func (e *BlockEncryptFP) Process(raw []byte) []byte {
 	e.crypt.Encrypt(raw, raw)
 	return raw
 }
+
+//
+// Close
+// @Description:
+// @receiver e
+//
+func (e *BlockEncryptFP) Close() {
+}

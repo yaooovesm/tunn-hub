@@ -23,6 +23,9 @@ func (f fp1) Process(raw []byte) []byte {
 	return raw
 }
 
+func (f fp1) Close() {
+}
+
 func TestFlowProcessors(t *testing.T) {
 	logging.Initialize()
 	b := []byte{1}

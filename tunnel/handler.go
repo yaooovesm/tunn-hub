@@ -102,7 +102,7 @@ func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket,
 	}
 	//每次登录时
 	h.Server.rxFlowProcessors[packet.UUID] = rxfp
-	h.Server.txFlowCounters[packet.UUID] = txfp
+	h.Server.txFlowProcessors[packet.UUID] = txfp
 	//将计数器注入到multiconn中
 	multiConn := transmitter.NewMultiConn(packet.UUID)
 	multiConn.SetWriteFlowProcessors(txfp)
@@ -167,6 +167,14 @@ func (h *AuthServerHandler) ClearOnline(uuid string) {
 		mt.Close()
 		h.Server.lock.Lock()
 		delete(h.Server.tunnels, uuid)
+		if p, ok := h.Server.txFlowProcessors[uuid]; ok && p != nil {
+			p.Close()
+		}
+		delete(h.Server.txFlowProcessors, uuid)
+		if p, ok := h.Server.rxFlowProcessors[uuid]; ok && p != nil {
+			p.Close()
+		}
+		delete(h.Server.rxFlowProcessors, uuid)
 		h.Server.lock.Unlock()
 	}
 }

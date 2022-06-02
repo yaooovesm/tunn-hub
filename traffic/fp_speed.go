@@ -26,6 +26,7 @@ type FlowStatisticsFP struct {
 	PacketSpeed     uint64
 	RecordGap       int
 	Print           bool
+	running         bool
 }
 
 //
@@ -44,6 +45,7 @@ func (fp *FlowStatisticsFP) Init() bool {
 	if fp.RecordGap == 0 {
 		fp.RecordGap = 1000
 	}
+	fp.running = true
 	go fp.statistics()
 	return true
 }
@@ -117,8 +119,6 @@ func (fp *FlowStatisticsFP) Commit() uint64 {
 func (fp *FlowStatisticsFP) Process(raw []byte) []byte {
 	atomic.AddUint64(&fp.Packet, 1)
 	atomic.AddUint64(&fp.Flow, uint64(len(raw)))
-	//fp.Packet++
-	//fp.Flow += uint64(len(raw))
 	return raw
 }
 
@@ -156,12 +156,21 @@ func (fp *FlowStatisticsFP) calcFlow() {
 // @receiver fp
 //
 func (fp *FlowStatisticsFP) statistics() {
-	for {
+	for fp.running {
 		time.Sleep(time.Millisecond * time.Duration(fp.RecordGap))
 		fp.calcFlow()
 		fp.calcPacket()
 		if fp.Print {
-			fmt.Println("[", fp.Name, "] packet_speed=", fp.PacketSpeed, "p/s rx_flow_speed=", fp.FlowSpeed/1024/1024, "mb/s")
+			fmt.Println("[", fp.Name, "] packet_speed=", fp.PacketSpeed, "p/s flow_speed=", fp.FlowSpeed/1024/1024, "mb/s")
 		}
 	}
+}
+
+//
+// Close
+// @Description:
+// @receiver fp
+//
+func (fp *FlowStatisticsFP) Close() {
+	fp.running = false
 }

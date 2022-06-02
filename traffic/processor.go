@@ -3,22 +3,6 @@ package traffic
 import log "github.com/cihub/seelog"
 
 //
-// CipherFlowProcessor
-// @Description:
-//
-type CipherFlowProcessor interface {
-	FlowProcessor
-
-	//
-	// Measure
-	// @Description:
-	// @param mtu
-	// @return int
-	//
-	Measure(mtu int) int
-}
-
-//
 // FlowProcessor
 // @Description: flow data processor interface
 //
@@ -35,6 +19,11 @@ type FlowProcessor interface {
 	// @return []byte
 	//
 	Process(raw []byte) []byte
+	//
+	// Close
+	// @Description:
+	//
+	Close()
 }
 
 //
@@ -187,4 +176,19 @@ func (fp FlowProcessors) List() []string {
 		current = current.Next
 	}
 	return list
+}
+
+//
+// Close
+// @Description:
+// @receiver fp
+//
+func (fp FlowProcessors) Close() {
+	current := fp.head
+	for current != nil {
+		//close
+		current.Processor.Close()
+		//move to next
+		current = current.Next
+	}
 }

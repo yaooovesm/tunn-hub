@@ -38,3 +38,12 @@ func (c *ZSTDCompressFP) Process(raw []byte) []byte {
 	res := c.encoder.EncodeAll(raw, make([]byte, 0, len(raw)))
 	return res
 }
+
+//
+// Close
+// @Description:
+// @receiver c
+//
+func (c *ZSTDCompressFP) Close() {
+	_ = c.encoder.Close()
+}

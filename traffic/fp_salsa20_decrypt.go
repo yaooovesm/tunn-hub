@@ -52,3 +52,11 @@ func (e *Salsa20DecryptFP) Process(raw []byte) []byte {
 	e.crypt.Decrypt(raw, raw)
 	return raw
 }
+
+//
+// Close
+// @Description:
+// @receiver e
+//
+func (e *Salsa20DecryptFP) Close() {
+}
