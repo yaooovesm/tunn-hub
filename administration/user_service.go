@@ -129,7 +129,7 @@ func (serv *userService) SetOffline(account string) {
 	serv.SetStatusByAccount(account, model.UserStatus{
 		Online:  false,
 		Address: "",
-		Config:  config.Config{},
+		Config:  config.ClientConfig{},
 		RX:      model.LinkStatus{},
 		TX:      model.LinkStatus{},
 	})

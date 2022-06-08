@@ -186,7 +186,7 @@ ReadLoop:
 // @param address
 //
 func (s *Server) login(tunn *transmitter.Tunnel, packet *TransportPacket, address string) {
-	cfg := config.Config{}
+	cfg := config.ClientConfig{}
 	err := json.Unmarshal(packet.Payload, &cfg)
 	//接收用户配置
 	if err != nil {
@@ -483,11 +483,11 @@ func (s *Server) RestartByUUID(uuid string) error {
 // @return cfg
 // @return err
 //
-func (s *Server) GetConfigByUUID(uuid string) (cfg config.Config, err error) {
+func (s *Server) GetConfigByUUID(uuid string) (cfg config.ClientConfig, err error) {
 	if c, ok := s.Online[uuid]; ok && c != nil && c.UUID == uuid {
 		return c.Config, nil
 	}
-	return config.Config{}, errors.New("uuid not found")
+	return config.ClientConfig{}, errors.New("uuid not found")
 }
 
 //

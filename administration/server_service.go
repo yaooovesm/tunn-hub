@@ -45,7 +45,7 @@ type serverService struct {
 	cancel             context.CancelFunc
 	kickFunc           func(uuid string) error
 	reconnectFunc      func(uuid string) error
-	searchFunc         func(uuid string) (cfg config.Config, err error)
+	searchFunc         func(uuid string) (cfg config.ClientConfig, err error)
 	transmitterVersion transmitter.Version
 	wsKey              string
 	ippool             *networking.IPAddressPool
@@ -75,7 +75,7 @@ func (serv *serverService) SetupServer(rx, tx *traffic.FlowStatisticsFP,
 func (serv *serverService) SetupAuthServer(
 	kickFunc func(uuid string) error,
 	reconnectFunc func(uuid string) error,
-	searchFunc func(uuid string) (cfg config.Config, err error),
+	searchFunc func(uuid string) (cfg config.ClientConfig, err error),
 	version transmitter.Version,
 	wsKey string,
 	ippool *networking.IPAddressPool) {

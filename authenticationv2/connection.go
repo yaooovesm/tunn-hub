@@ -11,7 +11,7 @@ import (
 //
 type Connection struct {
 	UUID   string
-	Config config.Config
+	Config config.ClientConfig
 	Conn   *transmitter.Tunnel
 }
 

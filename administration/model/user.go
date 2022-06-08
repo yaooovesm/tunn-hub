@@ -40,7 +40,7 @@ type UserInfo struct {
 //
 type UserStorage struct {
 	RXFlowCounter, TXFlowCounter *traffic.FlowStatisticsFP
-	Config                       config.Config
+	Config                       config.ClientConfig
 	Address                      string
 	UUID                         string
 }
@@ -104,12 +104,12 @@ func (i *UserInfo) Copy(src UserInfo) error {
 // @Description: from cache
 //
 type UserStatus struct {
-	Online  bool          `json:"online"`
-	Address string        `json:"address"`
-	RX      LinkStatus    `json:"rx"`
-	TX      LinkStatus    `json:"tx"`
-	Config  config.Config `json:"config"`
-	UUID    string        `json:"uuid"`
+	Online  bool                `json:"online"`
+	Address string              `json:"address"`
+	RX      LinkStatus          `json:"rx"`
+	TX      LinkStatus          `json:"tx"`
+	Config  config.ClientConfig `json:"config"`
+	UUID    string              `json:"uuid"`
 }
 
 //

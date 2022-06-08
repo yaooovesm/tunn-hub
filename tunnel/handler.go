@@ -71,7 +71,7 @@ func (h *AuthServerHandler) OnReport(packet *authenticationv2.TransportPacket) {
 // @param packet
 // @param Address
 //
-func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.Config) {
+func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.ClientConfig) {
 	log.Info("[Account:", cfg.User.Account, "][Address:", address, "][uuid:", packet.UUID, "] login success")
 	//setup flow processor
 	//在此处获取限速设置并注册限速器

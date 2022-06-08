@@ -98,7 +98,7 @@ func (u *userStatusService) GetStatus(id string) model.UserStatus {
 			Address: "",
 			RX:      model.LinkStatus{},
 			TX:      model.LinkStatus{},
-			Config:  config.Config{},
+			Config:  config.ClientConfig{},
 			UUID:    "",
 		}
 	}
@@ -116,7 +116,7 @@ func (u *userStatusService) GetStatus(id string) model.UserStatus {
 		Packet:      0,
 		PacketSpeed: 0,
 	}
-	cfg := config.Config{}
+	cfg := config.ClientConfig{}
 	uuid := ""
 	if storage, ok := u.users[id]; ok && storage != nil {
 		rx.ReadFromFP(storage.RXFlowCounter)
