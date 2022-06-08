@@ -11,6 +11,7 @@ type PushedConfig struct {
 	Routes      []Route      `json:"route"`
 	Device      Device       `json:"device"`
 	DataProcess DataProcess  `json:"data_process"`
+	Limit       Limit        `json:"limit"`
 }
 
 //

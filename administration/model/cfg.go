@@ -14,6 +14,7 @@ type ClientConfig struct {
 	Id     string         `json:"id"`
 	Routes []config.Route `json:"routes"`
 	Device config.Device  `json:"device"`
+	Limit  config.Limit   `json:"limit"`
 }
 
 //
@@ -49,6 +50,7 @@ func (c *ClientConfig) Decode(data string) error {
 	c.Id = cfg.Id
 	c.Routes = cfg.Routes
 	c.Device = cfg.Device
+	c.Limit = cfg.Limit
 	return nil
 }
 
@@ -85,6 +87,7 @@ func (c *ClientConfig) ToPushModel() config.PushedConfig {
 		DataProcess: config.DataProcess{
 			CipherType: config.Current.DataProcess.CipherType,
 		},
+		Limit: c.Limit,
 	}
 }
 

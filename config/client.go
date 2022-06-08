@@ -14,6 +14,7 @@ type ClientConfig struct {
 	Security    Security    `json:"security"`
 	Runtime     Runtime     `json:"runtime"`
 	Admin       Admin       `json:"admin"`
+	Limit       Limit       `json:"limit"`
 }
 
 //
