@@ -74,17 +74,23 @@ func (h *AuthServerHandler) OnReport(packet *authenticationv2.TransportPacket) {
 func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.Config) {
 	log.Info("[Account:", cfg.User.Account, "][Address:", address, "][uuid:", packet.UUID, "] login success")
 	//setup flow processor
+	//在此处获取限速设置并注册限速器
+	//lmt := traffic.NewPPSLimiterFP(10, config.Current.Global.MTU)
 	//tx
 	txfp := traffic.NewFlowProcessor()
 	//单用户TX流量统计
 	txfs := &traffic.FlowStatisticsFP{Name: "tx_" + packet.UUID}
 	txfp.Register(txfs, "tx_"+packet.UUID)
+	//限速器
+	//txfp.Register(&lmt, "txlmt_"+packet.UUID)
 	//rx
 	rxfp := traffic.NewFlowProcessor()
 	rxfp.Name = packet.UUID
 	//单用户RX流量统计
 	rxfs := &traffic.FlowStatisticsFP{Name: "rx_" + packet.UUID}
 	rxfp.Register(rxfs, "rx_"+packet.UUID)
+	//限速器
+	//rxfp.Register(&lmt, "rxlmt_"+packet.UUID)
 	//setup cipher
 	if cfg.DataProcess.CipherType != "" {
 		log.Info("[uuid:", packet.UUID, "] set cipher : ", cfg.DataProcess.CipherType)

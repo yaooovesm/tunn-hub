@@ -225,10 +225,11 @@ func TestSpeedLimiter(t *testing.T) {
 	logging.Initialize()
 	version := V1
 	running := true
-	bandwidth := 1000
-	flow := 20 * bandwidth * 1024 * 1024
+	bandwidth := 100
+	random := true
+	flow := 2 * bandwidth * 1024 * 1024
 	size := flow / 1400
-	speedExpect := float64(bandwidth) / 8
+	speedExpect := float64(bandwidth) / 8 / 2
 	fmt.Println("exp                = ", speedExpect, "M/s")
 	fmt.Println("trans size         = ", float64(flow)/1024/1024/1024, " G")
 	fmt.Println("packet total       = ", size)
@@ -253,16 +254,22 @@ func TestSpeedLimiter(t *testing.T) {
 	for i := 0; i < mtu; i++ {
 		b = append(b, byte(rand.Intn(254)))
 	}
+	//PPS
+	lmt := traffic.NewPPSLimiterFP(bandwidth, mtu)
+	//BPS
+	//lmt := traffic.NewBPSLimiterFP(bandwidth, mtu)
 
+	//RX
 	rxfs := traffic.FlowStatisticsFP{Name: "rx"}
 	rx := traffic.NewFlowProcessor()
 	rx.Register(&rxfs, "rx_speed")
+	rx.Register(&lmt, "tx_limiter")
 
-	txlmt := traffic.NewLimiterFP(bandwidth, mtu)
+	//TX
 	txfs := traffic.FlowStatisticsFP{Name: "tx"}
 	tx := traffic.NewFlowProcessor()
 	tx.Register(&txfs, "tx_speed")
-	tx.Register(&txlmt, "tx_limiter")
+	tx.Register(&lmt, "tx_limiter")
 
 	tcpAddr, _ := net.ResolveTCPAddr("tcp4", "0.0.0.0:8888")
 	listener, err := net.ListenTCP("tcp", tcpAddr)
@@ -283,6 +290,7 @@ func TestSpeedLimiter(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	//RX
+	maxRXLat := float64(0)
 	go func() {
 		for {
 			conn, err := listener.AcceptTCP()
@@ -301,12 +309,18 @@ func TestSpeedLimiter(t *testing.T) {
 						fmt.Println("[server] read error : ", err)
 						break
 					}
-					if !bytes.Equal(pl, b) {
-						fmt.Println("not equal")
-						t.Fail()
-						break
-					}
+					//if !bytes.Equal(pl, b) {
+					//	fmt.Println("not equal")
+					//	t.Fail()
+					//	break
+					//}
+					start := time.Now().UnixNano()
 					rx.Process(pl)
+					end := time.Now().UnixNano()
+					lat := float64(end-start) / 1000000
+					if lat > maxRXLat {
+						maxRXLat = lat
+					}
 					atomic.AddInt64(&count, 1)
 					if count == int64(size) {
 						break
@@ -327,12 +341,23 @@ func TestSpeedLimiter(t *testing.T) {
 	_ = conn.SetNoDelay(false)
 	fmt.Println("[client] connected...")
 	//TX
+	maxTXLat := float64(0)
 	go func() {
 		writer := NewTunWriter(conn, version)
 		txStart = time.Now().UnixNano()
 		fmt.Println("tx started ...")
 		for i := 0; i < size; i++ {
-			_, err = writer.Write(tx.Process(b))
+			if random {
+				b = make([]byte, rand.Intn(mtu))
+			}
+			start := time.Now().UnixNano()
+			data := tx.Process(b)
+			end := time.Now().UnixNano()
+			lat := float64(end-start) / 1000000
+			if lat > maxTXLat {
+				maxTXLat = lat
+			}
+			_, err = writer.Write(data)
 			if err != nil {
 				fmt.Println("[client] write error : ", err)
 				return
@@ -349,14 +374,14 @@ func TestSpeedLimiter(t *testing.T) {
 	rxAvgSpeed := rxTotal / (float64(rxCost) / float64(1000000000))
 	rxExpSpeed := 100 - ((rxAvgSpeed / speedExpect) * 100)
 	rxAvgPacket := float64(size) / (float64(rxCost) / float64(1000000000))
-	rxAvgCost := float64(rxCost) / float64(size)
+	rxAvgCost := float32((float64(rxCost) / float64(size)) / 1000000)
 
 	txCost := txEnd - txStart
 	txTotal := float64(txfs.Flow) / 1024 / 1024
 	txAvgSpeed := txTotal / (float64(txCost) / float64(1000000000))
 	txExpSpeed := 100 - ((txAvgSpeed / speedExpect) * 100)
 	txAvgPacket := float64(size) / (float64(txCost) / float64(1000000000))
-	txAvgCost := float64(txCost) / float64(size)
+	txAvgCost := float32((float64(txCost) / float64(size)) / 1000000)
 	running = false
 	time.Sleep(time.Millisecond * 2000)
 	fmt.Println()
@@ -365,7 +390,7 @@ func TestSpeedLimiter(t *testing.T) {
 	fmt.Println()
 	fmt.Println("RX")
 	fmt.Println("----------------------------------------------------------")
-	fmt.Println("流量         --> ", rxTotal, "M(", rxTotal/1024, " G)")
+	fmt.Println("流量         --> ", float32(rxTotal), "M(", float32(rxTotal/1024), "G)")
 	fmt.Println("数据包       --> ", rxfs.Packet)
 	fmt.Println("流量平均速度  --> ", rxAvgSpeed, "M/s")
 	if rxExpSpeed > 0 {
@@ -374,12 +399,13 @@ func TestSpeedLimiter(t *testing.T) {
 		fmt.Println("较预期速度    -->  +", rxExpSpeed*-1, "%")
 	}
 	fmt.Println("包平均速度    --> ", rxAvgPacket, "pps")
-	fmt.Println("平均处理时间  --> ", rxAvgCost, "ns")
+	fmt.Println("平均处理时间  --> ", rxAvgCost, "ms")
+	fmt.Println("最大处理时间  --> ", maxRXLat, "ms")
 	fmt.Println("----------------------------------------------------------")
 	fmt.Println()
 	fmt.Println("TX")
 	fmt.Println("----------------------------------------------------------")
-	fmt.Println("流量         --> ", txTotal, "M(", txTotal/1024, " G)")
+	fmt.Println("流量         --> ", float32(txTotal), "M(", float32(txTotal/1024), "G)")
 	fmt.Println("数据包       --> ", txfs.Packet)
 	fmt.Println("流量平均速度  --> ", txAvgSpeed, "M/s")
 	if txExpSpeed > 0 {
@@ -388,6 +414,7 @@ func TestSpeedLimiter(t *testing.T) {
 		fmt.Println("较预期速度    -->  +", txExpSpeed*-1, "%")
 	}
 	fmt.Println("包平均速度    --> ", txAvgPacket, "pps")
-	fmt.Println("平均处理时间  --> ", txAvgCost, "ns")
+	fmt.Println("平均处理时间  --> ", txAvgCost, "ms")
+	fmt.Println("最大处理时间  --> ", maxTXLat, "ms")
 	fmt.Println("----------------------------------------------------------")
 }
