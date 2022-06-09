@@ -84,6 +84,20 @@
                 :column="5"
                 size="small"
                 direction="vertical"
+                title="限制"
+                style="margin-top: 20px"
+            >
+              <el-descriptions-item width="20%" label="带宽限制">
+                {{ config.limit.bandwidth === 0 ? "无限制" : config.limit.bandwidth+" Mbps" }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-col>
+          <el-col :span="22" :offset="1">
+            <el-descriptions
+                border
+                :column="5"
+                size="small"
+                direction="vertical"
                 title="验证服务器"
                 style="margin-top: 20px"
             >
@@ -232,6 +246,9 @@ export default {
       route: {
         imports: [],
         exports: [],
+      },
+      limit: {
+        bandwidth: 0
       }
     }
   },

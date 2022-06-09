@@ -81,13 +81,18 @@
             <!--连接信息显示-->
             <div style="margin-bottom: 30px">
               <div class="subtitle">连接信息
+
                 <el-tooltip
                     effect="dark"
                     :content="Status.uuid"
-                    placement="bottom-start"
+                    placement="right"
                 >
-                  <i v-if="Status.uuid!==''" class="iconfont icon-info-circle"
-                     style="color: #007bbb;font-size: 12px"></i>
+                  <span v-if="Status.uuid!==''"
+                        style="display: inline-block;margin-left: 5px;color: #007bbb;opacity: 0.8">
+                    ID:{{ Status.uuid.substring(0, 6) }}
+                  </span>
+                  <!--                  <i v-if="Status.uuid!==''" class="iconfont icon-info-circle"-->
+                  <!--                     style="color: #007bbb;font-size: 12px"></i>-->
                 </el-tooltip>
               </div>
               <el-descriptions
@@ -103,6 +108,10 @@
                 </el-descriptions-item>
                 <el-descriptions-item width="25%" label="数据处理">{{
                     Status.config.data_process.encrypt
+                  }}
+                </el-descriptions-item>
+                <el-descriptions-item width="25%" label="限速">{{
+                    Status.config.limit.bandwidth === 0 ? "无限制" : Status.config.limit.bandwidth + " Mbps"
                   }}
                 </el-descriptions-item>
                 <el-descriptions-item width="25%" label="客户端版本">{{
@@ -122,9 +131,9 @@
                   {{
                     Status.config.runtime.os
                   }}
-                </el-descriptions-item>
-                <el-descriptions-item width="25%" label="架构">
-                  {{ Status.config.runtime.arch }}
+                  {{
+                    Status.config.runtime.arch
+                  }}
                 </el-descriptions-item>
                 <el-descriptions-item width="50%" label="系统">
                   {{ Status.config.runtime.platform }}
@@ -195,6 +204,9 @@ export default {
           data_process: {
             encrypt: "",
           },
+          limit: {
+            bandwidth: 0
+          }
         }
       }
 

@@ -13,7 +13,7 @@
                   scrollbar-always-on
                   v-loading="loading"
         >
-          <el-table-column label="平台" fixed width="100">
+          <el-table-column label="平台" fixed width="105">
             <template #default="scope">
               <div>
                 <svg class="icon" aria-hidden="true" v-if="scope.row.status.config.runtime.os==='windows'"
@@ -77,24 +77,53 @@
               <!--              </el-tag>-->
             </template>
           </el-table-column>
-          <el-table-column label="流量监控" width="170" prop="auth">
+          <el-table-column label="带宽限制" width="120" prop="auth">
             <template #default="scope">
-              <div>入方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}
+              <div>{{
+                  scope.row.status.config.limit.bandwidth === 0 ? "无限制" : scope.row.status.config.limit.bandwidth + " Mbps"
+                }}
               </div>
-              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}
-              </div>
+              <!--              <div>{{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}</div>-->
+              <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
+              <!--              </div>-->
             </template>
           </el-table-column>
-          <el-table-column label="数据包监控" width="170" prop="auth">
+          <el-table-column label="上行速率" width="120" align="center">
             <template #default="scope">
-              <div>入方向：&nbsp;{{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}
+              <div>{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}
               </div>
-              <div>出方向：&nbsp;{{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}
-              </div>
+              <!--              <div>{{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}</div>-->
+              <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
+              <!--              </div>-->
             </template>
           </el-table-column>
+          <el-table-column label="下行速率" width="120" align="center">
+            <template #default="scope">
+              <div>{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}
+              </div>
+              <!--              <div>{{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}</div>-->
+              <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
+              <!--              </div>-->
+            </template>
+          </el-table-column>
+          <!--          <el-table-column label="流量监控" width="170" prop="auth">-->
+          <!--            <template #default="scope">-->
+          <!--              <div>入方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}-->
+          <!--              </div>-->
+          <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
+          <!--              </div>-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
+          <!--          <el-table-column label="数据包监控" width="170" prop="auth">-->
+          <!--            <template #default="scope">-->
+          <!--              <div>入方向：&nbsp;{{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}-->
+          <!--              </div>-->
+          <!--              <div>出方向：&nbsp;{{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}-->
+          <!--              </div>-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <el-table-column prop="status.address" label="IP地址" width="180"/>
-          <el-table-column label="状态" width="100">
+          <el-table-column label="状态" width="100" align="center">
             <template #default="scope">
               <el-tag size="small" type="danger" effect="dark" v-if="scope.row.disabled===1">禁用</el-tag>
               <el-tag size="small" type="success" effect="dark" v-else-if="scope.row.disabled===0">正常</el-tag>

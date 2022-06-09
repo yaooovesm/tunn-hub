@@ -123,21 +123,49 @@
             <div class="title-text">高级设置</div>
           </div>
           <div style="padding: 20px">
-            <el-checkbox v-model="enableStaticCIDR" label="地址静态分配" style="margin-bottom: 5px" size="small"/>
-            <span
-                style="margin-bottom: 5px;font-size: 13px;color: #404040;display: inline-block;transform: translateY(-2px);">
-            <el-tooltip
-                effect="dark"
-                content='设置后客户端内网地址将会被静态分配以设置的值'
-                placement="right">
-              <i class="iconfont icon-exclamation-circle"
-                 style="color: #909399;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
-            </el-tooltip>
-          </span>
+            <div>
+              <span style="font-size: 12px;display: inline-block;transform: translateY(-2px);">地址静态</span>
+              <el-checkbox v-model="enableStaticCIDR" label="启用" style="margin-bottom: 5px;margin-left: 10px"
+                           size="small"/>
+              <span
+                  style="margin-bottom: 5px;font-size: 13px;color: #404040;display: inline-block;transform: translateY(-2px);">
+                <el-tooltip
+                    effect="dark"
+                    content='设置后客户端内网地址将会被静态分配以设置的值'
+                    placement="right">
+                  <i class="iconfont icon-exclamation-circle"
+                     style="color: #007bbb;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
+                </el-tooltip>
+              </span>
+            </div>
+
             <span v-if="enableStaticCIDR" style="display: block;margin-bottom: 5px;color: #909399;font-size: 12px">
               提示：若分配冲突则可能导致客户端无法接入网络，请确认后再修改。修改静态地址分配将在客户端重新连接后生效。
             </span>
             <el-input v-model="staticCIDR" v-if="enableStaticCIDR" placeholder="e.g. 192.168.1.1/24" size="small"/>
+            <div style="margin-top: 20px;font-size: 12px">
+              带宽限制
+              <el-input size="small" :min="0" :max="1000" v-model="limit.bandwidth"
+                        style="width: 60px;margin: 0 5px;"
+                        placeholder="带宽">
+              </el-input>
+              Mbps
+              <el-tooltip
+                  effect="dark"
+                  content='此处的设置将会同时影响上行和下行速率，带宽=上行带宽+下行带宽。设置 "0" 则不限制。'
+                  placement="right">
+                <i class="iconfont icon-exclamation-circle"
+                   style="color: #007bbb;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
+              </el-tooltip>
+              <span style="display: block;margin-top: 8px;color: #909399;font-size: 12px">
+              提示：此处的设置将会同时影响上行和下行速率，带宽=上行带宽+下行带宽。设置 "0" 则不限制。设置将在客户端重新连接后生效。
+              </span>
+              <!--              带宽限制 <el-button size="small" type="text" @click="$refs.bandwidth_select.show(limit.bandwidth)">{{ limit.bandwidth === 0 ? "无限制" : limit.bandwidth + "Mbps" }}</el-button>-->
+              <!--              <el-slider v-model="limit.bandwidth" size="small" :format-tooltip="function (val){-->
+              <!--                return val+'Mbps'-->
+              <!--              }" :marks="{0:'无限制',1000:'1000Mbps'}" :max="1000" :min="0"-->
+              <!--              />-->
+            </div>
           </div>
         </el-card>
       </div>
@@ -163,6 +191,9 @@ export default {
     return {
       loading: false,
       dialogVisible: false,
+      limit: {
+        bandwidth: 0
+      },
       addImportValue: "",
       addExportValue: "",
       configId: "",
@@ -231,6 +262,17 @@ export default {
         data.device.cidr = this.staticCIDR
       }
       data.routes = [...this.importRoutes, ...this.exportRoutes]
+      if (this.$storage.IsAdmin()) {
+        let bandwidth = Number(this.limit.bandwidth)
+        if (bandwidth < 0 || bandwidth > 1000) {
+          this.$utils.Error("设置错误","带宽值范围在0-1000")
+          return
+        }
+        data.limit = {
+          bandwidth: bandwidth
+        }
+      }
+      console.log(data)
       axios({
         method: "post",
         url: "/api/v1/cfg/update",
@@ -271,6 +313,7 @@ export default {
           this.staticCIDR = ""
           this.enableStaticCIDR = false
         }
+        this.limit = response.data.limit
         this.loading = false
       }).catch(() => {
         ElMessageBox.alert('加载用户配置失败', '错误', {
