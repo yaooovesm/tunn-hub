@@ -112,6 +112,10 @@ func (l *LimitedPPSBucket) Take(p []byte) {
 // @receiver l
 //
 func (l *LimitedPPSBucket) Close() {
+	defer func() {
+		recover()
+	}()
+	//有可能已关闭
 	close(l.bk)
 	l.running = false
 }
