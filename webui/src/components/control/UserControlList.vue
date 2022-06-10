@@ -65,7 +65,6 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status.config.device.cidr" fixed label="内网地址" width="150"/>
           <el-table-column prop="account" fixed label="账号" show-overflow-tooltip>
             <template #default="scope">
               {{ scope.row.account }}
@@ -88,24 +87,135 @@
               <!--              </div>-->
             </template>
           </el-table-column>
-          <el-table-column label="上行速率" width="120" align="center">
+          <el-table-column label="传输速率" width="200">
             <template #default="scope">
-              <div>{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}
-              </div>
+              <el-popover
+                  placement="bottom-end"
+                  :title="'速率统计@'+scope.row.account"
+                  :width="200"
+                  trigger="hover"
+              >
+                <template #default>
+                  <div style="margin-top: 20px" v-if="scope.row.status.online">
+                    <div class="detail-unit-title">
+                      <span>下行速率</span>
+                    </div>
+                    <div class="detail-unit">
+                      <span>流量 </span>
+                      {{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>数据包 </span>
+                      {{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}
+                    </div>
+                    <el-divider style="margin-top: 6px;margin-bottom: 6px"/>
+                    <div class="detail-unit-title">
+                      <span>上行速率</span>
+                    </div>
+                    <div class="detail-unit">
+                      <span>流量 </span>
+                      {{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>数据包 </span>
+                      {{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}
+                    </div>
+                    <el-divider style="margin-top: 6px;margin-bottom: 6px"/>
+                    <div class="detail-unit-title">
+                      <span>总速率</span>
+                    </div>
+                    <div class="detail-unit">
+                      <span>流量 </span>
+                      {{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed + scope.row.status.tx.FlowSpeed) }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>数据包 </span>
+                      {{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed + scope.row.status.rx.PacketSpeed) }}
+                    </div>
+                  </div>
+                  <div v-else>
+                    <span style="color: #909399;font-size: 12px;text-align: center;margin-top: 20px">客户端已离线</span>
+                  </div>
+                </template>
+                <template #reference>
+                  <div>
+                    <div style="display: inline-block;margin-right: 10px">
+                      <span
+                          style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↓</span>
+                      <span>{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}</span>
+                    </div>
+                    <div style="display: inline-block;">
+                      <span
+                          style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↑</span>
+                      <span>{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}</span>
+                    </div>
+                  </div>
+                </template>
+              </el-popover>
+              <!--服务端RX对应客户端TX(上行)-->
+              <!--              <div>{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}-->
+              <!--              </div>-->
               <!--              <div>{{ $utils.FormatPacketSpeed(scope.row.status.rx.PacketSpeed) }}</div>-->
               <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
               <!--              </div>-->
             </template>
           </el-table-column>
-          <el-table-column label="下行速率" width="120" align="center">
+          <el-table-column label="流量统计" width="200" prop="flow_count" sortable>
             <template #default="scope">
-              <div>{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}
-              </div>
-              <!--              <div>{{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}</div>-->
-              <!--              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
-              <!--              </div>-->
+              <!--此处flow_count对应客户端RX-->
+              <!--此处tx_count为客户端TX-->
+              <el-popover
+                  placement="bottom-end"
+                  :title="'流量统计@'+scope.row.account"
+                  :width="200"
+                  trigger="hover"
+              >
+                <template #default>
+                  <div>
+                    <div class="detail-unit">
+                      <span>下行流量 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.flow_count) }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>上行流量 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.tx_count) }}
+                    </div>
+                    <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
+                    <div class="detail-unit">
+                      <span>流量总计 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.tx_count + scope.row.flow_count) }}
+                    </div>
+                  </div>
+                </template>
+                <template #reference>
+                  <div>
+                    <div style="display: inline-block;margin-right: 10px">
+                      <span
+                          style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↓</span>
+                      <span>{{ $utils.FormatBytesSizeM(scope.row.flow_count) }}</span>
+                    </div>
+                    <div style="display: inline-block">
+                <span
+                    style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↑</span>
+                      <span>{{ $utils.FormatBytesSizeM(scope.row.tx_count) }}</span>
+                    </div>
+                  </div>
+                </template>
+              </el-popover>
+
             </template>
           </el-table-column>
+
+          <!--          <el-table-column label="下行速率" width="120" align="center">-->
+          <!--            <template #default="scope">-->
+          <!--              &lt;!&ndash;服务端TX对应客户端RX(下行)&ndash;&gt;-->
+          <!--              <div>{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}-->
+          <!--              </div>-->
+          <!--              &lt;!&ndash;              <div>{{ $utils.FormatPacketSpeed(scope.row.status.tx.PacketSpeed) }}</div>&ndash;&gt;-->
+          <!--              &lt;!&ndash;              <div>出方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.tx.FlowSpeed) }}&ndash;&gt;-->
+          <!--              &lt;!&ndash;              </div>&ndash;&gt;-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <!--          <el-table-column label="流量监控" width="170" prop="auth">-->
           <!--            <template #default="scope">-->
           <!--              <div>入方向：&nbsp;{{ $utils.FormatBytesSpeed(scope.row.status.rx.FlowSpeed) }}-->
@@ -122,8 +232,9 @@
           <!--              </div>-->
           <!--            </template>-->
           <!--          </el-table-column>-->
-          <el-table-column prop="status.address" label="IP地址" width="180"/>
-          <el-table-column label="状态" width="100" align="center">
+          <el-table-column prop="status.config.device.cidr" label="内网地址" width="150"/>
+          <el-table-column prop="status.address" label="客户端地址" width="180"/>
+          <el-table-column label="状态" width="100">
             <template #default="scope">
               <el-tag size="small" type="danger" effect="dark" v-if="scope.row.disabled===1">禁用</el-tag>
               <el-tag size="small" type="success" effect="dark" v-else-if="scope.row.disabled===0">正常</el-tag>
@@ -133,11 +244,11 @@
               <!--              </span>-->
             </template>
           </el-table-column>
-          <el-table-column label="流量统计" width="150" prop="flow_count" sortable show-overflow-tooltip>
-            <template #default="scope">
-              {{ $utils.FormatBytesSizeM(scope.row.flow_count) }}
-            </template>
-          </el-table-column>
+          <!--          <el-table-column label="流量发送" width="150" prop="tx_count" show-overflow-tooltip>-->
+          <!--            <template #default="scope">-->
+          <!--              -->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
           <!--          <el-table-column label="上次登录" width="160" prop="last_login" sortable>-->
           <!--            <template #default="scope">-->
           <!--              {{ scope.row.last_login === 0 ? "未曾登录" : $utils.UnixMilliToDate(scope.row.last_login, "") }}-->
@@ -437,5 +548,22 @@ export default {
 </script>
 
 <style scoped>
+.detail-unit-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #404040;
+  margin-bottom: 7px;
+}
 
+.detail-unit {
+  text-align: right;
+  font-size: 12px;
+  color: #007bbb;
+}
+
+.detail-unit span {
+  color: #404040;
+  float: left;
+  display: inline-block;
+}
 </style>
