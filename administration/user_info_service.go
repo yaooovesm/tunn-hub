@@ -145,6 +145,7 @@ func (u *userInfoService) Update(info *model.UserInfo) error {
 		LastLogin:  info.LastLogin,
 		LastLogout: info.LastLogout,
 		FlowCount:  info.FlowCount,
+		TXCount:    info.TXCount,
 		Disabled:   info.Disabled,
 		ConfigId:   info.ConfigId,
 	})
@@ -157,16 +158,17 @@ func (u *userInfoService) Update(info *model.UserInfo) error {
 // @Description: 保存流量数据
 // @receiver u
 // @param id
-// @param count
+// @param flow 对应hub向客户端发送的流量
+// @param tx 对应hub接收的流量
 //
-func (u *userInfoService) UpdateFlowCount(id string, count uint64) {
+func (u *userInfoService) UpdateFlowCount(id string, flow uint64, tx uint64) {
 	//不更新小于100Kb的数据
-	if id == "" || count <= 100*1024 {
+	if id == "" || (flow <= 100*1024 && tx <= 100*1024) {
 		return
 	}
 	info := model.UserInfo{Id: id}
-	db := u.db.Raw("UPDATE tunn_user SET flow_count = ?, updated = ? WHERE id = ?",
-		gorm.Expr("flow_count + ?", count), time.Now().UnixMilli(), info.Id).Scan(&info)
+	db := u.db.Raw("UPDATE tunn_user SET flow_count = ?,tx_count = ?, updated = ? WHERE id = ?",
+		gorm.Expr("flow_count + ?", flow), gorm.Expr("tx_count + ?", tx), time.Now().UnixMilli(), info.Id).Scan(&info)
 	if db.Error != nil {
 		_ = log.Warn("failed to update flow count at [", id, "] : ", db.Error)
 		return
@@ -188,6 +190,7 @@ func (u *userInfoService) UpdateByAccount(info *model.UserInfo) error {
 		LastLogin:  info.LastLogin,
 		LastLogout: info.LastLogout,
 		FlowCount:  info.FlowCount,
+		TXCount:    info.TXCount,
 		Disabled:   info.Disabled,
 		ConfigId:   info.ConfigId,
 	})

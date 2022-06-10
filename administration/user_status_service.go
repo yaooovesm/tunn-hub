@@ -55,7 +55,11 @@ func (u *userStatusService) autoCommit() {
 func (u *userStatusService) CommitAllFlowCounts() {
 	for id := range u.users {
 		if u.users[id] != nil && u.users[id].TXFlowCounter != nil {
-			UserServiceInstance().infoService.UpdateFlowCount(id, u.users[id].TXFlowCounter.Commit())
+			UserServiceInstance().infoService.UpdateFlowCount(id,
+				//flow_count
+				u.users[id].TXFlowCounter.Commit(),
+				//tx_count
+				u.users[id].RXFlowCounter.Commit())
 		}
 	}
 }
@@ -161,7 +165,11 @@ func (u *userStatusService) DeleteStorage(account string) {
 		return
 	}
 	if u.users[id] != nil && u.users[id].TXFlowCounter != nil {
-		UserServiceInstance().infoService.UpdateFlowCount(id, u.users[id].TXFlowCounter.Commit())
+		UserServiceInstance().infoService.UpdateFlowCount(id,
+			//flow_count
+			u.users[id].TXFlowCounter.Commit(),
+			//tx_count
+			u.users[id].RXFlowCounter.Commit())
 	}
 	delete(u.users, id)
 }

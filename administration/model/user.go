@@ -30,6 +30,7 @@ type UserInfo struct {
 	Created    int64  `json:"created" gorm:"autoCreateTime" gorm:"column:created"`
 	Updated    int64  `json:"updated" gorm:"autoUpdateTime:milli" gorm:"column:updated"`
 	FlowCount  uint64 `json:"flow_count" gorm:"column:flow_count"`
+	TXCount    uint64 `json:"tx_count" gorm:"column:tx_count"`
 	Disabled   int    `json:"disabled" gorm:"column:disabled"`
 	ConfigId   string `json:"config_id" gorm:"column:config_id"`
 }
@@ -68,6 +69,7 @@ func (i *UserInfo) FormatCreate() {
 	i.Created = 0
 	i.Updated = 0
 	i.FlowCount = 0
+	i.TXCount = 0
 	i.ConfigId = ""
 }
 
