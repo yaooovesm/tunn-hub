@@ -27,14 +27,15 @@ const (
 // @Description:
 //
 type ServerAdmin struct {
-	cfg           config.Admin
-	db            *gorm.DB
-	crypt         Crypt
-	engine        *gin.Engine
-	tokenServer   *TokenService
-	userService   *userService
-	serverService *serverService
-	static        embed.FS
+	cfg             config.Admin
+	db              *gorm.DB
+	crypt           Crypt
+	engine          *gin.Engine
+	tokenServer     *TokenService
+	userService     *userService
+	serverService   *serverService
+	scheduleService *scheduleService
+	static          embed.FS
 }
 
 //
@@ -72,6 +73,8 @@ func NewServerAdmin(cfg config.Admin, static embed.FS) (admin *ServerAdmin, err 
 	admin.userService = newUserService(admin)
 	//server service
 	admin.serverService = newServerService()
+	//schedule service
+	admin.scheduleService = newScheduleService()
 
 	//执行路由冲突检查
 	err = admin.userService.configService.HasDuplicateExport(config.Current.Routes, "", true)
@@ -120,6 +123,8 @@ func (ad *ServerAdmin) Run() {
 	//serve reporter
 	reporter := NewReporter(ad.cfg)
 	reporter.Serve()
+	//setup schedule
+	setupSchedules(ad.scheduleService)
 	//run
 	go func() {
 		log.Info("admin work at : ", address)
