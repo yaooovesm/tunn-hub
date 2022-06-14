@@ -20,17 +20,54 @@
             <el-tag size="small" type="success" effect="dark" v-if="User.disabled===0">正常</el-tag>
             <el-tag size="small" type="danger" effect="dark" v-else-if="User.disabled===1">禁用</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item width="20%" label="">{{ $utils.FormatBytesSize(User.flow_count) }}
+          <el-descriptions-item width="20%" label="">
+            <el-popover
+                placement="bottom-end"
+                :width="200"
+                trigger="hover"
+            >
+              <template #default>
+                <div>
+                  <div class="detail-unit">
+                    <span>下行流量 </span>
+                    {{ $utils.FormatBytesSizeM(User.flow_count) }}
+                  </div>
+                  <div class="detail-unit">
+                    <span>上行流量 </span>
+                    {{ $utils.FormatBytesSizeM(User.tx_count) }}
+                  </div>
+                  <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
+                  <div class="detail-unit">
+                    <span>流量总计 </span>
+                    {{ $utils.FormatBytesSizeM(User.tx_count + User.flow_count) }}
+                  </div>
+                </div>
+              </template>
+              <template #reference>
+                <div>
+                  <div style="display: inline-block;margin-right: 10px">
+                      <span
+                          style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↓</span>
+                    <span>{{ $utils.FormatBytesSizeM(User.flow_count) }}</span>
+                  </div>
+                  <div style="display: inline-block">
+                <span
+                    style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↑</span>
+                    <span>{{ $utils.FormatBytesSizeM(User.tx_count) }}</span>
+                  </div>
+                </div>
+              </template>
+            </el-popover>
             <template v-slot:label>
               流量统计
-              <el-tooltip
-                  effect="dark"
-                  content="此处统计的流量为服务器出方向流量，服务器入方向(客户端出方向)不计算入内。"
-                  placement="top-end"
-              >
-                <i style="font-size: 12px;font-weight: 500; color: rgba(0,123,187,0.8)"
-                   class="iconfont icon-question-circle"></i>
-              </el-tooltip>
+              <!--              <el-tooltip-->
+              <!--                  effect="dark"-->
+              <!--                  content="此处统计的流量为服务器出方向流量，服务器入方向(客户端出方向)不计算入内。"-->
+              <!--                  placement="top-end"-->
+              <!--              >-->
+              <!--                <i style="font-size: 12px;font-weight: 500; color: rgba(0,123,187,0.8)"-->
+              <!--                   class="iconfont icon-question-circle"></i>-->
+              <!--              </el-tooltip>-->
             </template>
           </el-descriptions-item>
           <!--          <el-descriptions-item width="20%" label="邮箱">{{-->
@@ -93,6 +130,7 @@ export default {
         created: 0,
         email: "",
         flow_count: 0,
+        tx_count: 0,
         last_login: 0,
         last_logout: 0,
         updated: 0,

@@ -30,9 +30,47 @@
               <el-tag size="small" type="danger" effect="dark" v-else-if="scope.row.disabled===1">禁用</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="流量统计" width="150" prop="flow_count" sortable>
+          <el-table-column label="流量统计" width="200" prop="flow_count" sortable>
             <template #default="scope">
-              {{ $utils.FormatBytesSize(scope.row.flow_count) }}
+              <!--              {{ $utils.FormatBytesSize(scope.row.flow_count) }}-->
+              <el-popover
+                  placement="bottom-end"
+                  :title="'流量统计@'+scope.row.account"
+                  :width="200"
+                  trigger="hover"
+              >
+                <template #default>
+                  <div>
+                    <div class="detail-unit">
+                      <span>下行流量 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.flow_count) }}
+                    </div>
+                    <div class="detail-unit">
+                      <span>上行流量 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.tx_count) }}
+                    </div>
+                    <el-divider style="margin-top: 10px;margin-bottom: 10px"/>
+                    <div class="detail-unit">
+                      <span>流量总计 </span>
+                      {{ $utils.FormatBytesSizeM(scope.row.tx_count + scope.row.flow_count) }}
+                    </div>
+                  </div>
+                </template>
+                <template #reference>
+                  <div>
+                    <div style="display: inline-block;margin-right: 10px">
+                      <span
+                          style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↓</span>
+                      <span>{{ $utils.FormatBytesSizeM(scope.row.flow_count) }}</span>
+                    </div>
+                    <div style="display: inline-block">
+                <span
+                    style="display: inline-block;transform: translateY(-2px);margin-right: 3px;font-weight: bolder;color: #007bbb">↑</span>
+                      <span>{{ $utils.FormatBytesSizeM(scope.row.tx_count) }}</span>
+                    </div>
+                  </div>
+                </template>
+              </el-popover>
             </template>
           </el-table-column>
           <el-table-column label="上次登录" width="160" prop="last_login" sortable>
