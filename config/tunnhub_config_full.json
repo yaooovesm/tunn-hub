@@ -9,7 +9,7 @@
   },
   "route": [
     {
-      "name":"test_route",
+      "name": "test_route",
       "option": "export",
       "network": "10.10.10.10/32"
     }
@@ -24,10 +24,9 @@
   },
   "data_process": {
     "encrypt": "XOR"
-  }
-,
+  },
   "security": {
-    "cert" : "./cert.pem",
+    "cert": "./cert.pem",
     "key": "./key.pem"
   },
   "admin": {
@@ -41,5 +40,11 @@
     "start": "172.22.0.11",
     "end": "172.22.0.100",
     "network": "172.22.0.0/24"
+  },
+  "schedule": {
+    "daily_flow_record": true,
+    "weekly_flow_record": true,
+    "monthly_flow_record": true,
+    "monthly_flow_reset": true
   }
 }
