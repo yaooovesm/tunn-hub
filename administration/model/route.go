@@ -5,7 +5,8 @@ package model
 // @Description:
 //
 type ImportableRoute struct {
-	Name     string `json:"name"`
-	Network  string `json:"network"`
-	Provider string `json:"provider"`
+	Name         string `json:"name"`
+	Network      string `json:"network"`
+	Provider     string `json:"provider"`
+	Certificated bool   `json:"certificated"`
 }

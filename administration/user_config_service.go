@@ -40,9 +40,10 @@ func (u *userClientConfigService) AvailableExports() ([]model.ImportableRoute, e
 	for i := range serverRoutes {
 		if serverRoutes[i].Option == config.RouteOptionExport {
 			routes = append(routes, model.ImportableRoute{
-				Name:     serverRoutes[i].Name,
-				Network:  serverRoutes[i].Network,
-				Provider: "TunnHub",
+				Name:         serverRoutes[i].Name,
+				Network:      serverRoutes[i].Network,
+				Provider:     "TunnHub",
+				Certificated: true,
 			})
 		}
 	}
@@ -54,9 +55,10 @@ func (u *userClientConfigService) AvailableExports() ([]model.ImportableRoute, e
 		for j := range list[i].Config.Routes {
 			if list[i].Config.Routes[j].Option == config.RouteOptionExport {
 				routes = append(routes, model.ImportableRoute{
-					Name:     list[i].Config.Routes[j].Name,
-					Network:  list[i].Config.Routes[j].Network,
-					Provider: list[i].Account,
+					Name:         list[i].Config.Routes[j].Name,
+					Network:      list[i].Config.Routes[j].Network,
+					Provider:     list[i].Account,
+					Certificated: list[i].Auth == string(Administrator),
 				})
 			}
 		}

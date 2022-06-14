@@ -165,4 +165,15 @@ export default {
   text-align: right;
   margin-bottom: 5px;
 }
+.detail-unit {
+  text-align: right;
+  font-size: 12px;
+  color: #007bbb;
+}
+
+.detail-unit span {
+  color: #404040;
+  float: left;
+  display: inline-block;
+}
 </style>
