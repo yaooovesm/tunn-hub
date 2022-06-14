@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	log "github.com/cihub/seelog"
+	"runtime"
 	"tunn-hub/administration"
 	"tunn-hub/application"
 	"tunn-hub/config"
@@ -17,6 +19,10 @@ var static embed.FS
 // @Description: entrance
 //
 func main() {
+	//set GOMAXPROCS
+	cores := runtime.NumCPU()
+	runtime.GOMAXPROCS(cores * 4)
+	fmt.Println("MAXPROCS set to ", cores*4)
 	//initialize log
 	logging.Initialize()
 	//load config
