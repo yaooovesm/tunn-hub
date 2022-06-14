@@ -28,6 +28,7 @@ type Config struct {
 	Admin       Admin       `json:"admin"`
 	IPPool      IPPool      `json:"ip_pool"`
 	Runtime     Runtime     `json:"runtime"`
+	Schedule    Schedule    `json:"schedule"`
 }
 
 //

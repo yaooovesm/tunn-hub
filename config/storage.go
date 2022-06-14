@@ -20,6 +20,7 @@ type ServerConfigStorage struct {
 	Security    Security    `json:"security"`
 	Admin       Admin       `json:"admin"`
 	IPPool      IPPool      `json:"ip_pool"`
+	Schedule    Schedule    `json:"schedule"`
 }
 
 //
@@ -67,6 +68,7 @@ func (cfg *ServerConfigStorage) ToConfig() Config {
 		Security:    cfg.Security,
 		Admin:       cfg.Admin,
 		IPPool:      cfg.IPPool,
+		Schedule:    cfg.Schedule,
 	}
 }
 
