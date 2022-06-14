@@ -34,22 +34,30 @@ func newUserClientConfigService(admin *ServerAdmin) *userClientConfigService {
 // @return []config.Route
 // @return error
 //
-func (u *userClientConfigService) AvailableExports() ([]config.Route, error) {
-	routes := make([]config.Route, 0)
+func (u *userClientConfigService) AvailableExports() ([]model.ImportableRoute, error) {
+	routes := make([]model.ImportableRoute, 0)
 	serverRoutes := config.Current.Routes
 	for i := range serverRoutes {
 		if serverRoutes[i].Option == config.RouteOptionExport {
-			routes = append(routes, serverRoutes[i])
+			routes = append(routes, model.ImportableRoute{
+				Name:     serverRoutes[i].Name,
+				Network:  serverRoutes[i].Network,
+				Provider: "TunnHub",
+			})
 		}
 	}
-	list, err := u.List()
+	list, err := UserServiceInstance().infoService.ListFull()
 	if err != nil {
 		return nil, err
 	}
 	for i := range list {
-		for j := range list[i].Routes {
-			if list[i].Routes[j].Option == config.RouteOptionExport {
-				routes = append(routes, list[i].Routes[j])
+		for j := range list[i].Config.Routes {
+			if list[i].Config.Routes[j].Option == config.RouteOptionExport {
+				routes = append(routes, model.ImportableRoute{
+					Name:     list[i].Config.Routes[j].Name,
+					Network:  list[i].Config.Routes[j].Network,
+					Provider: list[i].Account,
+				})
 			}
 		}
 	}

@@ -47,6 +47,16 @@ type UserStorage struct {
 }
 
 //
+// UserFull
+// @Description:
+//
+type UserFull struct {
+	UserInfo
+	Content string       `json:"content"`
+	Config  ClientConfig `json:"config" gorm:"-"`
+}
+
+//
 // TableName
 // @Description: gorm table name
 // @receiver UserInfo

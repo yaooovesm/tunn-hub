@@ -301,6 +301,24 @@ func (u *userInfoService) List() ([]model.UserInfo, error) {
 }
 
 //
+// ListFull
+// @Description:
+// @receiver u
+// @return []model.UserFull
+// @return error
+//
+func (u *userInfoService) ListFull() ([]model.UserFull, error) {
+	infos := make([]model.UserFull, 0)
+	db := u.db.Raw("SELECT tunn_config.content, tunn_user.* FROM tunn_config LEFT JOIN tunn_user ON tunn_config.id=tunn_user.config_id").Scan(&infos)
+	for i := range infos {
+		info := infos[i]
+		u.DecryptFullInfo(&info)
+		infos[i] = info
+	}
+	return infos, db.Error
+}
+
+//
 // EncryptInfo
 // @Description: 加密
 // @receiver u
@@ -326,4 +344,27 @@ func (u *userInfoService) DecryptInfo(i *model.UserInfo) {
 	i.Account = u.crypt.Decrypt(i.Account)
 	i.Auth = u.crypt.Decrypt(i.Auth)
 	i.Email = u.crypt.Decrypt(i.Email)
+}
+
+//
+// DecryptFullInfo
+// @Description: 解密
+// @receiver u
+// @param i
+// @return model.UserInfo
+//
+func (u *userInfoService) DecryptFullInfo(i *model.UserFull) {
+	i.Password = u.crypt.Decrypt(i.Password)
+	i.Account = u.crypt.Decrypt(i.Account)
+	i.Auth = u.crypt.Decrypt(i.Auth)
+	i.Email = u.crypt.Decrypt(i.Email)
+	storage := model.ClientConfigStorage{
+		Id:      i.ConfigId,
+		Content: i.Content,
+	}
+	cfg, err := storage.GetConfig()
+	if err != nil {
+		return
+	}
+	i.Config = cfg
 }
