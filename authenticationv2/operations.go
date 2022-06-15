@@ -2,6 +2,7 @@ package authenticationv2
 
 import (
 	"encoding/json"
+	"errors"
 	"tunn-hub/administration"
 	"tunn-hub/config"
 	"tunn-hub/transmitter"
@@ -87,7 +88,13 @@ func (o *Operation) GetParams(key string) interface{} {
 func (o *Operation) Process() AuthReply {
 	switch o.Operation {
 	case OperationGetAvailableExports:
-		exports, err := administration.UserServiceInstance().AvailableExports()
+		account := ""
+		if acc := o.GetParams("account"); acc == nil {
+			return o.reply(nil, errors.New("unknown account"))
+		} else {
+			account = acc.(string)
+		}
+		exports, err := administration.UserServiceInstance().AvailableExports(account)
 		return o.reply(exports, err)
 	case OperationUpdateRoutes:
 		params := o.GetParams("routes")

@@ -451,8 +451,8 @@ func (serv *userService) CommitAllFlowCount() {
 // @return []config.Route
 // @return error
 //
-func (serv *userService) AvailableExports() ([]model.ImportableRoute, error) {
-	return serv.configService.AvailableExports()
+func (serv *userService) AvailableExports(account string) ([]model.ImportableRoute, error) {
+	return serv.configService.AvailableExports(account)
 }
 
 //

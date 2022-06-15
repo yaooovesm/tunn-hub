@@ -25,9 +25,10 @@ const (
 // @Description:
 //
 type Route struct {
-	Name    string      `json:"name"` //for export
-	Network string      `json:"network"`
-	Option  RouteOption `json:"option"`
+	Name       string      `json:"name"` //for export
+	Network    string      `json:"network"`
+	Option     RouteOption `json:"option"`
+	Visibility string      `json:"visibility"` //能见度
 }
 
 //

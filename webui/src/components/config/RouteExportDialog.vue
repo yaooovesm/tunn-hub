@@ -21,6 +21,7 @@
               label-position="top"
               label-width="100px"
               :model="route"
+              size="small"
           >
             <el-form-item label="名称">
               <el-input v-model="route.name"/>
@@ -37,6 +38,10 @@
                     :value="m"
                 />
               </el-select>
+            </el-form-item>
+            <el-form-item label="名称">
+              <el-input v-model="route.visibility" :rows="3" type="textarea"
+                        placeholder="留空则其他用户无法见到这个网络，设置all则所有用户可见，指定用户可见时用逗号隔开用户名"/>
             </el-form-item>
           </el-form>
         </el-col>
@@ -59,9 +64,10 @@ export default {
       masks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
         17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
       route: {
-        maskNum: 24,
+        maskNum: 32,
         addr: "",
         name: "",
+        visibility: ""
       }
     }
   },
@@ -70,7 +76,8 @@ export default {
       let route = {
         name: this.route.name,
         network: this.route.addr + "/" + this.route.maskNum,
-        option: "export"
+        option: "export",
+        visibility: this.route.visibility
       }
       this.$emit("submit", route)
     },
@@ -79,6 +86,12 @@ export default {
     },
     close: function () {
       this.dialogVisible = false
+      this.route = {
+        maskNum: 32,
+        addr: "",
+        name: "",
+        visibility: ""
+      }
     }
   }
 }

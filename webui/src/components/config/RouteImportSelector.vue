@@ -20,12 +20,13 @@
           :key="r.network"
           :label="r.name"
           :value="r.network"
-          style="height: 50px;margin-bottom: 2px;padding: 0"
+          style="height: 50px;margin-bottom: 2px;padding: 0;"
           :disabled="r.provider === ''"
       >
         <el-popover
             placement="right-start"
             :width="200"
+            :hide-after="0"
             trigger="hover"
         >
           <template #default>

@@ -56,7 +56,7 @@ func (r *ReportFetchRequest) PermissionCheck(remote net.IP) error {
 			currentLevel = currentLevel.Compare(lev)
 		}
 	}
-	return TokenServiceInstance().CheckTokenCode(r.Token, currentLevel, remote)
+	return TokenServiceInstance().CheckTokenCode(r.Token, currentLevel, remote, nil)
 }
 
 //

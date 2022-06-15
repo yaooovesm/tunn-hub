@@ -1,6 +1,7 @@
 package administration
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"tunn-hub/administration/model"
 )
@@ -120,7 +121,14 @@ func ApiCreateConfig(ctx *gin.Context) {
 // @param ctx
 //
 func ApiAvailableExports(ctx *gin.Context) {
-	routes, err := UserServiceInstance().configService.AvailableExports()
+	account := ""
+	if acc, exists := ctx.Get("account"); exists && acc != nil {
+		account = acc.(string)
+	} else {
+		responseError(ctx, errors.New("no account"), "获取可导入网络列表失败")
+		return
+	}
+	routes, err := UserServiceInstance().configService.AvailableExports(account)
 	if err != nil {
 		responseError(ctx, err, "获取可导入网络列表失败")
 		return
