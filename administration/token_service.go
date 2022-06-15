@@ -76,10 +76,10 @@ func (l UserAuthLevel) Compare(l2 UserAuthLevel) (high UserAuthLevel) {
 //
 type TokenService struct {
 	crypt Crypt
-	cache sync.Map
-	exp   sync.Map
-	ip    sync.Map
-	level sync.Map
+	cache sync.Map // token:account  + token_id:id
+	exp   sync.Map // token:expire date
+	ip    sync.Map // token:auth
+	level sync.Map // token:level
 }
 
 //
@@ -219,7 +219,7 @@ func (t *TokenService) decodeToken(code string) model.Token {
 // @return error
 //
 func (t *TokenService) IsExist(account string, code string) error {
-	if !t.hasToken(code) {
+	if !t.hasToken(code, nil) {
 		return ErrNotLogin
 	}
 	if t.isExpired(code) {
@@ -242,7 +242,7 @@ func (t *TokenService) IsExist(account string, code string) error {
 func (t *TokenService) CheckToken(ctx *gin.Context, level UserAuthLevel) error {
 	code := ctx.GetHeader("token")
 	ip, _ := ctx.RemoteIP()
-	return t.CheckTokenCode(code, level, ip)
+	return t.CheckTokenCode(code, level, ip, ctx)
 }
 
 //
@@ -254,8 +254,8 @@ func (t *TokenService) CheckToken(ctx *gin.Context, level UserAuthLevel) error {
 // @param remote
 // @return error
 //
-func (t *TokenService) CheckTokenCode(code string, level UserAuthLevel, remote net.IP) error {
-	if !t.hasToken(code) {
+func (t *TokenService) CheckTokenCode(code string, level UserAuthLevel, remote net.IP, ctx *gin.Context) error {
+	if !t.hasToken(code, ctx) {
 		return ErrNotLogin
 	}
 	if t.isExpired(code) {
@@ -264,11 +264,9 @@ func (t *TokenService) CheckTokenCode(code string, level UserAuthLevel, remote n
 	if !t.isPermittedIp(code, remote) {
 		return ErrRemoteHostNotPermitted
 	}
-	if !t.hasPermissions(code, level) {
+	if !t.hasPermissions(code, level, ctx) {
 		return ErrNoPermissions
 	}
-	//续期
-	t.exp.Store(code, time.Now().UnixMilli()+DefaultTokenTimeout)
 	return nil
 }
 
@@ -319,19 +317,18 @@ func (t *TokenService) CheckSelfById(ctx *gin.Context, id string) error {
 // @param code
 // @param level
 //
-func (t *TokenService) hasPermissions(code string, level UserAuthLevel) bool {
+func (t *TokenService) hasPermissions(code string, level UserAuthLevel, ctx *gin.Context) bool {
 	has := false
 	if lev, ok := AuthLevelMap[level]; ok {
-		t.level.Range(func(key, value interface{}) bool {
-			if key.(string) == code {
-				cur := AuthLevelMap[UserAuthLevel(value.(string))]
-				if cur >= lev {
-					has = true
-				}
-				return false
+		if auth, ok := t.level.Load(code); ok {
+			if ctx != nil {
+				ctx.Set("auth", auth.(string))
 			}
-			return true
-		})
+			cur := AuthLevelMap[UserAuthLevel(auth.(string))]
+			if cur >= lev {
+				has = true
+			}
+		}
 	}
 	return has
 }
@@ -343,15 +340,14 @@ func (t *TokenService) hasPermissions(code string, level UserAuthLevel) bool {
 // @param code
 // @return bool
 //
-func (t *TokenService) hasToken(code string) bool {
+func (t *TokenService) hasToken(code string, ctx *gin.Context) bool {
 	has := false
-	t.cache.Range(func(key, value interface{}) bool {
-		if key.(string) == code {
-			has = true
-			return false
+	if account, ok := t.cache.Load(code); ok {
+		if ctx != nil {
+			ctx.Set("account", account)
 		}
-		return true
-	})
+		has = true
+	}
 	return has
 }
 
@@ -365,17 +361,12 @@ func (t *TokenService) hasToken(code string) bool {
 func (t *TokenService) isExpired(code string) bool {
 	expired := true
 	current := time.Now().UnixMilli()
-	t.exp.Range(func(key, value interface{}) bool {
-		if key.(string) == code {
-			if value.(int64) > current {
-				//通过则延时
-				expired = false
-				t.exp.Store(key, time.Now().UnixMilli()+DefaultTokenTimeout)
-			}
-			return false
+	if exp, ok := t.exp.Load(code); ok {
+		if exp.(int64) > current {
+			expired = false
+			t.exp.Store(code, time.Now().UnixMilli()+DefaultTokenTimeout)
 		}
-		return true
-	})
+	}
 	return expired
 }
 
