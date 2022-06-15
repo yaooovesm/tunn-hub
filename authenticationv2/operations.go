@@ -15,6 +15,7 @@ const (
 	OperationUpdateRoutes        OperationName = "OperationUpdateRoutes"
 	OperationResetRoutes         OperationName = "ResetRoutes"
 	OperationGetAvailableExports OperationName = "GetAvailableExports"
+	OperationGetUserFlowCount    OperationName = "GetUserFlowCount"
 )
 
 //
@@ -109,6 +110,17 @@ func (o *Operation) Process() AuthReply {
 	case OperationGetConfig:
 		cfg, err := administration.UserServiceInstance().GetConfigByConnectUUID(o.UUID)
 		return o.reply(cfg, err)
+	case OperationGetUserFlowCount:
+		account := o.GetParams("account")
+		info, err := administration.UserServiceInstance().GetUserInfoByAccount(account.(string))
+		if err != nil {
+			return o.reply("", err)
+		} else {
+			return o.reply(map[string]interface{}{
+				"rx": info.FlowCount,
+				"tx": info.TXCount,
+			}, nil)
+		}
 	}
 	return AuthReply{
 		Ok:      false,
