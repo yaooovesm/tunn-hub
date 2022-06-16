@@ -41,7 +41,7 @@ type AuthServerHandler interface {
 	// @Description:
 	// @param reply
 	//
-	AfterLogin(packet *TransportPacket, address string, cfg config.ClientConfig)
+	AfterLogin(packet *TransportPacket, address string, cfg config.ClientConfig, kick func())
 	//
 	// AfterLogout
 	// @Description:

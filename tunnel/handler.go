@@ -71,10 +71,9 @@ func (h *AuthServerHandler) OnReport(packet *authenticationv2.TransportPacket) {
 // @param packet
 // @param Address
 //
-func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.ClientConfig) {
+func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket, address string, cfg config.ClientConfig, kick func()) {
 	log.Info("[Account:", cfg.User.Account, "][Address:", address, "][uuid:", packet.UUID, "] login success")
 	//setup flow processor
-	//lmt := traffic.NewPPSLimiterFP(10, config.Current.Global.MTU)
 	//tx
 	txfp := traffic.NewFlowProcessor()
 	//单用户TX流量统计
@@ -91,6 +90,16 @@ func (h *AuthServerHandler) AfterLogin(packet *authenticationv2.TransportPacket,
 		lmt := traffic.NewPPSLimiterFP(int(cfg.Limit.Bandwidth), config.Current.Global.MTU)
 		txfp.Register(&lmt, "txlmt_"+packet.UUID)
 		rxfp.Register(&lmt, "rxlmt_"+packet.UUID)
+	}
+	//在此处获取并注册流量限制器
+	//单位为M
+	info, _ := administration.UserServiceInstance().GetUserFullByAccount(cfg.User.Account)
+	if info.Config.Limit.Flow != 0 {
+		//拉取最新流量记录
+		//单位转换为byte
+		flowlmt := traffic.NewFlowLimitFP(txfs, info.FlowCount, uint64(info.Config.Limit.Flow)*1024*1024, kick)
+		txfp.Register(&flowlmt, "flowlmt_"+packet.UUID)
+		//rxfp.Register(&flowlmt, "flowlmt_"+packet.UUID)
 	}
 	//setup cipher
 	if cfg.DataProcess.CipherType != "" {
