@@ -234,6 +234,10 @@ func (u *userInfoService) CheckPasswordAndAccount(info model.UserInfo) (cfg mode
 			if err != nil {
 				return cfg, err
 			}
+			//验证流量是否超过限制
+			if cfg.Limit.Flow != 0 && info.FlowCount >= uint64(cfg.Limit.Flow)*1024*1024 {
+				return cfg, errors.New("flow usage exceeds limit")
+			}
 			return
 		}
 	} else if db.Error == gorm.ErrRecordNotFound {
@@ -316,6 +320,23 @@ func (u *userInfoService) ListFull() ([]model.UserFull, error) {
 		infos[i] = info
 	}
 	return infos, db.Error
+}
+
+//
+// GetFullByAccount
+// @Description:
+// @receiver u
+// @param account
+// @return model.UserFull
+// @return error
+//
+func (u *userInfoService) GetFullByAccount(account string) (model.UserFull, error) {
+	info := model.UserInfo{Account: account}
+	u.EncryptInfo(&info)
+	full := model.UserFull{}
+	db := u.db.Raw("SELECT tunn_config.content, tunn_user.* FROM tunn_config LEFT JOIN tunn_user ON tunn_config.id=tunn_user.config_id WHERE tunn_user.account=?", info.Account).First(&full)
+	u.DecryptFullInfo(&full)
+	return full, db.Error
 }
 
 //

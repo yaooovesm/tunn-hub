@@ -292,7 +292,9 @@ func (s *Server) login(tunn *transmitter.Tunnel, packet *TransportPacket, addres
 		Error:   "",
 		Message: string(b),
 	}, PacketTypeLogin, packet.UUID, tunn)
-	s.handler.AfterLogin(packet, address, cfg)
+	s.handler.AfterLogin(packet, address, cfg, func() {
+		_ = s.KickByUUID(packet.UUID)
+	})
 }
 
 //
