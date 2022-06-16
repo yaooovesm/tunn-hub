@@ -160,11 +160,24 @@
               <span style="display: block;margin-top: 8px;color: #909399;font-size: 12px">
               提示：此处的设置将会同时影响上行和下行速率，带宽=上行带宽+下行带宽。设置 "0" 则不限制。设置将在客户端重新连接后生效。
               </span>
-              <!--              带宽限制 <el-button size="small" type="text" @click="$refs.bandwidth_select.show(limit.bandwidth)">{{ limit.bandwidth === 0 ? "无限制" : limit.bandwidth + "Mbps" }}</el-button>-->
-              <!--              <el-slider v-model="limit.bandwidth" size="small" :format-tooltip="function (val){-->
-              <!--                return val+'Mbps'-->
-              <!--              }" :marks="{0:'无限制',1000:'1000Mbps'}" :max="1000" :min="0"-->
-              <!--              />-->
+            </div>
+            <div style="margin-top: 20px;font-size: 12px">
+              流量限制
+              <el-input size="small" :min="0" v-model="limit.flow"
+                        style="width: 60px;margin: 0 5px;"
+                        placeholder="流量">
+              </el-input>
+              M
+              <el-tooltip
+                  effect="dark"
+                  content='流量限制单位为M，限制对象为服务器出方向(客户端入方向)流量。设置 "0" 则不限制。'
+                  placement="right">
+                <i class="iconfont icon-exclamation-circle"
+                   style="color: #007bbb;font-size: 10px;margin-left: 5px;line-height: 24px"></i>
+              </el-tooltip>
+              <!--              <span style="display: block;margin-top: 8px;color: #909399;font-size: 12px">-->
+              <!--              提示：流量限制指的是限制Hub端的发送即客户端接收，单位为M。设置 "0" 则不限制。设置将在客户端重新连接后生效。-->
+              <!--              </span>-->
             </div>
           </div>
         </el-card>
@@ -194,7 +207,8 @@ export default {
       loading: false,
       dialogVisible: false,
       limit: {
-        bandwidth: 0
+        bandwidth: 0,
+        flow: 0,
       },
       addImportValue: "",
       addExportValue: "",
@@ -281,7 +295,8 @@ export default {
           return
         }
         data.limit = {
-          bandwidth: bandwidth
+          bandwidth: bandwidth,
+          flow: Number(this.limit.flow)
         }
       }
       axios({
