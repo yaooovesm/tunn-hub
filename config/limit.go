@@ -6,4 +6,5 @@ package config
 //
 type Limit struct {
 	Bandwidth uint `json:"bandwidth"`
+	Flow      uint `json:"flow"`
 }
