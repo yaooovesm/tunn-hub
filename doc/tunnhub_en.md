@@ -32,6 +32,15 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 ### Updates
 
 ------
+2022/06/16 @ 1.1.0.220616
+
+- flow speed limit
+- flow count limit
+- add visibility to network export
+- rich network export/import information
+- flow counter record/reset schedule(daily,weekly,monthly)
+- fix resource recycle
+- WebUI adjust
 
 2022/05/27 @ 1.0.0.220527
 
