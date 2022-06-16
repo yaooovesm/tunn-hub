@@ -184,6 +184,18 @@ func (serv userService) GetUserInfoByAccount(account string) (model.UserInfo, er
 }
 
 //
+// GetUserFullByAccount
+// @Description:
+// @receiver serv
+// @param account
+// @return model.UserFull
+// @return error
+//
+func (serv userService) GetUserFullByAccount(account string) (model.UserFull, error) {
+	return serv.infoService.GetFullByAccount(account)
+}
+
+//
 // GetUserByAccount
 // @Description:
 // @receiver serv
