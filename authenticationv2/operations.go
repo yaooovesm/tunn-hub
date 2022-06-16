@@ -112,13 +112,16 @@ func (o *Operation) Process() AuthReply {
 		return o.reply(cfg, err)
 	case OperationGetUserFlowCount:
 		account := o.GetParams("account")
-		info, err := administration.UserServiceInstance().GetUserInfoByAccount(account.(string))
+		info, err := administration.UserServiceInstance().GetUserFullByAccount(account.(string))
 		if err != nil {
 			return o.reply("", err)
 		} else {
 			return o.reply(map[string]interface{}{
-				"rx": info.FlowCount,
-				"tx": info.TXCount,
+				"flow": map[string]interface{}{
+					"rx": info.FlowCount,
+					"tx": info.TXCount,
+				},
+				"limit": info.Config.Limit,
 			}, nil)
 		}
 	}
