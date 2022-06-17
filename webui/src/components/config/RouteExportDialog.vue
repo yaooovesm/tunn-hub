@@ -39,7 +39,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="名称">
+            <el-form-item label="能见度">
               <el-input v-model="route.visibility" :rows="3" type="textarea"
                         placeholder="留空则其他用户无法见到这个网络，设置all则所有用户可见，指定用户可见时用逗号隔开用户名"/>
             </el-form-item>
