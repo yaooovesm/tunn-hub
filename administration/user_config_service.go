@@ -78,6 +78,45 @@ func (u *userClientConfigService) AvailableExports(account string) ([]model.Impo
 }
 
 //
+// AllExports
+// @Description:
+// @receiver u
+// @return []model.ImportableRoute
+// @return error
+//
+func (u *userClientConfigService) AllExports() ([]model.ImportableRoute, error) {
+	routes := make([]model.ImportableRoute, 0)
+	serverRoutes := config.Current.Routes
+	for i := range serverRoutes {
+		if serverRoutes[i].Option == config.RouteOptionExport {
+			routes = append(routes, model.ImportableRoute{
+				Name:         serverRoutes[i].Name,
+				Network:      serverRoutes[i].Network,
+				Provider:     "TunnHub",
+				Certificated: true,
+			})
+		}
+	}
+	list, err := UserServiceInstance().infoService.ListFull()
+	if err != nil {
+		return nil, err
+	}
+	for i := range list {
+		for j := range list[i].Config.Routes {
+			if list[i].Config.Routes[j].Option == config.RouteOptionExport {
+				routes = append(routes, model.ImportableRoute{
+					Name:         list[i].Config.Routes[j].Name,
+					Network:      list[i].Config.Routes[j].Network,
+					Provider:     list[i].Account,
+					Certificated: list[i].Auth == string(Administrator),
+				})
+			}
+		}
+	}
+	return routes, nil
+}
+
+//
 // visibilityCheck
 // @Description:
 // @param v
@@ -105,7 +144,7 @@ func visibilityCheck(v, account string) bool {
 // @return error
 //
 func (u *userClientConfigService) ImportsCheck(routes []config.Route) error {
-	exports, err := u.AvailableExports("")
+	exports, err := u.AllExports()
 	if err != nil {
 		return err
 	}
