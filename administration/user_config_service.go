@@ -188,6 +188,18 @@ func (u *userClientConfigService) GetById(id string) (cfg model.ClientConfig, er
 	if err != nil {
 		return model.ClientConfig{}, err
 	}
+	//添加命名
+	exports, err := u.AllExports()
+	if err != nil {
+		return model.ClientConfig{}, err
+	}
+	for i := range cfg.Routes {
+		for j := range exports {
+			if exports[j].Network == cfg.Routes[i].Network {
+				cfg.Routes[i].Name = exports[j].Name
+			}
+		}
+	}
 	return
 }
 
