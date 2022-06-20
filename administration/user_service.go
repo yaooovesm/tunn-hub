@@ -509,7 +509,7 @@ func (serv *userService) UpdateRoutesByConnectUUID(uuid string, routes []config.
 	_, err = serv.configService.UpdateById(model.ClientConfig{
 		Id:     userInfo.ConfigId,
 		Routes: routes,
-	})
+	}, true)
 	if err != nil {
 		return err
 	}

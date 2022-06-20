@@ -14,6 +14,7 @@ import (
 //
 type userClientConfigService struct {
 	ServerAdmin
+	UpdatedRecently bool
 }
 
 //
@@ -24,7 +25,8 @@ type userClientConfigService struct {
 //
 func newUserClientConfigService(admin *ServerAdmin) *userClientConfigService {
 	return &userClientConfigService{
-		ServerAdmin: *admin,
+		ServerAdmin:     *admin,
+		UpdatedRecently: true,
 	}
 }
 
@@ -248,7 +250,7 @@ func (u *userClientConfigService) DeleteById(id string) error {
 // @param cfg
 // @return error
 //
-func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.ClientConfig, error) {
+func (u *userClientConfigService) UpdateById(cfg model.ClientConfig, positive bool) (model.ClientConfig, error) {
 	err := u.HasDuplicateExport(cfg.Routes, cfg.Id, false)
 	if err != nil {
 		return model.ClientConfig{}, err
@@ -265,6 +267,9 @@ func (u *userClientConfigService) UpdateById(cfg model.ClientConfig) (model.Clie
 	cfg, err = storage.GetConfig()
 	if err != nil {
 		return model.ClientConfig{}, err
+	}
+	if positive {
+		u.UpdatedRecently = true
 	}
 	return cfg, nil
 }

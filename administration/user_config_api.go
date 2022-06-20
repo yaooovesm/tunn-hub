@@ -70,7 +70,7 @@ func ApiUpdateConfigById(ctx *gin.Context) {
 		response400(ctx)
 		return
 	}
-	cfg, err = UserServiceInstance().configService.UpdateById(cfg)
+	cfg, err = UserServiceInstance().configService.UpdateById(cfg, true)
 	if err != nil {
 		responseError(ctx, err, "更新设置失败")
 		return
