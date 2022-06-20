@@ -1,6 +1,9 @@
 package administration
 
-import "tunn-hub/schedule"
+import (
+	log "github.com/cihub/seelog"
+	"tunn-hub/schedule"
+)
 
 //
 // scheduleService
@@ -48,6 +51,7 @@ func (s *scheduleService) Register(spec string, name string, f func(), autorun b
 //
 func (s *scheduleService) StopByName(name string) {
 	if sc, ok := s.Schedules[name]; ok && sc != nil {
+		log.Info("[schedule] ", name, " stopped...")
 		sc.Stop()
 	}
 }
@@ -60,6 +64,7 @@ func (s *scheduleService) StopByName(name string) {
 //
 func (s *scheduleService) StartByName(name string) {
 	if sc, ok := s.Schedules[name]; ok && sc != nil {
+		log.Info("[schedule] ", name, " started...")
 		sc.Start()
 	}
 }
