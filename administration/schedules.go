@@ -5,9 +5,13 @@ import (
 	log "github.com/cihub/seelog"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
 	"tunn-hub/administration/model"
 	"tunn-hub/config"
+	"tunn-hub/monitor"
 )
 
 //
@@ -16,70 +20,70 @@ import (
 // @param service
 //
 func setupSchedules(service *scheduleService) {
-	////每小时保存一次流量记录,总共保留24小时内记录
-	//err := service.Register("@hourly", "hourly_traffic_recorder", func() {
-	//	//确定要保存的文件名
-	//	//找到最新的序号，最新序号+1即为保存的序号
-	//	path := "./record/hourly/"
-	//	if config.Current.Schedule.HourlyNetworkTrafficDump != "" {
-	//		path = config.Current.Schedule.HourlyNetworkTrafficDump
-	//	}
-	//	s, err := os.Stat(path)
-	//	if os.IsNotExist(err) || !s.IsDir() {
-	//		_ = os.MkdirAll(path, 0644)
-	//	}
-	//	var latest = int64(0)
-	//	var latestNum = 0
-	//	var has = false
-	//	err = filepath.Walk(path,
-	//		func(p string, f os.FileInfo, err error) error {
-	//			if f != nil && !f.IsDir() {
-	//				mo := f.ModTime().UnixMilli()
-	//				num, err := strconv.Atoi(strings.ReplaceAll(filepath.Base(p), "traffic", ""))
-	//				if err != nil {
-	//					return err
-	//				}
-	//				if mo > latest {
-	//					latest = mo
-	//					latestNum = num
-	//					has = true
-	//				}
-	//			}
-	//			return nil
-	//		})
-	//	if err != nil {
-	//		_ = log.Warn("hourly record failed : ", err)
-	//		return
-	//	}
-	//	//确认序号写入
-	//	if has {
-	//		if latestNum == 23 {
-	//			latestNum = 0
-	//		} else {
-	//			latestNum += 1
-	//		}
-	//	}
-	//	err = ServerServiceInstance().recorderService.TrafficRecorder.DumpAndReset(path + "traffic" + strconv.Itoa(latestNum))
-	//	if err != nil {
-	//		_ = log.Warn("hourly record failed : ", err)
-	//		return
-	//	}
-	//}, true)
-	////每分钟记录一次流量记录
-	//err = service.Register("*/1 * * * *", "traffic_recorder", func() {
-	//	ServerServiceInstance().recorderService.TrafficRecorder.Push(
-	//		monitor.CreateHubTrafficStampWithDuration(
-	//			ServerServiceInstance().rxFlowCounter,
-	//			ServerServiceInstance().txFlowCounter,
-	//			60000, //记录时长 60000ms
-	//		),
-	//	)
-	//}, true)
-	//if err != nil {
-	//	_ = log.Warn("schedule register failed : ", err)
-	//}
+	//每小时保存一次流量记录,总共保留24小时内记录
+	err := service.Register("@hourly", "hourly_traffic_recorder", func() {
+		//确定要保存的文件名
+		//找到最新的序号，最新序号+1即为保存的序号
+		path := "./record/hourly/"
+		if config.Current.Schedule.HourlyNetworkTrafficDump != "" {
+			path = config.Current.Schedule.HourlyNetworkTrafficDump
+		}
+		s, err := os.Stat(path)
+		if os.IsNotExist(err) || !s.IsDir() {
+			_ = os.MkdirAll(path, 0644)
+		}
+		var latest = int64(0)
+		var latestNum = 0
+		var has = false
+		err = filepath.Walk(path,
+			func(p string, f os.FileInfo, err error) error {
+				if f != nil && !f.IsDir() {
+					mo := f.ModTime().UnixMilli()
+					num, err := strconv.Atoi(strings.ReplaceAll(filepath.Base(p), "traffic", ""))
+					if err != nil {
+						return err
+					}
+					if mo > latest {
+						latest = mo
+						latestNum = num
+						has = true
+					}
+				}
+				return nil
+			})
+		if err != nil {
+			_ = log.Warn("hourly record failed : ", err)
+			return
+		}
+		//确认序号写入
+		if has {
+			if latestNum == 23 {
+				latestNum = 0
+			} else {
+				latestNum += 1
+			}
+		}
+		err = ServerServiceInstance().recorderService.TrafficRecorder.DumpAndReset(path + "traffic" + strconv.Itoa(latestNum))
+		if err != nil {
+			_ = log.Warn("hourly record failed : ", err)
+			return
+		}
+	}, true)
+	//每分钟记录一次流量记录
+	err = service.Register("*/1 * * * *", "traffic_recorder", func() {
+		ServerServiceInstance().recorderService.TrafficRecorder.Push(
+			monitor.CreateHubTrafficStampWithDuration(
+				ServerServiceInstance().rxFlowCounter,
+				ServerServiceInstance().txFlowCounter,
+				60000, //记录时长 60000ms
+			),
+		)
+	}, true)
+	if err != nil {
+		_ = log.Warn("schedule register failed : ", err)
+	}
 	//网络导入检查
-	err := service.Register("*/1 * * * *", "user_imports_check_1m", func() {
+	err = service.Register("*/1 * * * *", "user_imports_check_1m", func() {
 		checkUserImports()
 	}, true)
 	if err != nil {

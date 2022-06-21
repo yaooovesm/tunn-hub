@@ -2,9 +2,13 @@ package administration
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"strconv"
 	"tunn-hub/administration/model"
 	"tunn-hub/config"
+	"tunn-hub/monitor"
 	"tunn-hub/networking"
 	"tunn-hub/traffic"
 	"tunn-hub/transmitter"
@@ -28,7 +32,8 @@ func ServerServiceInstance() *serverService {
 //
 func newServerService() *serverService {
 	serverServiceInstance = &serverService{
-		monitorService: newMonitorService(4000),
+		monitorService:  newMonitorService(4000),
+		recorderService: newRecorderService(),
 	}
 	return serverServiceInstance
 }
@@ -38,6 +43,7 @@ func newServerService() *serverService {
 // @Description:
 //
 type serverService struct {
+	recorderService    *recorderService
 	monitorService     *monitorService
 	rxFlowCounter      *traffic.FlowStatisticsFP
 	txFlowCounter      *traffic.FlowStatisticsFP
@@ -180,4 +186,50 @@ func (serv *serverService) GetIPPoolGeneral() map[string]interface{} {
 		return nil
 	}
 	return serv.ippool.General()
+}
+
+//
+// GetRecentHourTrafficData
+// @Description:
+// @receiver serv
+// @param recent
+// @return []monitor.HubTrafficStamp
+//
+func (serv *serverService) GetRecentHourTrafficData() []monitor.HubTrafficStamp {
+	return serv.recorderService.RecentHour()
+}
+
+//
+// GetRecentDayTrafficData
+// @Description:
+// @receiver serv
+//
+func (serv *serverService) GetRecentDayTrafficData() []monitor.HubTrafficStamp {
+	return serv.recorderService.RecentDay()
+}
+
+//
+// readTrafficHistory
+// @Description:
+// @param path
+// @param num
+// @param now
+// @param duration
+// @return []monitor.HubTrafficStamp
+//
+func readTrafficHistory(path string, num int, now, duration int64) []monitor.HubTrafficStamp {
+	data := make([]monitor.HubTrafficStamp, 0)
+	read, err := ioutil.ReadFile(path + "traffic" + strconv.Itoa(num))
+	if err != nil {
+		return make([]monitor.HubTrafficStamp, 0)
+	}
+	err = json.Unmarshal(read, &data)
+	if err != nil {
+		return make([]monitor.HubTrafficStamp, 0)
+	}
+	//丢弃超过24小时的数据
+	if now-data[len(data)-1].Timestamp > duration {
+		return make([]monitor.HubTrafficStamp, 0)
+	}
+	return data
 }
