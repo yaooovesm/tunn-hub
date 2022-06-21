@@ -159,3 +159,21 @@ func ApiDownloadCurrentCert(ctx *gin.Context) {
 	ctx.Header("FileName", filename)
 	ctx.File(config.Current.Security.CertPem)
 }
+
+//
+// ApiRecentHourTrafficData
+// @Description:
+// @param ctx
+//
+func ApiRecentHourTrafficData(ctx *gin.Context) {
+	responseSuccess(ctx, ServerServiceInstance().GetRecentHourTrafficData(), "")
+}
+
+//
+// ApiRecentDayTrafficData
+// @Description:
+// @param ctx
+//
+func ApiRecentDayTrafficData(ctx *gin.Context) {
+	responseSuccess(ctx, ServerServiceInstance().GetRecentDayTrafficData(), "")
+}

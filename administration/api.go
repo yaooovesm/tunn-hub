@@ -78,6 +78,8 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		serverGroup.GET("/ippool", ApiIPPoolGeneral)
 		serverGroup.GET("/ippool/list", ApiIPPoolInfoList)
 		serverGroup.GET("/monitor", ApiGetServerSystemData)
+		serverGroup.GET("/monitor/traffic/24h", ApiRecentDayTrafficData)
+		serverGroup.GET("/monitor/traffic/1h", ApiRecentHourTrafficData)
 		serverGroup.POST("/cert/create", ApiCreateTLSCert)
 		serverGroup.GET("/cert/download", ApiDownloadCurrentCert)
 	}
