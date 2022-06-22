@@ -4,6 +4,9 @@
       <el-col :span="22" :offset="1" style="margin-bottom: 10px" v-if="connect">
         <reporter-client :resources="res" :interval="2000" @recv="onRecv" ref="reporter_client" v-if="connect"/>
       </el-col>
+      <el-col :xs="22" :sm="22" :md="22" :lg="22" :xl="22" :offset="1">
+        <traffic-recorder-overview/>
+      </el-col>
       <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
         <flow-overview ref="flow" :passive="true"/>
       </el-col>
@@ -30,10 +33,12 @@ import ServerConfigOverview from "@/components/overview/ServerConfigOverview";
 import IPPoolOverview from "@/components/overview/IPPoolOverview";
 import MonitorOverview from "@/components/overview/MonitorOverview";
 import ReporterClient from "@/components/ReporterClient";
+import TrafficRecorderOverview from "@/components/overview/TrafficRecorderOverview";
 
 export default {
   name: "OverviewPage",
   components: {
+    TrafficRecorderOverview,
     ReporterClient,
     MonitorOverview,
     IPPoolOverview,
