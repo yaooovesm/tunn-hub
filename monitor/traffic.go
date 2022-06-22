@@ -95,28 +95,11 @@ func (r *HubTrafficRecorder) DumpAndReset(file string) error {
 // @Description:
 //
 type HubTrafficStamp struct {
-	RxFlowSpeed   uint64 //流量接收速率
-	TxFlowSpeed   uint64 //流量发送速率
-	RxPacketSpeed uint64 //数据包接收速率
-	TxPacketSpeed uint64 //数据包发送速率
-	Timestamp     int64  //时间戳
-}
-
-//
-// CreateHubTrafficStamp
-// @Description:
-// @param rx
-// @param tx
-// @return HubTrafficStamp
-//
-func CreateHubTrafficStamp(rx, tx *traffic.FlowStatisticsFP) HubTrafficStamp {
-	return HubTrafficStamp{
-		RxFlowSpeed:   rx.FlowSpeed,
-		TxFlowSpeed:   tx.FlowSpeed,
-		RxPacketSpeed: rx.PacketSpeed,
-		TxPacketSpeed: tx.PacketSpeed,
-		Timestamp:     time.Now().UnixMilli(),
-	}
+	RxFlow    uint64 `json:"rx_flow"`   //接收流量
+	TxFlow    uint64 `json:"tx_flow"`   //发送流量
+	RxPacket  uint64 `json:"rx_packet"` //数据包接收速率
+	TxPacket  uint64 `json:"tx_packet"` //数据包发送速率
+	Timestamp int64  `json:"timestamp"` //时间戳
 }
 
 //
@@ -132,7 +115,6 @@ func CreateHubTrafficStampWithDuration(rx, tx *traffic.FlowStatisticsFP, gap int
 	if rx == nil || tx == nil {
 		return HubTrafficStamp{}
 	}
-	sec := uint64(gap / 1000)
 	start := time.Now().UnixMilli()
 	rxFlowSt1 := rx.Flow
 	txFlowSt1 := tx.Flow
@@ -144,10 +126,10 @@ func CreateHubTrafficStampWithDuration(rx, tx *traffic.FlowStatisticsFP, gap int
 	rxPacketSt2 := rx.Packet
 	txPacketSt2 := tx.Packet
 	return HubTrafficStamp{
-		RxFlowSpeed:   (rxFlowSt2 - rxFlowSt1) / sec,
-		TxFlowSpeed:   (txFlowSt2 - txFlowSt1) / sec,
-		RxPacketSpeed: (rxPacketSt2 - rxPacketSt1) / sec,
-		TxPacketSpeed: (txPacketSt2 - txPacketSt1) / sec,
-		Timestamp:     start,
+		RxFlow:    rxFlowSt2 - rxFlowSt1,
+		TxFlow:    txFlowSt2 - txFlowSt1,
+		RxPacket:  rxPacketSt2 - rxPacketSt1,
+		TxPacket:  txPacketSt2 - txPacketSt1,
+		Timestamp: start,
 	}
 }
