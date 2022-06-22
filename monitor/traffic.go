@@ -129,6 +129,9 @@ func CreateHubTrafficStamp(rx, tx *traffic.FlowStatisticsFP) HubTrafficStamp {
 // @return HubTrafficStamp
 //
 func CreateHubTrafficStampWithDuration(rx, tx *traffic.FlowStatisticsFP, gap int) HubTrafficStamp {
+	if rx == nil || tx == nil {
+		return HubTrafficStamp{}
+	}
 	sec := uint64(gap / 1000)
 	start := time.Now().UnixMilli()
 	rxFlowSt1 := rx.Flow
