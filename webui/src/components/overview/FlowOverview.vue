@@ -2,7 +2,7 @@
   <div v-loading="loading">
     <el-card shadow="always" body-style="padding:0">
       <div class="title" style="margin-top: 20px;margin-bottom: 20px;">
-        <div class="title-text">流量监控
+        <div class="title-text">仪表盘
         </div>
       </div>
       <div style="padding: 20px">
