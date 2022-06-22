@@ -246,45 +246,41 @@ export default {
           }
         })
       }
-    ,
-      formatMb(data)
-      {
-        return (data / 1024 / 1024).toFixed(2)
-      }
-    ,
-      formatDate(time, format)
-      {
-        let t = new Date(time);
-        let tf = function (i) {
-          return (i < 10 ? "0" : "") + i;
-        };
-        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function (a) {
-          switch (a) {
-            case "yyyy":
-              return tf(t.getFullYear());
-            case "MM":
-              return tf(t.getMonth() + 1);
-            case "mm":
-              return tf(t.getMinutes());
-            case "dd":
-              return tf(t.getDate());
-            case "HH":
-              return tf(t.getHours());
-            case "ss":
-              return tf(t.getSeconds());
-          }
-        });
-      }
-    ,
-      guid: function () {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          let r = Math.random() * 16 | 0,
-              v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      }
+    },
+    formatMb: function (data) {
+      return (data / 1024 / 1024).toFixed(2)
+    },
+    formatDate: function (time, format) {
+      let t = new Date(time);
+      let tf = function (i) {
+        return (i < 10 ? "0" : "") + i;
+      };
+      return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function (a) {
+        switch (a) {
+          case "yyyy":
+            return tf(t.getFullYear());
+          case "MM":
+            return tf(t.getMonth() + 1);
+          case "mm":
+            return tf(t.getMinutes());
+          case "dd":
+            return tf(t.getDate());
+          case "HH":
+            return tf(t.getHours());
+          case "ss":
+            return tf(t.getSeconds());
+        }
+      });
+    },
+    guid: function () {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     }
   }
+}
 </script>
 
 <style scoped>
