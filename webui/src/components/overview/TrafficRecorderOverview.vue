@@ -206,80 +206,85 @@ export default {
           },
           effect: "spin"
         })
-
-        method: "get",
-        url: "/api/v1/server/monitor/traffic/" + this.range,
-        data: {}
-      }).then(res => {
-        let response = res.data
-        if (response.data == null || response.data.length <= 2) {
-          this.noData = true
-        } else {
-          this.noData = false
-          let ts = []
-          //let traffic = []
-          let rxFlow = []
-          let txFlow = []
-          for (let i in response.data) {
-            ts.push(response.data[i].timestamp)
-            rxFlow.push(this.formatMb(response.data[i].rx_flow))
-            txFlow.push(this.formatMb(response.data[i].tx_flow))
-            // traffic.push({
-            //   RxFlowSpeed: response.data[i].RxFlowSpeed,
-            //   TxFlowSpeed: response.data[i].TxFlowSpeed,
-            //   RxPacketSpeed: response.data[i].RxPacketSpeed,
-            //   TxPacketSpeed: response.data[i].TxPacketSpeed,
-            //   Timestamp: response.data[i].Timestamp
-            // })
+        axios({
+          method: "get",
+          url: "/api/v1/server/monitor/traffic/" + this.range,
+          data: {}
+        }).then(res => {
+          let response = res.data
+          if (response.data == null || response.data.length <= 2) {
+            this.noData = true
+          } else {
+            this.noData = false
+            let ts = []
+            //let traffic = []
+            let rxFlow = []
+            let txFlow = []
+            for (let i in response.data) {
+              ts.push(response.data[i].timestamp)
+              rxFlow.push(this.formatMb(response.data[i].rx_flow))
+              txFlow.push(this.formatMb(response.data[i].tx_flow))
+              // traffic.push({
+              //   RxFlowSpeed: response.data[i].RxFlowSpeed,
+              //   TxFlowSpeed: response.data[i].TxFlowSpeed,
+              //   RxPacketSpeed: response.data[i].RxPacketSpeed,
+              //   TxPacketSpeed: response.data[i].TxPacketSpeed,
+              //   Timestamp: response.data[i].Timestamp
+              // })
+            }
+            this.option.xAxis.data = ts
+            this.option.series[0].data = rxFlow
+            this.option.series[1].data = txFlow
+            this.chart.setOption(this.option)
           }
-          this.option.xAxis.data = ts
-          this.option.series[0].data = rxFlow
-          this.option.series[1].data = txFlow
-          this.chart.setOption(this.option)
-        }
 
-      }).catch((err) => {
-        this.$utils.HandleError(err)
-      }).finally(() => {
-        if (!silence) {
-          this.chart.hideLoading();
-        }
-      })
-    },
-    formatMb(data) {
-      return (data / 1024 / 1024).toFixed(2)
-    },
-    formatDate(time, format) {
-      let t = new Date(time);
-      let tf = function (i) {
-        return (i < 10 ? "0" : "") + i;
-      };
-      return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function (a) {
-        switch (a) {
-          case "yyyy":
-            return tf(t.getFullYear());
-          case "MM":
-            return tf(t.getMonth() + 1);
-          case "mm":
-            return tf(t.getMinutes());
-          case "dd":
-            return tf(t.getDate());
-          case "HH":
-            return tf(t.getHours());
-          case "ss":
-            return tf(t.getSeconds());
-        }
-      });
-    },
-    guid: function () {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        let r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
+        }).catch((err) => {
+          this.$utils.HandleError(err)
+        }).finally(() => {
+          if (!silence) {
+            this.chart.hideLoading();
+          }
+        })
+      }
+    ,
+      formatMb(data)
+      {
+        return (data / 1024 / 1024).toFixed(2)
+      }
+    ,
+      formatDate(time, format)
+      {
+        let t = new Date(time);
+        let tf = function (i) {
+          return (i < 10 ? "0" : "") + i;
+        };
+        return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function (a) {
+          switch (a) {
+            case "yyyy":
+              return tf(t.getFullYear());
+            case "MM":
+              return tf(t.getMonth() + 1);
+            case "mm":
+              return tf(t.getMinutes());
+            case "dd":
+              return tf(t.getDate());
+            case "HH":
+              return tf(t.getHours());
+            case "ss":
+              return tf(t.getSeconds());
+          }
+        });
+      }
+    ,
+      guid: function () {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          let r = Math.random() * 16 | 0,
+              v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
     }
   }
-}
 </script>
 
 <style scoped>
