@@ -97,8 +97,8 @@ func (r *HubTrafficRecorder) DumpAndReset(file string) error {
 type HubTrafficStamp struct {
 	RxFlow    uint64 `json:"rx_flow"`   //接收流量
 	TxFlow    uint64 `json:"tx_flow"`   //发送流量
-	RxPacket  uint64 `json:"rx_packet"` //数据包接收速率
-	TxPacket  uint64 `json:"tx_packet"` //数据包发送速率
+	RxPacket  uint64 `json:"rx_packet"` //数据包接收
+	TxPacket  uint64 `json:"tx_packet"` //数据包发送
 	Timestamp int64  `json:"timestamp"` //时间戳
 }
 
