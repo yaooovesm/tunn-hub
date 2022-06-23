@@ -34,11 +34,11 @@ func NewCrypt(key []byte) (crypt Crypt, err error) {
 	encrypt := traffic.NewFlowProcessor()
 	encrypt.Name = "orm_data_encrypt_processor"
 	encrypt.Register(traffic.NewBlockEncryptFP(aes), "encrypt")
-	encrypt.Register(&traffic.ZSTDCompressFP{}, "compress")
+	//encrypt.Register(&traffic.ZSTDCompressFP{}, "compress")
 
 	decrypt := traffic.NewFlowProcessor()
 	decrypt.Name = "orm_data_decrypt_processor"
-	decrypt.Register(&traffic.ZSTDDecompressFP{}, "decompress")
+	//decrypt.Register(&traffic.ZSTDDecompressFP{}, "decompress")
 	decrypt.Register(traffic.NewBlockDecryptFP(aes), "decrypt")
 
 	return Crypt{
