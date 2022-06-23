@@ -22,6 +22,9 @@
       <el-col :xs="22" :sm="22" :md="8" :lg="8" :xl="8" style="margin-top: 30px">
         <server-config-overview/>
       </el-col>
+      <el-col :xs="22" :sm="22" :md="22" :lg="22" :xl="22" :offset="1" style="margin-top: 80px">
+        <link-overview style="left: 50%"/>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -34,10 +37,12 @@ import IPPoolOverview from "@/components/overview/IPPoolOverview";
 import MonitorOverview from "@/components/overview/MonitorOverview";
 import ReporterClient from "@/components/ReporterClient";
 import TrafficRecorderOverview from "@/components/overview/TrafficRecorderOverview";
+import LinkOverview from "@/components/overview/LinkOverview";
 
 export default {
   name: "OverviewPage",
   components: {
+    LinkOverview,
     TrafficRecorderOverview,
     ReporterClient,
     MonitorOverview,

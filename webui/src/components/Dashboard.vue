@@ -72,9 +72,9 @@
             <router-view style="padding-bottom: 30px;margin-left: 1px;width: calc(100% - 11px)"/>
           </el-scrollbar>
         </el-main>
-        <el-footer v-if="$route.path ==='/dashboard/home' || $route.path ==='/dashboard/overview'">
-          <link-overview/>
-        </el-footer>
+        <!--        <el-footer v-if="$route.path ==='/dashboard/home' || $route.path ==='/dashboard/overview'">-->
+        <!--          <link-overview/>-->
+        <!--        </el-footer>-->
       </el-container>
     </el-container>
   </div>
@@ -82,11 +82,11 @@
 
 <script>
 import PageHeader from "@/components/dashboard/PageHeader";
-import LinkOverview from "@/components/overview/LinkOverview";
+//import LinkOverview from "@/components/overview/LinkOverview";
 
 export default {
   name: "DashboardPage",
-  components: {LinkOverview, PageHeader},
+  components: {PageHeader},
   data() {
     return {
       icon: "right",
