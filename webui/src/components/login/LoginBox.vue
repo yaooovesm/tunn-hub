@@ -20,7 +20,7 @@
             <el-input v-model="loginData.password" @keyup.enter="login" show-password/>
           </el-form-item>
         </el-form>
-        <el-button type="primary" @click="login" style="margin-top: 40px;width: 100%">Login</el-button>
+        <el-button type="primary" @click="login" style="margin-top: 40px;width: 100%">登录</el-button>
       </el-col>
     </el-row>
     <el-divider style="margin-top: 50px;margin-bottom: 30px"/>
