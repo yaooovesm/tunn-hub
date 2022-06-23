@@ -228,7 +228,8 @@ func readTrafficHistory(path string, num int, now, duration int64) []monitor.Hub
 		return make([]monitor.HubTrafficStamp, 0)
 	}
 	//丢弃超过24小时的数据
-	if now-data[len(data)-1].Timestamp > duration {
+	last := len(data) - 1
+	if last < 0 || now-data[last].Timestamp > duration {
 		return make([]monitor.HubTrafficStamp, 0)
 	}
 	return data
