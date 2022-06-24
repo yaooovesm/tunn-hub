@@ -114,15 +114,15 @@ export default {
         url: "/api/v1/user/logout/" + usr.info.account,
         data: {}
       }).then(() => {
+      }).catch(err => {
+        console.log("error : " + err)
+      }).finally(() => {
         this.$storage.User = {
           isLogin: false,
           token: "",
           info: undefined,
         }
         localStorage.removeItem("tunnel_server_user")
-        this.$router.push({path: "/login"})
-      }).catch(err => {
-        console.log("error : " + err)
         this.$router.push({path: "/login"})
       })
     }
