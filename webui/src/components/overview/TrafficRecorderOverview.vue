@@ -9,10 +9,10 @@
         <div v-if="error"
              style="width: 100%;padding-top: 80px;padding-bottom:80px;font-size: 15px;color: #aaaaaa;text-align: center;">
           <div style="height: 40px">
-            发生错误
+            发生错误，请尝试刷浏览器
           </div>
         </div>
-        <div v-if="!noData">
+        <div v-if="!noData && !error">
           <div :id="id" style="width: 100%;height: 200px;"></div>
         </div>
         <div v-else
