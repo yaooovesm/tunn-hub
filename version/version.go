@@ -1,6 +1,6 @@
 package version
 
 const (
-	Version = "1.1.0.220616" //application version
+	Version = "1.2.0.220624" //application version
 	Develop = false          //is develop version
 )
