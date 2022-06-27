@@ -6,6 +6,14 @@
 
 <br>
 
+### 流程简图
+
+--------
+
+![img](./img/how_it_works.jpg)
+
+<br>
+
 ### 特性
 
 --------
@@ -34,6 +42,14 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 ### 更新
 
 ------
+2022/06/24 @ 1.2.0.220624
+
+- 网络导入定时检查
+- 流量记录查询
+- 流量记录图表 (1h/24h)
+- WebUI样式调整
+- 修复部分已知问题
+
 2022/06/16 @ 1.1.0.220616
 
 - 流量限速
@@ -189,6 +205,15 @@ ip_pool.start
 ip_pool.end
 #地址池网络，如：192.168.10.0/24
 ip_pool.network
+
+#开启日度流量记录
+schedule.daily_flow_record
+#开启周度流量记录
+schedule.weekly_flow_record
+#开启月度流量记录
+schedule.monthly_flow_record
+#开启月度流量重置
+schedule.monthly_flow_reset
 ```
 
 示例
@@ -235,6 +260,12 @@ ip_pool.network
     "start": "172.22.0.11",
     "end": "172.22.0.100",
     "network": "172.22.0.0/24"
+  },
+  "schedule": {
+    "daily_flow_record": true,
+    "weekly_flow_record": true,
+    "monthly_flow_record": true,
+    "monthly_flow_reset": true
   }
 }
 ```

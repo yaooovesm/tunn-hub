@@ -6,6 +6,14 @@
 
 <br>
 
+### How it works
+
+--------
+
+![img](./img/how_it_works.jpg)
+
+<br>
+
 ### Features
 
 --------
@@ -32,6 +40,14 @@ AES256 / AES192 / AES128 / XOR / SM4 / TEA / XTEA / Salsa20 / Blowfish
 ### Updates
 
 ------
+2022/06/24 @ 1.2.0.220624
+
+- network import check schedule
+- flow record query
+- flow record display (1h/24h)
+- WebUI appearance adjust
+- fix some problem
+
 2022/06/16 @ 1.1.0.220616
 
 - flow speed limit
@@ -186,6 +202,15 @@ ip_pool.start
 ip_pool.end
 #ip pool network e.g. 192.168.10.0/24
 ip_pool.network
+
+#enable daily flow data record
+schedule.daily_flow_record
+#enable weekly flow data record
+schedule.weekly_flow_record
+#enable monthly flow data record
+schedule.monthly_flow_record
+#enable monthly flow data reset
+schedule.monthly_flow_reset
 ```
 
 Example
@@ -232,6 +257,12 @@ Example
     "start": "172.22.0.11",
     "end": "172.22.0.100",
     "network": "172.22.0.0/24"
+  },
+  "schedule": {
+    "daily_flow_record": true,
+    "weekly_flow_record": true,
+    "monthly_flow_record": true,
+    "monthly_flow_reset": true
   }
 }
 ```
