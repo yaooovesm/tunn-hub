@@ -333,7 +333,6 @@ func (serv userService) UpdateUser(info *model.UserInfo) error {
 		return err
 	}
 	origin.Email = info.Email
-	origin.ConfigId = info.ConfigId
 	if info.Password != "" {
 		origin.Password = info.Password
 	}
