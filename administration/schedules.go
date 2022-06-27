@@ -199,8 +199,13 @@ func checkUserImports() {
 				continue
 			}
 			for j := 0; j < len(list[i].Config.Routes); j++ {
-				if !importValidationCheck(exports, list[i].Config.Routes[j]) {
+				route := list[i].Config.Routes[j]
+				if route.Option != config.RouteOptionImport {
+					continue
+				}
+				if !importValidationCheck(exports, route) {
 					changed = true
+					log.Info("[", list[i].Account, "][network:", route.Name, "]invalid import : ", route.Network)
 					list[i].Config.Routes = append(list[i].Config.Routes[:j], list[i].Config.Routes[j+1:]...)
 				}
 			}
