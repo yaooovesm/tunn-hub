@@ -63,6 +63,7 @@ export default {
       dialogVisible: false,
       masks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
         17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+      oname: "",
       route: {
         maskNum: 24,
         addr: "",
@@ -79,9 +80,10 @@ export default {
         option: "export",
         visibility: this.route.visibility
       }
-      this.$emit("submit", route)
+      this.$emit("submit", route, this.oname)
     },
     show: function (r) {
+      this.oname = r.name
       this.route.name = r.name
       let cidr = r.network.split("/")
       this.route.addr = cidr[0]

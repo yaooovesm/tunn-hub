@@ -221,10 +221,10 @@ export default {
     }
   },
   methods: {
-    handleExportModify: function (r) {
+    handleExportModify: function (r, oname) {
       for (let i = 0; i < this.exportRoutes.length; i++) {
         let origin = this.exportRoutes[i]
-        if (origin.name === r.name) {
+        if (origin.name === oname) {
           this.exportRoutes[i] = r
           break
         }
