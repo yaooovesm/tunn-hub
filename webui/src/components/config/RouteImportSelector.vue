@@ -90,6 +90,9 @@ import axios from "axios";
 export default {
   name: "RouteImportSelector",
   props: {
+    account: {
+      type: String
+    },
     imported: {
       type: Array
     },
@@ -121,9 +124,10 @@ export default {
     },
     load: function () {
       this.loading = true
+      let accountParam = this.account === '' ? '' : '/' + this.account
       axios({
         method: "get",
-        url: "/api/v1/cfg/route/available",
+        url: "/api/v1/cfg/route/available" + accountParam,
         data: {}
       }).then(res => {
         let response = res.data

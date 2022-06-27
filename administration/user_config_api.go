@@ -135,3 +135,22 @@ func ApiAvailableExports(ctx *gin.Context) {
 	}
 	responseSuccess(ctx, routes, "")
 }
+
+//
+// ApiAvailableExportsByAccount
+// @Description:
+// @param ctx
+//
+func ApiAvailableExportsByAccount(ctx *gin.Context) {
+	account := ctx.Param("account")
+	if account == "" {
+		responseError(ctx, errors.New("no account"), "获取可导入网络列表失败")
+		return
+	}
+	routes, err := UserServiceInstance().configService.AvailableExports(account)
+	if err != nil {
+		responseError(ctx, err, "获取可导入网络列表失败")
+		return
+	}
+	responseSuccess(ctx, routes, "")
+}

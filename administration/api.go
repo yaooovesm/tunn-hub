@@ -93,5 +93,6 @@ func (api *ServerAdminApi) v1(r *gin.RouterGroup) {
 		cfgGroup.POST("/update", ApiUpdateConfigById)
 		cfgGroup.PUT("/create", ApiCreateConfig)
 		cfgGroup.GET("/route/available", ApiAvailableExports)
+		cfgGroup.GET("/route/available/:account", ApiAvailableExportsByAccount)
 	}
 }

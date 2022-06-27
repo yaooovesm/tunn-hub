@@ -65,6 +65,7 @@
             </div>
             <route-import-selector
                 style="margin-top: 8px"
+                :account="account"
                 :imported="importRoutes"
                 :exported="exportRoutes"
                 @submit="handleAddImport"
