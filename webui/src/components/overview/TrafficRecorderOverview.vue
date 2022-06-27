@@ -17,7 +17,7 @@
         </div>
         <div v-else
              style="width: 100%;padding-top: 80px;padding-bottom:80px;font-size: 15px;color: #aaaaaa;text-align: center;">
-          <div style="height: 40px">
+          <div style="height: 40px" v-if="!error">
             无数据或数据量不足
             <el-tooltip
                 effect="dark"
