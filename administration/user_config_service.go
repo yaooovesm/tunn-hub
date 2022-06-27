@@ -63,6 +63,9 @@ func (u *userClientConfigService) AvailableExports(account string) ([]model.Impo
 		return nil, err
 	}
 	for i := range list {
+		if list[i].Account == account {
+			continue
+		}
 		for j := range list[i].Config.Routes {
 			if list[i].Config.Routes[j].Option == config.RouteOptionExport {
 				if auth == Administrator || visibilityCheck(list[i].Config.Routes[j].Visibility, account) {
